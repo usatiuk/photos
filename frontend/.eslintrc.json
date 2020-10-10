@@ -1,11 +1,23 @@
 {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
     "plugins": [
+        "@typescript-eslint",
+        "prettier",
+        "import",
         "jest",
         "react",
         "react-hooks",
         "html"
     ],
     "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "prettier/@typescript-eslint",
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        "plugin:import/typescript",
         "plugin:jest/recommended",
         "plugin:react-hooks/recommended",
         "plugin:react/recommended"
@@ -17,6 +29,7 @@
         "ecmaFeatures": {
             "jsx": true
         },
+        "sourceType": "module",
         "project": "./tsconfig.json"
     },
     "settings": {
@@ -34,5 +47,8 @@
                 ]
             }
         }
+    },
+    "rules": {
+        "@typescript-eslint/require-await": "warn"
     }
 }
