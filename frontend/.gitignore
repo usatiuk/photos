@@ -1,0 +1,13 @@
+.idea/
+node_modules/
+build/
+tmp/
+temp/
+dist/
+ormconfig.json
+ormconfig.test.json
+.env
+.cache
+.directory
+.history
+.parcel-cache
