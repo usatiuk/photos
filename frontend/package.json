@@ -1,0 +1,42 @@
+{
+    "name": "photos-frontend",
+    "scripts": {
+        "start": "parcel serve src/index.html",
+        "build": "parcel build src/index.html",
+        "lint": "eslint ./src/** --ext .js,.jsx,.ts,.tsx",
+        "test": "jest"
+    },
+    "postcss": {
+        "plugins": {
+            "autoprefixer": true
+        }
+    },
+    "dependencies": {
+        "@typescript-eslint/eslint-plugin": "^4.4.0",
+        "@typescript-eslint/parser": "^4.4.0",
+        "eslint": "^7.10.0",
+        "eslint-config-prettier": "^6.12.0",
+        "eslint-import-resolver-typescript": "^2.3.0",
+        "eslint-plugin-html": "^6.1.0",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-jest": "^24.1.0",
+        "eslint-plugin-jsx-a11y": "^6.3.1",
+        "eslint-plugin-prettier": "^3.1.4",
+        "eslint-plugin-react": "^7.21.3",
+        "eslint-plugin-react-hooks": "^4.1.2",
+        "jest": "^26.5.2",
+        "parcel": "^2.0.0-nightly.419",
+        "prettier": "^2.1.2",
+        "prettier-eslint": "^11.0.0",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "typescript": "^4.0.3"
+    },
+    "devDependencies": {
+        "@types/eslint": "^7.2.4",
+        "@types/eslint-plugin-prettier": "^3.1.0",
+        "@types/prettier": "^2.1.1",
+        "@types/react": "^16.9.51",
+        "@types/react-dom": "^16.9.8"
+    }
+}

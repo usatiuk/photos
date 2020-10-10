@@ -1,0 +1,38 @@
+{
+    "plugins": [
+        "jest",
+        "react",
+        "react-hooks",
+        "html"
+    ],
+    "extends": [
+        "plugin:jest/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:react/recommended"
+    ],
+    "env": {
+        "browser": true
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "project": "./tsconfig.json"
+    },
+    "settings": {
+        "import/parsers": {
+            "@typescript-eslint/parser": [
+                ".ts",
+                ".tsx"
+            ]
+        },
+        "import/resolver": {
+            "typescript": {
+                "alwaysTryTypes": true,
+                "project": [
+                    "./tsconfig.json"
+                ]
+            }
+        }
+    }
+}

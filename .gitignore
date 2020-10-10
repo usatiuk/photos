@@ -1,0 +1,10 @@
+.idea/
+node_modules/
+build/
+tmp/
+temp/
+dist/
+ormconfig.json
+.env
+.directory
+.history

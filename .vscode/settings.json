@@ -1,0 +1,8 @@
+{
+    "cSpell.words": [
+        "typeorm"
+    ],
+    "files.exclude": {
+        "frontend": true
+    }
+}
