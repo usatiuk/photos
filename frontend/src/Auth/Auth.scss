@@ -1,0 +1,41 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.AuthForm {
+    margin: auto;
+    margin-top: 10rem;
+    width: 20rem;
+    left: 0;
+    right: 0;
+    position: absolute;
+
+    form {
+        display: flex;
+        flex-direction: column;
+
+        h2 {
+            margin-bottom: 1rem;
+        }
+
+        .header,
+        .footer {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+
+            button.change {
+                margin-left: auto;
+            }
+        }
+
+        .footer {
+            #error {
+                height: 1rem;
+                color: $pt-intent-danger;
+            }
+
+            button.submit {
+                margin-left: auto;
+            }
+        }
+    }
+}
