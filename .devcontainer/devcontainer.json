@@ -1,0 +1,50 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.140.1/containers/javascript-node-postgres
+// Update the VARIANT arg in docker-compose.yml to pick a Node.js version: 10, 12, 14 
+{
+	"name": "DevEnv",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspace",
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"sqltools.connections": [
+			{
+				"name": "MySQL",
+				"server": "db",
+				"driver": "MySQL",
+				"port": 3306,
+				"database": "writer",
+				"username": "writer",
+				"askForPassword": false,
+				"password": "writer",
+				"connectionTimeout": 15
+			},
+			{
+				"name": "MySQL",
+				"server": "dbtest",
+				"driver": "MySQL",
+				"port": 3306,
+				"database": "writer_test",
+				"username": "writer",
+				"askForPassword": false,
+				"password": "writer",
+				"connectionTimeout": 15
+			}
+		]
+	},
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"dbaeumer.vscode-eslint",
+		"mtxr.sqltools",
+		"mtxr.sqltools-driver-mysql",
+		"ms-vscode.vscode-typescript-tslint-plugin"
+	],
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [1234, 3000],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "npm config set unsafe-perm=true && npm i && cd frontend && npm i",
+	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
+	// "remoteUser": "node"
+}
