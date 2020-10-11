@@ -1,6 +1,6 @@
 {
     "type": "mariadb",
-    "host": "dbtest",
+    "host": "localhost",
     "port": 3306,
     "username": "photos",
     "password": "photos",

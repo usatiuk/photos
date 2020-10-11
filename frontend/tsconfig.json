@@ -15,7 +15,13 @@
         "noImplicitAny": true,
         "allowSyntheticDefaultImports": true,
         "strictFunctionTypes": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "baseUrl": "./src",
+        "paths": {
+            "~*": [
+                "./*"
+            ]
+        }
     },
     "include": [
         "./src/**/*.ts",
