@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import { ConnectionOptions } from "typeorm";
-import { sys } from "typescript";
 
 export enum EnvType {
     production,
