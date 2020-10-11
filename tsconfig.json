@@ -12,10 +12,17 @@
         "sourceMap": true,
         "noImplicitAny": true,
         "strictFunctionTypes": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "baseUrl": "./src",
+        "paths": {
+            "~*": [
+                "./*"
+            ]
+        }
     },
     "include": [
         "./src/**/*.ts",
+        "./tests/**/*.ts",
     ],
     "exclude": [
         "frontend"

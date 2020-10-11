@@ -4,5 +4,7 @@ import { Connection, createConnection } from "typeorm";
 import { config } from "./";
 
 export async function connect(): Promise<Connection> {
-    return createConnection(config.dbConnectionOptions);
+    return config.dbConnectionOptions
+        ? createConnection(config.dbConnectionOptions)
+        : createConnection();
 }
