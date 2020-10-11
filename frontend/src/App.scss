@@ -1,0 +1,32 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.animationWrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-x: hidden;
+}
+
+.loadingWrapper {
+    position: fixed;
+    width: 100%;
+    height: 75%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    overflow: hidden;
+}
+
+.bp3-navbar {
+    .bp3-button {
+        margin-right: 0.25rem;
+    }
+}
+
+body {
+    font-family: "PT Sans", "emoji", sans-serif;
+
+    background: $light-gray5;
+}

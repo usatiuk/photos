@@ -1,0 +1,53 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.viewComponent {
+    position: absolute;
+    max-width: 100%;
+    width: 50rem;
+    left: 0;
+    right: 0;
+    top: -$pt-navbar-height;
+    bottom: 0;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 2 * $pt-navbar-height + 20px;
+    max-height: 100%;
+}
+
+#mainContainer {
+    transition: 0.3s;
+
+    #MainScreen {
+        transition: 0.3s;
+    }
+
+    .bp3-navbar {
+        transition: 0.3s;
+
+        > * {
+            // keeps the breadcrumbs from taking all the space
+            max-width: 65%;
+        }
+
+        * {
+            transition: 0.3s;
+        }
+    }
+
+    #uploadingStatusButton {
+        width: 40px;
+    }
+}
+
+#mainContainer.bp3-dark {
+    transition: 0.3s;
+
+    #MainScreen {
+        transition: 0.3s;
+        background: $dark-gray3;
+    }
+
+    .bp3-navbar {
+        transition: 0.3s;
+    }
+}

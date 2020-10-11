@@ -1,0 +1,10 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+#overview {
+    display: flex;
+    flex-direction: column;
+}
+
+.bp3-dark {
+    #overview {}
+}
