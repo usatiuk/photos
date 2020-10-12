@@ -10,7 +10,7 @@ import { IAppState } from "~redux/reducers";
 
 interface ILoginComponentProps extends RouteComponentProps {
     inProgress: boolean;
-    error: string;
+    error: string | null;
     spinner: boolean;
     login: (username: string, password: string) => void;
 }

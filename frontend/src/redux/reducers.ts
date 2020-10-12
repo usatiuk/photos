@@ -27,10 +27,10 @@ const localSettingsPersistConfig = {
 };
 
 export const rootReducer = combineReducers({
-    auth: persistReducer<IAuthState>(authPersistConfig, authReducer),
+    auth: persistReducer<IAuthState>(authPersistConfig, authReducer as any),
     user: userReducer,
     localSettings: persistReducer(
         localSettingsPersistConfig,
-        localSettingsReducer,
+        localSettingsReducer as any,
     ),
 });
