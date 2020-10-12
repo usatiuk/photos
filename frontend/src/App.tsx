@@ -4,7 +4,7 @@ import { AuthScreen } from "~Auth/AuthScreen";
 import { requireAuth } from "~Auth/AuthWrapper";
 import { Home } from "~Home/Home";
 
-export function AppComponent(props: RouteComponentProps) {
+export const AppComponent: React.FunctionComponent<RouteComponentProps> = () => {
     return (
         <Switch>
             <Route path="/signup" component={AuthScreen} />,
@@ -12,6 +12,6 @@ export function AppComponent(props: RouteComponentProps) {
             <Route path="/" component={requireAuth(Home)} />,
         </Switch>
     );
-}
+};
 
 export const App = withRouter(AppComponent);

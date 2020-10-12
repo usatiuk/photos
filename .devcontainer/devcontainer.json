@@ -15,10 +15,10 @@
 				"server": "db",
 				"driver": "MySQL",
 				"port": 3306,
-				"database": "writer",
-				"username": "writer",
+				"database": "photos",
+				"username": "photos",
 				"askForPassword": false,
-				"password": "writer",
+				"password": "photos",
 				"connectionTimeout": 15
 			},
 			{
@@ -26,10 +26,10 @@
 				"server": "dbtest",
 				"driver": "MySQL",
 				"port": 3306,
-				"database": "writer_test",
-				"username": "writer",
+				"database": "photos_test",
+				"username": "photos",
 				"askForPassword": false,
-				"password": "writer",
+				"password": "photos",
 				"connectionTimeout": 15
 			}
 		]
@@ -42,7 +42,10 @@
 		"ms-vscode.vscode-typescript-tslint-plugin"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [1234, 3000],
+	"forwardPorts": [
+		1234,
+		3000
+	],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm config set unsafe-perm=true && npm i && cd frontend && npm i",
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.

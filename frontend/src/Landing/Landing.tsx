@@ -10,7 +10,7 @@ export function LandingComponent(props: RouteComponentProps) {
         <>
             <Navbar>
                 <Navbar.Group align={Alignment.LEFT}>
-                    <Navbar.Heading>Writer</Navbar.Heading>
+                    <Navbar.Heading>Photos</Navbar.Heading>
                     <Navbar.Divider />
                 </Navbar.Group>
                 <Navbar.Group align={Alignment.RIGHT}>
