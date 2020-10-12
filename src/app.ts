@@ -12,6 +12,7 @@ import * as serve from "koa-static";
 import { config, EnvType } from "~config";
 import { userRouter } from "~routes/users";
 import { devRouter } from "~routes/dev";
+import { photosRouter } from "~routes/photos";
 
 export const app = new Koa();
 
@@ -45,6 +46,7 @@ app.use(async (ctx, next) => {
 app.use(serve("frontend/dist"));
 
 app.use(userRouter.routes()).use(userRouter.allowedMethods());
+app.use(photosRouter.routes()).use(photosRouter.allowedMethods());
 
 if (config.env === EnvType.development) {
     app.use(devRouter.routes()).use(devRouter.allowedMethods());
