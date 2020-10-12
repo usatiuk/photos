@@ -52,7 +52,7 @@ export class HomeComponent extends React.PureComponent<IHomeProps> {
                                 minimal={true}
                                 onClick={() => this.props.history.push("/")}
                             >
-                                Writer
+                                Photos
                             </Button>
                             <Navbar.Divider />
                         </Navbar.Group>

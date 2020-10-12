@@ -5,7 +5,7 @@ export const AppToaster = Toaster.create({
     position: Position.TOP,
 });
 
-export function showPasswordSavedToast() {
+export function showPasswordSavedToast(): void {
     AppToaster.show({
         message: "Password saved!",
         intent: "success",
@@ -13,7 +13,7 @@ export function showPasswordSavedToast() {
     });
 }
 
-export function showPasswordNotSavedToast(error: string) {
+export function showPasswordNotSavedToast(error: string): void {
     AppToaster.show({
         message: "Password not saved! " + error,
         intent: "danger",

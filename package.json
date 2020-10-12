@@ -15,8 +15,8 @@
     "lint-frontend-fix": "cd frontend && npm run lint-fix",
     "lint-all": "npm run lint && npm run lint-frontend",
     "lint-all-fix": "npm run lint-fix && npm run lint-frontend-fix",
-    "prettier-check": "prettier src/** --check && prettier frontend/src/** --check",
-    "prettify": "prettier src/** --write && prettier frontend/src/** --write"
+    "prettier-check": "prettier src/**/*.ts frontend/src/**/*.ts frontend/src/**/*.tsx --check",
+    "prettify": "prettier src/**/*.ts frontend/src/**/*.ts frontend/src/**/*.tsx  --write"
   },
   "license": "MIT",
   "dependencies": {
