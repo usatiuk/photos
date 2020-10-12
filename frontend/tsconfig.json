@@ -16,6 +16,7 @@
         "allowSyntheticDefaultImports": true,
         "strictFunctionTypes": true,
         "strictNullChecks": true,
+        "skipLibCheck": true,
         "baseUrl": "./src",
         "paths": {
             "~*": [

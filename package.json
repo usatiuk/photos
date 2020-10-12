@@ -7,9 +7,16 @@
     "ts-node-dev": "ts-node-dev -r tsconfig-paths/register ./src/server.ts",
     "dev": "cross-env NODE_ENV=development concurrently npm:ts-node-dev npm:start-frontend -c 'blue,green'",
     "test": "cross-env NODE_ENV=test mocha --timeout 15000 -r ts-node/register -r tsconfig-paths/register 'src/tests/**/*.ts' ",
-    "lint": "eslint ./src/** --ext .js,.jsx,.ts,.tsx",
+    "test-frontend": "cd frontend && npm test",
+    "test-all": "npm test && npm run test-frontend",
+    "lint": "eslint ./src/** --ext .js,.jsx,.ts,.tsx && tsc --noEmit",
+    "lint-fix": "eslint ./src/** --ext .js,.jsx,.ts,.tsx --fix",
     "lint-frontend": "cd frontend && npm run lint",
-    "lint-all": "npm run lint && npm run lint-frontend"
+    "lint-frontend-fix": "cd frontend && npm run lint-fix",
+    "lint-all": "npm run lint && npm run lint-frontend",
+    "lint-all-fix": "npm run lint-fix && npm run lint-frontend-fix",
+    "prettier-check": "prettier src/** --check && prettier frontend/src/** --check",
+    "prettify": "prettier src/** --write && prettier frontend/src/** --write"
   },
   "license": "MIT",
   "dependencies": {
@@ -26,6 +33,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-mocha": "^8.0.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
     "koa-body": "^4.2.0",
@@ -63,5 +71,10 @@
     "@types/mocha": "^8.0.3",
     "@types/prettier": "^2.1.1",
     "@types/supertest": "^2.0.10"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-all && npm run prettier-check"
+    }
   }
 }
