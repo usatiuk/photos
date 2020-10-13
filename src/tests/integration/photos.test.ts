@@ -114,6 +114,8 @@ describe("photos", function () {
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
+        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
             .set({
@@ -122,6 +124,8 @@ describe("photos", function () {
             })
             .attach("photo", dogPath)
             .expect(200);
+
+        expect(await dbPhoto.isUploaded()).to.be.equal(true);
 
         const showResp = await request(callback)
             .get(`/photos/showByID/${photo.id}`)
@@ -159,6 +163,7 @@ describe("photos", function () {
             user: seed.user1.id as any,
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
+        expect(await dbPhoto.isUploaded()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -168,6 +173,8 @@ describe("photos", function () {
             })
             .attach("photo", dogPath)
             .expect(404);
+
+        expect(await dbPhoto.isUploaded()).to.be.equal(false);
     });
 
     it("should create, upload but not show a photo to another user", async function () {
@@ -194,6 +201,7 @@ describe("photos", function () {
             user: seed.user1.id as any,
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
+        expect(await dbPhoto.isUploaded()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -203,6 +211,8 @@ describe("photos", function () {
             })
             .attach("photo", dogPath)
             .expect(200);
+
+        expect(await dbPhoto.isUploaded()).to.be.equal(true);
 
         await request(callback)
             .get(`/photos/showByID/${photo.id}`)
