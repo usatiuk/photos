@@ -1,9 +1,18 @@
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import { connect } from "config/database";
 import * as request from "supertest";
 import { getConnection } from "typeorm";
 import { app } from "~app";
 import { IUserAuthJSON, User } from "~entity/User";
+import {
+    IUserEditBody,
+    IUserEditRespBody,
+    IUserGetRespBody,
+    IUserLoginBody,
+    IUserLoginRespBody,
+    IUserSignupBody,
+    IUserSignupRespBody,
+} from "~routes/users";
 
 import { ISeed, seedDB } from "./util";
 
@@ -34,9 +43,14 @@ describe("users", function () {
             .expect("Content-Type", /json/)
             .expect(200);
 
-        expect(response.body.error).to.be.false;
+        const body = response.body as IUserGetRespBody;
 
-        const { jwt: _, ...user } = response.body.data as IUserAuthJSON;
+        if (body.error !== false) {
+            assert(false);
+            return;
+        }
+
+        const { jwt: _, ...user } = body.data;
 
         expect(user).to.deep.equal(seed.user1.toJSON());
     });
@@ -45,14 +59,18 @@ describe("users", function () {
         const response = await request(callback)
             .post("/users/login")
             .set({ "Content-Type": "application/json" })
-            .send({ username: "User1", password: "User1" })
+            .send({ username: "User1", password: "User1" } as IUserLoginBody)
             .expect("Content-Type", /json/)
             .expect(200);
 
-        expect(response.body.error).to.be.false;
+        const body = response.body as IUserLoginRespBody;
 
-        const { jwt: _, ...user } = response.body.data as IUserAuthJSON;
+        if (body.error !== false) {
+            assert(false);
+            return;
+        }
 
+        const { jwt: _, ...user } = response.body.data;
         expect(user).to.deep.equal(seed.user1.toJSON());
     });
 
@@ -60,11 +78,12 @@ describe("users", function () {
         const response = await request(callback)
             .post("/users/login")
             .set({ "Content-Type": "application/json" })
-            .send({ username: "User1", password: "asdf" })
+            .send({ username: "User1", password: "asdf" } as IUserLoginBody)
             .expect(404);
 
-        expect(response.body.error).to.be.equal("User not found");
-        expect(response.body.data).to.be.false;
+        const body = response.body as IUserLoginRespBody;
+        expect(body.error).to.be.equal("User not found");
+        expect(body.data).to.be.false;
     });
 
     it("should signup user", async function () {
@@ -75,16 +94,19 @@ describe("users", function () {
                 username: "NUser1",
                 password: "NUser1",
                 email: "nuser1@users.com",
-            })
+            } as IUserSignupBody)
             .expect("Content-Type", /json/)
             .expect(200);
 
-        expect(response.body.error).to.be.false;
+        const body = response.body as IUserSignupRespBody;
 
-        const { jwt: _, ...user } = response.body.data as IUserAuthJSON;
+        if (body.error !== false) {
+            assert(false);
+            return;
+        }
 
+        const { jwt: _, ...user } = body.data;
         const newUser = await User.findOneOrFail({ username: "NUser1" });
-
         expect(user).to.deep.equal(newUser.toJSON());
     });
 
@@ -96,11 +118,13 @@ describe("users", function () {
                 username: "User1",
                 password: "NUser1",
                 email: "user1@users.com",
-            })
+            } as IUserSignupBody)
             .expect(400);
 
-        expect(response.body.error).to.be.equal("User already exists");
-        expect(response.body.data).to.be.false;
+        const body = response.body as IUserSignupRespBody;
+
+        expect(body.error).to.be.equal("User already exists");
+        expect(body.data).to.be.false;
     });
 
     it("should change user's password", async function () {
@@ -112,31 +136,46 @@ describe("users", function () {
             })
             .send({
                 password: "User1NewPass",
-            })
+            } as IUserEditBody)
             .expect("Content-Type", /json/)
             .expect(200);
 
-        expect(response.body.error).to.be.false;
+        const body = response.body as IUserEditRespBody;
+
+        if (body.error !== false) {
+            assert(false);
+            return;
+        }
 
         const loginResponse = await request(callback)
             .post("/users/login")
             .set({ "Content-Type": "application/json" })
-            .send({ username: "User1", password: "User1NewPass" })
+            .send({
+                username: "User1",
+                password: "User1NewPass",
+            } as IUserLoginBody)
             .expect("Content-Type", /json/)
             .expect(200);
 
-        expect(loginResponse.body.error).to.be.false;
+        const loginBody = loginResponse.body as IUserLoginRespBody;
 
-        const { jwt: _, ...user } = response.body.data as IUserAuthJSON;
+        if (loginBody.error !== false) {
+            assert(false);
+            return;
+        }
+
+        const { jwt: _, ...user } = loginBody.data;
         expect(user).to.deep.equal(seed.user1.toJSON());
 
         const badLoginResponse = await request(callback)
             .post("/users/login")
             .set({ "Content-Type": "application/json" })
-            .send({ username: "User1", password: "User1" })
+            .send({ username: "User1", password: "User1" } as IUserLoginBody)
             .expect(404);
 
-        expect(badLoginResponse.body.error).to.be.equal("User not found");
-        expect(badLoginResponse.body.data).to.be.false;
+        const badLoginBody = badLoginResponse.body as IUserLoginRespBody;
+
+        expect(badLoginBody.error).to.be.equal("User not found");
+        expect(badLoginBody.data).to.be.false;
     });
 });

@@ -11,12 +11,20 @@ export interface IConfig {
     env: EnvType;
     port: number;
     jwtSecret: string;
+    dataDir: string;
     dbConnectionOptions: ConnectionOptions | null;
 }
 
 function getJwtSecret(): string {
     switch (process.env.NODE_ENV) {
+        case "development":
+            return "DEVSECRET";
+            break;
+        case "test":
+            return "TESTSECRET";
+            break;
         case "production":
+        default:
             if (process.env.JWT_SECRET === undefined) {
                 console.log("JWT_SECRET is not set");
                 process.exit(1);
@@ -24,15 +32,26 @@ function getJwtSecret(): string {
                 return process.env.JWT_SECRET;
             }
             break;
+    }
+}
+
+function getDataDir(): string {
+    switch (process.env.NODE_ENV) {
         case "development":
-            return "DEVSECRET";
+            return "./data_dev";
             break;
         case "test":
-            return "TESTSECRET";
+            return "./data_test";
             break;
+
+        case "production":
         default:
-            console.log("Unknown NODE_ENV");
-            process.exit(1);
+            if (process.env.DATA_DIR === undefined) {
+                console.log("DATA_DIR is not set");
+                process.exit(1);
+            } else {
+                return process.env.DATA_DIR;
+            }
             break;
     }
 }
@@ -41,6 +60,7 @@ const production: IConfig = {
     env: EnvType.production,
     port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
     jwtSecret: getJwtSecret(),
+    dataDir: getDataDir(),
     dbConnectionOptions: null,
 };
 

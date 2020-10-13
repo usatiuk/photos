@@ -8,7 +8,7 @@ export interface IOverviewComponentProps {
     fetching: boolean;
     spinner: boolean;
 
-    fetchDocs: () => void;
+    fetchPhotos: () => void;
 }
 
 export function OverviewComponent() {
