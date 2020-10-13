@@ -10,3 +10,6 @@ ormconfig.test.json
 .env
 .directory
 .history
+data_test
+data_dev
+data

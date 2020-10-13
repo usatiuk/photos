@@ -1,15 +1,44 @@
+import * as fs from "fs/promises";
+
 import { User } from "entity/User";
-//import { Document } from "~entity/Document";
+import { Photo } from "~entity/Photo";
+import { getHash, getSize } from "~util";
+
+export const dogPath = "./src/tests/integration/photos/dog.jpg";
+export const catPath = "./src/tests/integration/photos/cat.jpg";
 
 export interface ISeed {
     user1: User;
     user2: User;
-    // doc1: Document;
-    // doc2p: Document;
+    dogPhoto: Photo;
+    catPhoto: Photo;
+}
+
+export let dogHash = "";
+export let dogSize = "";
+export let dogFileSize = 0;
+export const dogFormat = "image/jpeg";
+export let catHash = "";
+export let catSize = "";
+export let catFileSize = 0;
+export const catFormat = "image/jpeg";
+
+export async function prepareMetadata(): Promise<void> {
+    dogHash = await getHash(dogPath);
+    dogSize = await getSize(dogPath);
+    dogFileSize = (await fs.stat(dogPath)).size;
+    catHash = await getHash(catPath);
+    catSize = await getSize(catPath);
+    catFileSize = (await fs.stat(catPath)).size;
 }
 
 export async function seedDB(): Promise<ISeed> {
-    //await Document.remove(await Document.find());
+    dogHash = await getHash(dogPath);
+    dogSize = await getSize(dogPath);
+    catHash = await getHash(catPath);
+    catSize = await getSize(catPath);
+
+    await Photo.remove(await Photo.find());
     await User.remove(await User.find());
 
     const user1 = new User("User1", "user1@users.com");
@@ -20,11 +49,14 @@ export async function seedDB(): Promise<ISeed> {
     await user2.setPassword("User2");
     await user2.save();
 
-    //const doc1 = new Document(user1, "Doc1", "Doc1", false);
-    //const doc2p = new Document(user1, "Doc2", "Doc2", true);
+    const dogPhoto = new Photo(user2, dogHash, dogSize, dogFormat);
+    const catPhoto = new Photo(user2, catHash, catSize, catFormat);
 
-    //await doc1.save();
-    //await doc2p.save();
+    await fs.copyFile(dogPath, dogPhoto.getPath());
+    await fs.copyFile(catPath, catPhoto.getPath());
 
-    return { user1, user2 }; // doc1, doc2p };
+    await dogPhoto.save();
+    await catPhoto.save();
+
+    return { user1, user2, dogPhoto, catPhoto };
 }
