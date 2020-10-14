@@ -6,7 +6,9 @@ import { constants as fsConstants } from "fs";
 import {
     AfterRemove,
     BaseEntity,
+    BeforeInsert,
     BeforeRemove,
+    BeforeUpdate,
     Column,
     Entity,
     Index,
@@ -14,6 +16,15 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./User";
+import {
+    isAlphanumeric,
+    IsAlphanumeric,
+    IsHash,
+    IsMimeType,
+    Length,
+    Matches,
+    validateOrReject,
+} from "class-validator";
 
 export interface IPhotoJSON {
     id: number;
@@ -32,14 +43,16 @@ export class Photo extends BaseEntity {
 
     @Column({ length: 190 })
     @Index()
+    @IsHash("md5")
     public hash: string;
 
     @Column({ length: 190 })
-    @Index()
+    @IsAlphanumeric()
+    @Matches(/\d*x\d*/)
     public size: string;
 
     @Column({ length: 190 })
-    @Index()
+    @IsMimeType()
     public format: string;
 
     @Column({ type: "timestamp", default: null })
@@ -59,6 +72,16 @@ export class Photo extends BaseEntity {
 
     public getPath(): string {
         return path.join(this.user.getDataPath(), this.getFileName());
+    }
+
+    @BeforeInsert()
+    async beforeInsertValidate(): Promise<void> {
+        return validateOrReject(this);
+    }
+
+    @BeforeUpdate()
+    async beforeUpdateValidate(): Promise<void> {
+        return validateOrReject(this);
     }
 
     @BeforeRemove()

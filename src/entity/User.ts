@@ -8,6 +8,7 @@ import {
     BaseEntity,
     BeforeInsert,
     BeforeRemove,
+    BeforeUpdate,
     Column,
     Entity,
     Index,
@@ -16,6 +17,14 @@ import {
 } from "typeorm";
 import { config } from "../config";
 import { Photo } from "./Photo";
+import {
+    IsAlphanumeric,
+    IsBase32,
+    IsBase64,
+    IsEmail,
+    IsHash,
+    validateOrReject,
+} from "class-validator";
 
 export type IUserJSON = Pick<User, "id" | "username">;
 
@@ -35,10 +44,12 @@ export class User extends BaseEntity {
 
     @Column({ length: 190 })
     @Index({ unique: true })
+    @IsAlphanumeric()
     public username: string;
 
     @Column({ length: 190 })
     @Index({ unique: true })
+    @IsEmail()
     public email: string;
 
     @Column({ length: 190 })
@@ -73,6 +84,16 @@ export class User extends BaseEntity {
     @BeforeRemove()
     async removeDataDir(): Promise<void> {
         await fs.rmdir(this.getDataPath(), { recursive: true });
+    }
+
+    @BeforeInsert()
+    async beforeInsertValidate(): Promise<void> {
+        return validateOrReject(this);
+    }
+
+    @BeforeUpdate()
+    async beforeUpdateValidate(): Promise<void> {
+        return validateOrReject(this);
     }
 
     public toJSON(): IUserJSON {
