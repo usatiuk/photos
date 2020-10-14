@@ -1,15 +1,16 @@
-import { fetchJSON, fetchJSONAuth } from "../utils";
-import { IAPIResponse } from "~/../../src/types";
-import { IUserAuthJSON, IUserJSON } from "~../../src/entity/User";
+import { fetchJSONAuth } from "../utils";
+import { IUserEditRespBody, IUserGetRespBody } from "~../../src/routes/users";
 
-export async function fetchUser(): Promise<IAPIResponse<IUserJSON>> {
+export async function fetchUser(): Promise<IUserGetRespBody> {
     return (fetchJSONAuth("/users/user", "GET") as unknown) as Promise<
-        IAPIResponse<IUserAuthJSON>
+        IUserGetRespBody
     >;
 }
 
-export async function changeUserPassword(newPassword: string) {
+export async function changeUserPassword(
+    newPassword: string,
+): Promise<IUserEditRespBody> {
     return (fetchJSONAuth("/users/edit", "POST", {
         password: newPassword,
-    }) as unknown) as Promise<IAPIResponse<IUserAuthJSON>>;
+    }) as unknown) as Promise<IUserEditRespBody>;
 }

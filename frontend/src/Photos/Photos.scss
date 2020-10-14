@@ -3,9 +3,35 @@
 #overview {
     display: flex;
     flex-direction: column;
+
+    .list {
+        display: flex;
+        flex-shrink: 0;
+        flex-grow: 0;
+        flex-wrap: wrap;
+
+        // 400px is the minimal width for 2 cards to fit
+        @media (max-width: 400px) {
+            justify-content: center;
+        }
+
+        .photoCard {
+            transition: 0.3s;
+            user-select: none;
+            height: 15rem;
+            width: 10.5rem;
+            margin: 1rem;
+            padding: 0rem;
+            overflow: hidden;
+
+            img {
+                height: auto;
+                width: 100%;
+            }
+        }
+    }
 }
 
 .bp3-dark {
-    #overview {
-    }
+    #overview {}
 }

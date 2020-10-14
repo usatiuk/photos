@@ -1,10 +1,12 @@
 import { Spinner } from "@blueprintjs/core";
 import * as React from "react";
 
-export function LoadingStub() {
-    return (
-        <div className="loadingWrapper">
-            <Spinner />
-        </div>
-    );
+export interface ILoadingStubProps {
+    spinner?: boolean;
 }
+
+export const LoadingStub: React.FunctionComponent<ILoadingStubProps> = (
+    props,
+) => {
+    return <div className="loadingWrapper">{props.spinner && <Spinner />}</div>;
+};
