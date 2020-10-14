@@ -7,6 +7,7 @@ import { Photo, IPhotoJSON } from "~entity/Photo";
 import { IPhotosNewPostBody } from "~routes/photos";
 import * as fs from "fs/promises";
 import { constants as fsConstants } from "fs";
+import * as jwt from "jsonwebtoken";
 
 import {
     catPath,
@@ -20,6 +21,7 @@ import {
     seedDB,
 } from "./util";
 import { sleep } from "deasync";
+import { config } from "~config";
 
 const callback = app.callback();
 
@@ -77,6 +79,50 @@ describe("photos", function () {
         expect(parseInt(response.header["content-length"])).to.equal(
             dogFileSize,
         );
+    });
+
+    it("should show a photo using access token", async function () {
+        const getTokenResp = await request(callback)
+            .get(`/photos/getShowByIDToken/${seed.dogPhoto.id}`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(200);
+
+        expect(getTokenResp.body.error).to.be.false;
+        const token = getTokenResp.body.data as string;
+
+        const response = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}/${token}`)
+            .expect(200);
+        expect(parseInt(response.header["content-length"])).to.equal(
+            dogFileSize,
+        );
+
+        const tokenSelfSigned = jwt.sign(
+            seed.dogPhoto.toJSON(),
+            config.jwtSecret,
+            {
+                expiresIn: "1m",
+            },
+        );
+
+        const responseSS = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}/${tokenSelfSigned}`)
+            .expect(200);
+        expect(parseInt(responseSS.header["content-length"])).to.equal(
+            dogFileSize,
+        );
+    });
+
+    it("should not show a photo using expired access token", async function () {
+        const token = jwt.sign(seed.dogPhoto.toJSON(), config.jwtSecret, {
+            expiresIn: "0s",
+        });
+
+        const response = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}/${token}`)
+            .expect(401);
     });
 
     it("should not show a photo without jwt", async function () {
