@@ -212,6 +212,36 @@ describe("photos", function () {
         );
     });
 
+    it("should not create a photo twice", async function () {
+        const response = await request(callback)
+            .post("/photos/new")
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .send({
+                hash: dogHash,
+                size: dogSize,
+                format: dogFormat,
+            } as IPhotosNewPostBody)
+            .expect(200);
+
+        expect(response.body.error).to.be.false;
+
+        const response2 = await request(callback)
+            .post("/photos/new")
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .send({
+                hash: dogHash,
+                size: dogSize,
+                format: dogFormat,
+            } as IPhotosNewPostBody)
+            .expect(400);
+    });
+
     it("should not upload a photo twice", async function () {
         const response = await request(callback)
             .post("/photos/new")
@@ -457,7 +487,10 @@ describe("photos", function () {
 
         const photos = response.body.data as IPhotoReqJSON[];
 
-        const userPhotos = [seed.dogPhoto.toReqJSON(), seed.catPhoto.toReqJSON()];
+        const userPhotos = [
+            seed.dogPhoto.toReqJSON(),
+            seed.catPhoto.toReqJSON(),
+        ];
 
         expect(photos).to.deep.equal(userPhotos);
     });

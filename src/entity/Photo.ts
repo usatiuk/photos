@@ -43,6 +43,7 @@ export interface IPhotoReqJSON extends IPhotoJSON {
 }
 
 @Entity()
+@Index(["hash", "size", "user"], { unique: true })
 export class Photo extends BaseEntity {
     @PrimaryGeneratedColumn()
     public id: number;
