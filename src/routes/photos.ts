@@ -4,6 +4,7 @@ import { User } from "~entity/User";
 import { IAPIResponse } from "~types";
 import * as fs from "fs/promises";
 import send = require("koa-send");
+import { getHash, getSize } from "~util";
 
 export const photosRouter = new Router();
 
@@ -75,6 +76,14 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
             return;
         }
         const file = Object.values(files)[0];
+
+        const photoHash = await getHash(file.path);
+        const photoSize = await getSize(file.path);
+
+        if (photoHash !== photo.hash || photoSize !== photo.size) {
+            ctx.throw(400, "Wrong photo");
+            return;
+        }
 
         try {
             // TODO: actually move file if it's on different filesystems
@@ -194,7 +203,7 @@ photosRouter.get("/photos/showByID/:id", async (ctx) => {
 
     const photo = await Photo.findOne({ id, user });
 
-    if (!photo) {
+    if (!photo || !(await photo.isUploaded())) {
         ctx.throw(404);
         return;
     }
