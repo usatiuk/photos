@@ -222,6 +222,21 @@ describe("photos", function () {
             .expect(404);
     });
 
+    it("should not create a photo with weird properties", async function () {
+        const response = await request(callback)
+            .post("/photos/new")
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .send({
+                hash: "../test",
+                size: "33333",
+                format: dogFormat,
+            } as IPhotosNewPostBody)
+            .expect(400);
+    });
+
     /*
     it("should update a photo", async function () {
         const response = await request(callback)
