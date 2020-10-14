@@ -5,6 +5,8 @@ import { IAPIResponse } from "~types";
 import * as fs from "fs/promises";
 import send = require("koa-send");
 import { getHash, getSize } from "~util";
+import * as jwt from "jsonwebtoken";
+import { config } from "~config";
 
 export const photosRouter = new Router();
 
@@ -191,6 +193,39 @@ photosRouter.get("/photos/byID/:id", async (ctx) => {
     } as IPhotosByIDGetRespBody;
 });
 
+photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
+    const { id, token } = ctx.params as {
+        id: number | undefined;
+        token: string | undefined;
+    };
+
+    if (!(id && token)) {
+        ctx.throw(400);
+        return;
+    }
+
+    try {
+        jwt.verify(token, config.jwtSecret) as IPhotoJSON;
+    } catch (e) {
+        ctx.throw(401);
+    }
+
+    const photoJson = jwt.decode(token) as IPhotoJSON;
+    const { user } = photoJson;
+
+    const photo = await Photo.findOne({
+        id,
+        user: { id: user },
+    });
+
+    if (!photo || !(await photo.isUploaded())) {
+        ctx.throw(404);
+        return;
+    }
+
+    await send(ctx, photo.getPath());
+});
+
 photosRouter.get("/photos/showByID/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -214,6 +249,37 @@ photosRouter.get("/photos/showByID/:id", async (ctx) => {
     }
 
     await send(ctx, photo.getPath());
+});
+
+export type IPhotoShowToken = string;
+export type IPhotosGetShowTokenByID = IAPIResponse<IPhotoShowToken>;
+photosRouter.get("/photos/getShowByIDToken/:id", async (ctx) => {
+    if (!ctx.state.user) {
+        ctx.throw(401);
+    }
+
+    const { id } = ctx.params as {
+        id: number | undefined;
+    };
+
+    if (!id) {
+        ctx.throw(400);
+    }
+
+    const { user } = ctx.state;
+
+    const photo = await Photo.findOne({ id, user });
+    if (!photo || !(await photo.isUploaded())) {
+        ctx.throw(404);
+        return;
+    }
+
+    const token = jwt.sign(photo.toJSON(), config.jwtSecret, {
+        expiresIn: "1h",
+        algorithm: "HS256",
+    });
+
+    ctx.body = { error: false, data: token } as IPhotosGetShowTokenByID;
 });
 
 export type IPhotosByIDDeleteRespBody = IAPIResponse<boolean>;
