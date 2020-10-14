@@ -7,12 +7,14 @@ import {
     ILocalSettingsState,
     localSettingsReducer,
 } from "./localSettings/reducer";
+import { IPhotosState, photosReducer } from "./photos/reducer";
 import { IUserState, userReducer } from "./user/reducer";
 
 export interface IAppState {
     auth: IAuthState & PersistPartial;
     user: IUserState;
     localSettings: ILocalSettingsState & PersistPartial;
+    photos: IPhotosState;
 }
 
 const authPersistConfig = {
@@ -33,4 +35,5 @@ export const rootReducer = combineReducers({
         localSettingsPersistConfig,
         localSettingsReducer as any,
     ),
+    photos: photosReducer,
 });

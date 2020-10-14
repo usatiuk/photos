@@ -1,5 +1,5 @@
 import * as Router from "@koa/router";
-import { IPhotoJSON, Photo } from "~entity/Photo";
+import { IPhotoReqJSON, Photo } from "~entity/Photo";
 import { User } from "~entity/User";
 import { IAPIResponse } from "~types";
 import * as fs from "fs/promises";
@@ -15,7 +15,7 @@ export interface IPhotosNewPostBody {
     size: string | undefined;
     format: string | undefined;
 }
-export type IPhotosNewRespBody = IAPIResponse<IPhotoJSON>;
+export type IPhotosNewRespBody = IAPIResponse<IPhotoReqJSON>;
 photosRouter.post("/photos/new", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -40,11 +40,11 @@ photosRouter.post("/photos/new", async (ctx) => {
 
     ctx.body = {
         error: false,
-        data: photo.toJSON(),
+        data: photo.toReqJSON(),
     } as IPhotosNewRespBody;
 });
 
-export type IPhotosUploadRespBody = IAPIResponse<IPhotoJSON>;
+export type IPhotosUploadRespBody = IAPIResponse<IPhotoReqJSON>;
 photosRouter.post("/photos/upload/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -101,14 +101,14 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
     }
     ctx.body = {
         error: false,
-        data: photo.toJSON(),
+        data: photo.toReqJSON(),
     } as IPhotosUploadRespBody;
 });
 
 /**
 export interface IPhotosByIDPatchBody {     
 }
-export type IPhotosByIDPatchRespBody = IAPIResponse<IPhotoJSON>;
+export type IPhotosByIDPatchRespBody = IAPIResponse<IPhotoReqJSON>;
 photosRouter.patch("/photos/byID/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -143,12 +143,12 @@ photosRouter.patch("/photos/byID/:id", async (ctx) => {
     
     ctx.body = {
         error: false,
-        data: photo.toJSON(),
+        data: photo.toReqJSON(),
     };
 });
 */
 
-export type IPhotosListRespBody = IAPIResponse<IPhotoJSON[]>;
+export type IPhotosListRespBody = IAPIResponse<IPhotoReqJSON[]>;
 photosRouter.get("/photos/list", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -160,11 +160,11 @@ photosRouter.get("/photos/list", async (ctx) => {
 
     ctx.body = {
         error: false,
-        data: photos.map((photo) => photo.toJSON()),
+        data: photos.map((photo) => photo.toReqJSON()),
     } as IPhotosListRespBody;
 });
 
-export type IPhotosByIDGetRespBody = IAPIResponse<IPhotoJSON>;
+export type IPhotosByIDGetRespBody = IAPIResponse<IPhotoReqJSON>;
 photosRouter.get("/photos/byID/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -189,7 +189,7 @@ photosRouter.get("/photos/byID/:id", async (ctx) => {
 
     ctx.body = {
         error: false,
-        data: photo.toJSON(),
+        data: photo.toReqJSON(),
     } as IPhotosByIDGetRespBody;
 });
 
@@ -205,13 +205,13 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
     }
 
     try {
-        jwt.verify(token, config.jwtSecret) as IPhotoJSON;
+        jwt.verify(token, config.jwtSecret) as IPhotoReqJSON;
     } catch (e) {
         ctx.throw(401);
     }
 
-    const photoJson = jwt.decode(token) as IPhotoJSON;
-    const { user } = photoJson;
+    const photoReqJSON = jwt.decode(token) as IPhotoReqJSON;
+    const { user } = photoReqJSON;
 
     const photo = await Photo.findOne({
         id,
@@ -274,10 +274,7 @@ photosRouter.get("/photos/getShowByIDToken/:id", async (ctx) => {
         return;
     }
 
-    const token = jwt.sign(photo.toJSON(), config.jwtSecret, {
-        expiresIn: "1h",
-        algorithm: "HS256",
-    });
+    const token = photo.getJWTToken();
 
     ctx.body = { error: false, data: token } as IPhotosGetShowTokenByID;
 });

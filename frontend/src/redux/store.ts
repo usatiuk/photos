@@ -6,6 +6,7 @@ import { rootReducer } from "~redux/reducers";
 
 import { setToken } from "./api/utils";
 import { authSaga } from "./auth/sagas";
+import { photosSaga } from "./photos/sagas";
 import { getUser } from "./user/actions";
 import { userSaga } from "./user/sagas";
 
@@ -26,3 +27,4 @@ export const persistor = persistStore(store, null, () => {
 
 sagaMiddleware.run(authSaga);
 sagaMiddleware.run(userSaga);
+sagaMiddleware.run(photosSaga);

@@ -3,13 +3,14 @@ import { connect } from "config/database";
 import * as request from "supertest";
 import { getConnection } from "typeorm";
 import { app } from "~app";
-import { Photo, IPhotoJSON } from "~entity/Photo";
-import { IPhotosNewPostBody } from "~routes/photos";
+import { Photo, IPhotoReqJSON } from "~entity/Photo";
+import { IPhotosListRespBody, IPhotosNewPostBody } from "~routes/photos";
 import * as fs from "fs/promises";
 import { constants as fsConstants } from "fs";
 import * as jwt from "jsonwebtoken";
 
 import {
+    catFileSize,
     catPath,
     dogFileSize,
     dogFormat,
@@ -51,9 +52,9 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoJSON;
+        const photo = response.body.data as IPhotoReqJSON;
 
-        const usedPhoto = seed.dogPhoto.toJSON();
+        const usedPhoto = seed.dogPhoto.toReqJSON();
 
         expect(photo).to.deep.equal(usedPhoto);
     });
@@ -82,6 +83,31 @@ describe("photos", function () {
     });
 
     it("should show a photo using access token", async function () {
+        const listResp = await request(callback)
+            .get(`/photos/list`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(200);
+
+        const listRespBody = listResp.body as IPhotosListRespBody;
+
+        if (listRespBody.error !== false) {
+            expect(listResp.body.error).to.be.false;
+            return;
+        }
+
+        const photos = listRespBody.data;
+        expect(photos.length).to.be.equal(2);
+
+        const listAnyResp = await request(callback)
+            .get(`/photos/showByID/${photos[0].id}/${photos[0].accessToken}`)
+            .expect(200);
+        expect(parseInt(listAnyResp.header["content-length"])).to.be.oneOf([
+            dogFileSize,
+            catFileSize,
+        ]);
+
         const getTokenResp = await request(callback)
             .get(`/photos/getShowByIDToken/${seed.dogPhoto.id}`)
             .set({
@@ -100,7 +126,7 @@ describe("photos", function () {
         );
 
         const tokenSelfSigned = jwt.sign(
-            seed.dogPhoto.toJSON(),
+            seed.dogPhoto.toReqJSON(),
             config.jwtSecret,
             {
                 expiresIn: "1m",
@@ -116,7 +142,7 @@ describe("photos", function () {
     });
 
     it("should not show a photo using expired access token", async function () {
-        const token = jwt.sign(seed.dogPhoto.toJSON(), config.jwtSecret, {
+        const token = jwt.sign(seed.dogPhoto.toReqJSON(), config.jwtSecret, {
             expiresIn: "0s",
         });
 
@@ -152,7 +178,7 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoJSON;
+        const photo = response.body.data as IPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
@@ -202,7 +228,7 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoJSON;
+        const photo = response.body.data as IPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
@@ -261,7 +287,7 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoJSON;
+        const photo = response.body.data as IPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
@@ -307,7 +333,7 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoJSON;
+        const photo = response.body.data as IPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
@@ -345,7 +371,7 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoJSON;
+        const photo = response.body.data as IPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
@@ -402,7 +428,7 @@ describe("photos", function () {
         
         expect(response.body.error).to.be.false;
         
-        const photo = response.body.data as IPhotoJSON;
+        const photo = response.body.data as IPhotoReqJSON;
         
         expect(photo.name).to.be.equal("Test1");
         
@@ -429,9 +455,9 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photos = response.body.data as IPhotoJSON[];
+        const photos = response.body.data as IPhotoReqJSON[];
 
-        const userPhotos = [seed.dogPhoto.toJSON(), seed.catPhoto.toJSON()];
+        const userPhotos = [seed.dogPhoto.toReqJSON(), seed.catPhoto.toReqJSON()];
 
         expect(photos).to.deep.equal(userPhotos);
     });
@@ -444,9 +470,9 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoJSON;
+        const photo = response.body.data as IPhotoReqJSON;
 
-        const usedPhoto = seed.catPhoto.toJSON();
+        const usedPhoto = seed.catPhoto.toReqJSON();
 
         expect(photo).to.deep.equal(usedPhoto);
     });

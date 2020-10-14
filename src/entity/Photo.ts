@@ -2,6 +2,7 @@ import * as path from "path";
 import * as fs from "fs/promises";
 import * as mime from "mime-types";
 import { constants as fsConstants } from "fs";
+import * as jwt from "jsonwebtoken";
 
 import {
     AfterRemove,
@@ -25,6 +26,7 @@ import {
     Matches,
     validateOrReject,
 } from "class-validator";
+import { config } from "~config";
 
 export interface IPhotoJSON {
     id: number;
@@ -34,6 +36,10 @@ export interface IPhotoJSON {
     format: string;
     createdAt: number;
     editedAt: number;
+}
+
+export interface IPhotoReqJSON extends IPhotoJSON {
+    accessToken: string;
 }
 
 @Entity()
@@ -114,6 +120,13 @@ export class Photo extends BaseEntity {
         this.user = user;
     }
 
+    public getJWTToken(): string {
+        return jwt.sign(this.toJSON(), config.jwtSecret, {
+            expiresIn: "1h",
+            algorithm: "HS256",
+        });
+    }
+
     public toJSON(): IPhotoJSON {
         return {
             id: this.id,
@@ -123,6 +136,19 @@ export class Photo extends BaseEntity {
             format: this.format,
             createdAt: this.createdAt.getTime(),
             editedAt: this.editedAt.getTime(),
+        };
+    }
+
+    public toReqJSON(): IPhotoReqJSON {
+        return {
+            id: this.id,
+            user: this.user.id,
+            hash: this.hash,
+            size: this.size,
+            format: this.format,
+            createdAt: this.createdAt.getTime(),
+            editedAt: this.editedAt.getTime(),
+            accessToken: this.getJWTToken(),
         };
     }
 }
