@@ -140,6 +140,65 @@ describe("photos", function () {
         );
     });
 
+    it("should not upload a photo twice", async function () {
+        const response = await request(callback)
+            .post("/photos/new")
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .send({
+                hash: dogHash,
+                size: dogSize,
+                format: dogFormat,
+            } as IPhotosNewPostBody)
+            .expect(200);
+
+        expect(response.body.error).to.be.false;
+
+        const photo = response.body.data as IPhotoJSON;
+
+        expect(photo.hash).to.be.equal(dogHash);
+        const dbPhoto = await Photo.findOneOrFail({
+            id: photo.id,
+            user: seed.user1.id as any,
+        });
+        expect(dbPhoto.hash).to.be.equal(dogHash);
+
+        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+
+        await request(callback)
+            .post(`/photos/upload/${photo.id}`)
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .attach("photo", dogPath)
+            .expect(200);
+
+        expect(await dbPhoto.isUploaded()).to.be.equal(true);
+
+        await request(callback)
+            .post(`/photos/upload/${photo.id}`)
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .attach("photo", dogPath)
+            .expect(400);
+
+        const showResp = await request(callback)
+            .get(`/photos/showByID/${photo.id}`)
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+            })
+            .expect(200);
+
+        expect(parseInt(showResp.header["content-length"])).to.equal(
+            dogFileSize,
+        );
+    });
+
     it("should not upload a wrong photo", async function () {
         const response = await request(callback)
             .post("/photos/new")
