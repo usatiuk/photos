@@ -1,5 +1,6 @@
 import { Reducer } from "redux";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
+import { UserAction, UserTypes } from "~redux/user/actions";
 import { PhotoAction, PhotoTypes } from "./actions";
 
 export interface IPhotosState {
@@ -18,9 +19,11 @@ const defaultPhotosState: IPhotosState = {
 
 export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
     state: IPhotosState = defaultPhotosState,
-    action: PhotoAction,
+    action: PhotoAction | UserAction,
 ) => {
     switch (action.type) {
+        case UserTypes.USER_LOGOUT:
+            return defaultPhotosState;
         case PhotoTypes.PHOTOS_LOAD_START:
             return {
                 ...defaultPhotosState,
