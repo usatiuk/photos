@@ -69,6 +69,11 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
         return;
     }
 
+    if (await photo.isUploaded()) {
+        ctx.throw(400, "Already uploaded");
+        return;
+    }
+
     if (ctx.request.files) {
         const files = ctx.request.files;
         if (Object.keys(files).length > 1) {
