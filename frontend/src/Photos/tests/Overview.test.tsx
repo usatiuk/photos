@@ -7,20 +7,26 @@ afterEach(() => {
     jest.restoreAllMocks();
 });
 
+const fetchPhotosFn = jest.fn();
+
 const overviewComponentDefaultProps: IOverviewComponentProps = {
     photos: null,
     fetching: false,
     fetchingError: null,
     fetchingSpinner: false,
 
-    fetchPhotos: jest.fn(),
+    fetchPhotos: fetchPhotosFn,
 };
 
 describe("<Overview />", () => {
-    it("should not crash", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it("should not crash and call fetchPhotos", () => {
         const wrapper = shallow(
             <OverviewComponent {...overviewComponentDefaultProps} />,
         );
-        expect(wrapper.contains("Overview!")).toBeTruthy();
+        expect(fetchPhotosFn).toHaveBeenCalled();
     });
 });
