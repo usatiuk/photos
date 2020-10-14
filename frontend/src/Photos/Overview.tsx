@@ -33,7 +33,6 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
 
     return (
         <div id="overview">
-            {" "}
             <div className="list">{photos}</div>
         </div>
     );
