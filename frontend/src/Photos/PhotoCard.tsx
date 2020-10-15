@@ -42,7 +42,7 @@ export class PhotoCardComponent extends React.PureComponent<
     }
     */
     public render(): JSX.Element {
-        const isUploaded = this.props.photo.uploaded;
+        const fileExists = this.props.photo.uploaded;
         return (
             <Card
                 className="photoCard"
@@ -53,7 +53,7 @@ export class PhotoCardComponent extends React.PureComponent<
                 }
             */
             >
-                {isUploaded ? (
+                {fileExists ? (
                     <img src={getPhotoThumbPath(this.props.photo, 512)}></img>
                 ) : (
                     <Spinner />

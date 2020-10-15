@@ -178,7 +178,7 @@ describe("photos", function () {
         expect(response.body.error).to.be.equal("Not Found");
     });
 
-    it("should create, upload and show a photo", async function () {
+    it("should create, upload and show a photo with a shot date", async function () {
         const response = await request(callback)
             .post("/photos/new")
             .set({
@@ -203,7 +203,7 @@ describe("photos", function () {
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
-        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+        expect(await dbPhoto.fileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -214,7 +214,15 @@ describe("photos", function () {
             .attach("photo", dogPath)
             .expect(200);
 
-        expect(await dbPhoto.isUploaded()).to.be.equal(true);
+        const dbPhotoUpl = await Photo.findOneOrFail({
+            id: photo.id,
+            user: seed.user1.id as any,
+        });
+        expect(dbPhotoUpl.hash).to.be.equal(dogHash);
+        expect(await dbPhotoUpl.fileExists()).to.be.equal(true);
+        expect(dbPhotoUpl.shotAt.toISOString()).to.be.equal(
+            new Date("2020-10-05T14:20:18").toISOString(),
+        );
 
         const showResp = await request(callback)
             .get(`/photos/showByID/${photo.id}`)
@@ -290,7 +298,7 @@ describe("photos", function () {
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
-        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+        expect(await dbPhoto.fileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -301,7 +309,7 @@ describe("photos", function () {
             .attach("photo", dogPath)
             .expect(200);
 
-        expect(await dbPhoto.isUploaded()).to.be.equal(true);
+        expect(await dbPhoto.fileExists()).to.be.equal(true);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -349,7 +357,7 @@ describe("photos", function () {
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
-        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+        expect(await dbPhoto.fileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -360,7 +368,7 @@ describe("photos", function () {
             .attach("photo", catPath)
             .expect(400);
 
-        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+        expect(await dbPhoto.fileExists()).to.be.equal(false);
 
         const showResp = await request(callback)
             .get(`/photos/showByID/${photo.id}`)
@@ -394,7 +402,7 @@ describe("photos", function () {
             user: seed.user1.id as any,
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
-        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+        expect(await dbPhoto.fileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -405,7 +413,7 @@ describe("photos", function () {
             .attach("photo", dogPath)
             .expect(404);
 
-        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+        expect(await dbPhoto.fileExists()).to.be.equal(false);
     });
 
     it("should create, upload but not show a photo to another user", async function () {
@@ -432,7 +440,7 @@ describe("photos", function () {
             user: seed.user1.id as any,
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
-        expect(await dbPhoto.isUploaded()).to.be.equal(false);
+        expect(await dbPhoto.fileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -443,7 +451,7 @@ describe("photos", function () {
             .attach("photo", dogPath)
             .expect(200);
 
-        expect(await dbPhoto.isUploaded()).to.be.equal(true);
+        expect(await dbPhoto.fileExists()).to.be.equal(true);
 
         await request(callback)
             .get(`/photos/showByID/${photo.id}`)
