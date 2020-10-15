@@ -23,6 +23,7 @@ import { Overview } from "~Photos/Overview";
 import { toggleDarkMode } from "~redux/localSettings/actions";
 import { IAppState } from "~redux/reducers";
 import { logoutUser } from "~redux/user/actions";
+import { Photo } from "~Photos/Photo";
 
 export interface IHomeProps extends RouteComponentProps {
     user: IUserJSON | null;
@@ -99,6 +100,10 @@ export class HomeComponent extends React.PureComponent<IHomeProps> {
                                         <Route
                                             path="/account"
                                             component={Account}
+                                        />
+                                        <Route
+                                            path="/photos/:id"
+                                            component={Photo}
                                         />
                                         <Route path="/" component={Overview} />
                                     </Switch>

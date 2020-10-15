@@ -1,6 +1,7 @@
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
 import {
     IPhotosByIDDeleteRespBody,
+    IPhotosByIDGetRespBody,
     IPhotosListRespBody,
     IPhotosNewRespBody,
     IPhotosUploadRespBody,
@@ -20,6 +21,10 @@ export function getPhotoThumbPath(photo: IPhotoReqJSON, size: number): string {
 
 export async function fetchPhotosList(): Promise<IPhotosListRespBody> {
     return fetchJSONAuth("/photos/list", "GET");
+}
+
+export async function fetchPhoto(id: number): Promise<IPhotosByIDGetRespBody> {
+    return fetchJSONAuth(`/photos/byID/${id}`, "GET");
 }
 
 export async function createPhoto(

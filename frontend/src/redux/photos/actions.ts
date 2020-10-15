@@ -10,6 +10,9 @@ export enum PhotoTypes {
     PHOTOS_LOAD_START = "PHOTOS_LOAD",
     PHOTOS_LOAD_SUCCESS = "PHOTOS_LOAD_SUCCESS",
     PHOTOS_LOAD_FAIL = "PHOTOS_LOAD_FAIL",
+    PHOTO_LOAD_START = "PHOTO_LOAD",
+    PHOTO_LOAD_SUCCESS = "PHOTO_LOAD_SUCCESS",
+    PHOTO_LOAD_FAIL = "PHOTO_LOAD_FAIL",
     PHOTOS_UPLOAD_START = "PHOTOS_UPLOAD",
     PHOTO_CREATE_SUCCESS = "PHOTO_CREATE_SUCCESS",
     PHOTO_CREATE_FAIL = "PHOTO_CREATE_FAIL",
@@ -33,6 +36,22 @@ export interface IPhotosLoadSuccessAction extends Action {
 
 export interface IPhotosLoadFailAction extends Action {
     type: PhotoTypes.PHOTOS_LOAD_FAIL;
+    error: string;
+}
+
+export interface IPhotoLoadStartAction extends Action {
+    type: PhotoTypes.PHOTO_LOAD_START;
+    id: number;
+}
+
+export interface IPhotoLoadSuccessAction extends Action {
+    type: PhotoTypes.PHOTO_LOAD_SUCCESS;
+    photo: IPhotoReqJSON;
+}
+
+export interface IPhotoLoadFailAction extends Action {
+    type: PhotoTypes.PHOTO_LOAD_FAIL;
+    id: number;
     error: string;
 }
 
@@ -92,6 +111,10 @@ export function photosLoadStart(): IPhotosLoadStartAction {
     return { type: PhotoTypes.PHOTOS_LOAD_START };
 }
 
+export function photoLoadStart(id: number): IPhotoLoadStartAction {
+    return { type: PhotoTypes.PHOTO_LOAD_START, id };
+}
+
 export function photosUploadStart(files: FileList): IPhotosUploadStartAction {
     return { type: PhotoTypes.PHOTOS_UPLOAD_START, files };
 }
@@ -143,6 +166,16 @@ export function photosLoadFail(error: string): IPhotosLoadFailAction {
     return { type: PhotoTypes.PHOTOS_LOAD_FAIL, error };
 }
 
+export function photoLoadSuccess(
+    photo: IPhotoReqJSON,
+): IPhotoLoadSuccessAction {
+    return { type: PhotoTypes.PHOTO_LOAD_SUCCESS, photo };
+}
+
+export function photoLoadFail(id:number,error: string): IPhotoLoadFailAction {
+    return { type: PhotoTypes.PHOTO_LOAD_FAIL,id, error };
+}
+
 export function photoDeleteStart(
     photo: IPhotoReqJSON,
 ): IPhotoDeleteStartAction {
@@ -183,4 +216,7 @@ export type PhotoAction =
     | IPhotoDeleteFailAction
     | IPhotoDeleteStartAction
     | IPhotoDeleteSuccessAction
-    | IPhotoDeleteCancelAction;
+    | IPhotoDeleteCancelAction
+    | IPhotoLoadFailAction
+    | IPhotoLoadStartAction
+    | IPhotoLoadSuccessAction;

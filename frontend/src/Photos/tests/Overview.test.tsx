@@ -11,9 +11,9 @@ const fetchPhotosFn = jest.fn();
 
 const overviewComponentDefaultProps: IOverviewComponentProps = {
     photos: null,
-    fetching: false,
-    fetchingError: null,
-    fetchingSpinner: false,
+    overviewFetching: false,
+    overviewFetchingError: null,
+    overviewFetchingSpinner: false,
 
     fetchPhotos: fetchPhotosFn,
 };
