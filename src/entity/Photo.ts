@@ -21,12 +21,15 @@ import {
     isAlphanumeric,
     IsAlphanumeric,
     IsHash,
+    IsIn,
     IsMimeType,
+    isNumber,
     Length,
     Matches,
     validateOrReject,
 } from "class-validator";
 import { config } from "~config";
+import { resizeTo } from "~util";
 
 export interface IPhotoJSON {
     id: number;
@@ -37,11 +40,14 @@ export interface IPhotoJSON {
     createdAt: number;
     editedAt: number;
     shotAt: number;
+    uploaded: boolean;
 }
 
 export interface IPhotoReqJSON extends IPhotoJSON {
     accessToken: string;
 }
+
+export const ThumbSizes = ["512", "1024", "2048"];
 
 @Entity()
 @Index(["hash", "size", "user"], { unique: true })
@@ -62,6 +68,9 @@ export class Photo extends BaseEntity {
     @Column({ length: 190 })
     @IsMimeType()
     public format: string;
+
+    @Column({ type: "set", enum: ThumbSizes, default: [] })
+    public generatedThumbs: string[];
 
     @Column({ type: "varchar", length: 500 })
     public accessToken: string;
@@ -87,8 +96,18 @@ export class Photo extends BaseEntity {
         }`;
     }
 
+    private getThumbFileName(size: number): string {
+        return `${this.user.id.toString()}-${this.hash}-${this.size}-${size}.${
+            mime.extension(this.format) as string
+        }`;
+    }
+
     public getPath(): string {
         return path.join(this.user.getDataPath(), this.getFileName());
+    }
+
+    private getThumbPath(size: number): string {
+        return path.join(this.user.getDataPath(), this.getThumbFileName(size));
     }
 
     @BeforeInsert()
@@ -105,6 +124,12 @@ export class Photo extends BaseEntity {
     async cleanupFiles(): Promise<void> {
         try {
             await fs.unlink(this.getPath());
+            await Promise.all(
+                this.generatedThumbs.map(
+                    async (size) =>
+                        await fs.unlink(this.getThumbPath(parseInt(size))),
+                ),
+            );
         } catch (e) {
             if (e.code !== "ENOENT") {
                 throw e;
@@ -121,6 +146,26 @@ export class Photo extends BaseEntity {
         }
     }
 
+    private async generateThumbnail(size: number): Promise<void> {
+        if (!(await this.isUploaded())) {
+            return;
+        }
+        await resizeTo(this.getPath(), this.getThumbPath(size), size);
+        this.generatedThumbs.push(size.toString());
+        await this.save();
+    }
+
+    public async getReadyThumbnailPath(size: number): Promise<string> {
+        if (!ThumbSizes.includes(size.toString())) {
+            throw new Error("Wrong thumbnail size");
+        }
+        const path = this.getThumbPath(size);
+        if (!this.generatedThumbs.includes(size.toString())) {
+            await this.generateThumbnail(size);
+        }
+        return path;
+    }
+
     constructor(user: User, hash: string, size: string, format: string) {
         super();
         this.createdAt = new Date();
@@ -132,6 +177,7 @@ export class Photo extends BaseEntity {
         this.format = format;
         this.size = size;
         this.user = user;
+        this.generatedThumbs = [];
     }
 
     public async getJWTToken(): Promise<string> {
@@ -141,7 +187,7 @@ export class Photo extends BaseEntity {
         if (tokenExpiryOld - now - 60 * 10 * 1000 > 0) {
             return this.accessToken;
         } else {
-            const token = jwt.sign(this.toJSON(), config.jwtSecret, {
+            const token = jwt.sign(await this.toJSON(), config.jwtSecret, {
                 expiresIn: "1h",
                 algorithm: "HS256",
             });
@@ -152,7 +198,10 @@ export class Photo extends BaseEntity {
         }
     }
 
-    public toJSON(): IPhotoJSON {
+    public async toJSON(): Promise<IPhotoJSON> {
+        if (!isNumber(this.user.id)) {
+            throw new Error("User not loaded");
+        }
         return {
             id: this.id,
             user: this.user.id,
@@ -162,11 +211,12 @@ export class Photo extends BaseEntity {
             createdAt: this.createdAt.getTime(),
             editedAt: this.editedAt.getTime(),
             shotAt: this.shotAt.getTime(),
+            uploaded: await this.isUploaded(),
         };
     }
 
     public async toReqJSON(): Promise<IPhotoReqJSON> {
         const token = await this.getJWTToken();
-        return { ...this.toJSON(), accessToken: token };
+        return { ...(await this.toJSON()), accessToken: token };
     }
 }
