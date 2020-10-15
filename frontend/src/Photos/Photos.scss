@@ -4,6 +4,13 @@
     display: flex;
     flex-direction: column;
 
+    #actionbar {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+    }
+
     .list {
         display: flex;
         flex-shrink: 0;

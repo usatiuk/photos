@@ -10,7 +10,7 @@ export async function fetchUser(): Promise<IUserGetRespBody> {
 export async function changeUserPassword(
     newPassword: string,
 ): Promise<IUserEditRespBody> {
-    return (fetchJSONAuth("/users/edit", "POST", {
+    return fetchJSONAuth("/users/edit", "POST", {
         password: newPassword,
-    }) as unknown) as Promise<IUserEditRespBody>;
+    });
 }

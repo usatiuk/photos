@@ -7,6 +7,8 @@ import { photosLoadStart } from "~redux/photos/actions";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
 import { LoadingStub } from "~LoadingStub";
 import { PhotoCard } from "./PhotoCard";
+import { Button } from "@blueprintjs/core";
+import { UploadButton } from "./UploadButton";
 
 export interface IOverviewComponentProps {
     photos: IPhotoReqJSON[] | null;
@@ -33,6 +35,9 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
 
     return (
         <div id="overview">
+            <div id="actionbar">
+                <UploadButton />
+            </div>
             <div className="list">{photos}</div>
         </div>
     );
