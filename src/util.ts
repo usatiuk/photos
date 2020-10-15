@@ -1,6 +1,8 @@
 import deasync = require("deasync");
 import { fromFile } from "hasha";
-import sharp = require("sharp");
+import * as ExifReader from "exifreader";
+import * as sharp from "sharp";
+import * as fs from "fs/promises";
 
 export async function getHash(file: string): Promise<string> {
     return await fromFile(file, {
@@ -16,6 +18,17 @@ export async function getSize(file: string): Promise<string> {
         );
     }
     return `${metadata.width}x${metadata.height}`;
+}
+
+export async function getShotDate(file: string): Promise<Date | null> {
+    const tags = ExifReader.load(await fs.readFile(file));
+    const imageDate = tags["DateTimeOriginal"].description;
+    if (!imageDate) {
+        return null;
+    }
+    const dateStr = imageDate.split(" ")[0].replace(/:/g, "-");
+    const date = new Date(dateStr + "T" + imageDate.split(" ")[1]);
+    return date;
 }
 
 export async function resizeTo(

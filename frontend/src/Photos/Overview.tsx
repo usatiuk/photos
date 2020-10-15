@@ -29,9 +29,9 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
         return <LoadingStub spinner={props.fetchingSpinner} />;
     }
 
-    const photos = props.photos.map((photo) => (
-        <PhotoCard key={photo.id} photo={photo} />
-    ));
+    const photos = props.photos
+        .sort((a, b) => b.shotAt - a.shotAt)
+        .map((photo) => <PhotoCard key={photo.id} photo={photo} />);
 
     return (
         <div id="overview">

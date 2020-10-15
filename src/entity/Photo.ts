@@ -29,7 +29,7 @@ import {
     validateOrReject,
 } from "class-validator";
 import { config } from "~config";
-import { resizeTo } from "~util";
+import { getShotDate, resizeTo } from "~util";
 
 export interface IPhotoJSON {
     id: number;
@@ -68,6 +68,9 @@ export class Photo extends BaseEntity {
     @Column({ length: 190 })
     @IsMimeType()
     public format: string;
+
+    @Column({ default: false })
+    public uploaded: boolean;
 
     @Column({ type: "set", enum: ThumbSizes, default: [] })
     public generatedThumbs: string[];
@@ -137,17 +140,38 @@ export class Photo extends BaseEntity {
         }
     }
 
-    public async isUploaded(): Promise<boolean> {
+    // Checks if file exists and updates the DB
+    public async fileExists(): Promise<boolean> {
         try {
             await fs.access(this.getPath(), fsConstants.F_OK);
+            if (!this.uploaded) {
+                this.uploaded = true;
+                await this.save();
+            }
             return true;
         } catch (e) {
+            if (this.uploaded) {
+                this.uploaded = false;
+                this.generatedThumbs = [];
+                await this.save();
+            }
             return false;
         }
     }
 
+    public async processUpload(): Promise<void> {
+        await this.fileExists();
+        const date = await getShotDate(this.getPath());
+        if (date !== null) {
+            this.shotAt = date;
+        } else {
+            this.shotAt = new Date();
+        }
+        await this.save();
+    }
+
     private async generateThumbnail(size: number): Promise<void> {
-        if (!(await this.isUploaded())) {
+        if (!(await this.fileExists())) {
             return;
         }
         await resizeTo(this.getPath(), this.getThumbPath(size), size);
@@ -211,7 +235,7 @@ export class Photo extends BaseEntity {
             createdAt: this.createdAt.getTime(),
             editedAt: this.editedAt.getTime(),
             shotAt: this.shotAt.getTime(),
-            uploaded: await this.isUploaded(),
+            uploaded: this.uploaded,
         };
     }
 
