@@ -3,20 +3,32 @@ import { IPhotoReqJSON } from "~../../src/entity/Photo";
 import { UserAction, UserTypes } from "~redux/user/actions";
 import { PhotoAction, PhotoTypes } from "./actions";
 
-export interface IPhotosState {
-    photos: IPhotoReqJSON[] | null;
+export interface IPhotoState {
     fetching: boolean;
     fetchingError: string | null;
-    fetchingSpinner: boolean;
+}
+
+export interface IPhotosState {
+    photos: IPhotoReqJSON[] | null;
+
+    photoStates: Record<number, IPhotoState>;
+
+    overviewFetching: boolean;
+    overviewLoaded: boolean;
+    overviewFetchingError: string | null;
+    overviewFetchingSpinner: boolean;
 
     deleteCache: Record<number, IPhotoReqJSON>;
 }
 
 const defaultPhotosState: IPhotosState = {
     photos: null,
-    fetching: false,
-    fetchingError: null,
-    fetchingSpinner: false,
+    overviewLoaded: false,
+    overviewFetching: false,
+    overviewFetchingError: null,
+    overviewFetchingSpinner: false,
+
+    photoStates: {},
 
     deleteCache: {},
 };
@@ -31,15 +43,67 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
         case PhotoTypes.PHOTOS_LOAD_START:
             return {
                 ...defaultPhotosState,
-                fetching: true,
-                fetchingSpinner: false,
+                overviewFetching: true,
+                overviewFetchingSpinner: false,
             };
         case PhotoTypes.PHOTOS_START_FETCHING_SPINNER:
-            return { ...state, fetchingSpinner: true };
+            return { ...state, overviewFetchingSpinner: true };
         case PhotoTypes.PHOTOS_LOAD_SUCCESS:
-            return { ...defaultPhotosState, photos: action.photos };
+            return {
+                ...defaultPhotosState,
+                photos: action.photos,
+                overviewLoaded: true,
+            };
         case PhotoTypes.PHOTOS_LOAD_FAIL:
-            return { ...defaultPhotosState, fetchingError: action.error };
+            return {
+                ...defaultPhotosState,
+                overviewFetchingError: action.error,
+            };
+
+        case PhotoTypes.PHOTO_LOAD_START: {
+            const { photoStates } = state;
+            photoStates[action.id] = {
+                fetching: true,
+                fetchingError: null,
+            };
+            return {
+                ...state,
+                photoStates,
+            };
+        }
+        case PhotoTypes.PHOTO_LOAD_SUCCESS: {
+            const { photoStates } = state;
+            photoStates[action.photo.id] = {
+                fetching: false,
+                fetchingError: null,
+            };
+            if (state.photos) {
+                const photos = state.photos;
+                const photosNoDup = photos.filter(
+                    (p) => p.id !== action.photo.id,
+                );
+                const updPhotos = [action.photo, ...photosNoDup];
+                return { ...state, photos: updPhotos, photoStates };
+            } else {
+                const photos = [action.photo];
+                return {
+                    ...state,
+                    photos,
+                    photoStates,
+                };
+            }
+        }
+        case PhotoTypes.PHOTO_LOAD_FAIL: {
+            const { photoStates } = state;
+            photoStates[action.id] = {
+                fetching: false,
+                fetchingError: action.error,
+            };
+            return {
+                ...state,
+                photoStates,
+            };
+        }
         case PhotoTypes.PHOTO_CREATE_SUCCESS:
             if (state.photos) {
                 const photos = state.photos;

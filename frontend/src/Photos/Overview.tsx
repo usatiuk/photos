@@ -1,4 +1,4 @@
-import "./Photos.scss";
+import "./Overview.scss";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -12,9 +12,10 @@ import { UploadButton } from "./UploadButton";
 
 export interface IOverviewComponentProps {
     photos: IPhotoReqJSON[] | null;
-    fetching: boolean;
-    fetchingError: string | null;
-    fetchingSpinner: boolean;
+    overviewLoaded: boolean;
+    overviewFetching: boolean;
+    overviewFetchingError: string | null;
+    overviewFetchingSpinner: boolean;
 
     fetchPhotos: () => void;
 }
@@ -22,11 +23,11 @@ export interface IOverviewComponentProps {
 export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps> = (
     props,
 ) => {
-    if (!props.photos && !props.fetching) {
+    if (!props.overviewLoaded && !props.overviewFetching) {
         props.fetchPhotos();
     }
     if (!props.photos) {
-        return <LoadingStub spinner={props.fetchingSpinner} />;
+        return <LoadingStub spinner={props.overviewFetchingSpinner} />;
     }
 
     const photos = props.photos
@@ -46,9 +47,10 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
 function mapStateToProps(state: IAppState) {
     return {
         photos: state.photos.photos,
-        fetching: state.photos.fetching,
-        fetchingError: state.photos.fetchingError,
-        fetchingSpinner: state.photos.fetchingSpinner,
+        overviewLoaded: state.photos.overviewLoaded,
+        overviewFetching: state.photos.overviewFetching,
+        overviewFetchingError: state.photos.overviewFetchingError,
+        overviewFetchingSpinner: state.photos.overviewFetchingSpinner,
     };
 }
 

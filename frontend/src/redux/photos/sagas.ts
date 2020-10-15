@@ -14,16 +14,20 @@ import * as SparkMD5 from "spark-md5";
 import {
     createPhoto,
     deletePhoto,
+    fetchPhoto,
     fetchPhotosList,
     uploadPhoto,
 } from "~redux/api/photos";
 import {
     IPhotoDeleteStartAction,
+    IPhotoLoadStartAction,
     IPhotosUploadStartAction,
     photoCreateFail,
     photoCreateSuccess,
     photoDeleteFail,
     photoDeleteSuccess,
+    photoLoadFail,
+    photoLoadSuccess,
     photosLoadFail,
     photosLoadSuccess,
     photosStartFetchingSpinner,
@@ -130,6 +134,32 @@ function* photosLoad() {
     }
 }
 
+function* photoLoad(action: IPhotoLoadStartAction) {
+    try {
+        //const spinner = yield fork(startSpinner);
+
+        const { response, timeout } = yield race({
+            response: call(fetchPhoto, action.id),
+            timeout: delay(10000),
+        });
+
+        //yield cancel(spinner);
+
+        if (timeout) {
+            yield put(photoLoadFail(action.id, "Timeout"));
+            return;
+        }
+        if (response.data) {
+            const photo = response.data;
+            yield put(photoLoadSuccess(photo));
+        } else {
+            yield put(photoLoadFail(action.id, response.error));
+        }
+    } catch (e) {
+        yield put(photoLoadFail(action.id, "Internal error"));
+    }
+}
+
 function* photoUpload(f: File) {
     try {
         const hash = yield call(computeChecksumMd5, f);
@@ -218,6 +248,7 @@ export function* photosSaga() {
     yield all([
         takeLatest(PhotoTypes.PHOTOS_LOAD_START, photosLoad),
         takeLatest(PhotoTypes.PHOTOS_UPLOAD_START, photosUpload),
+        takeLatest(PhotoTypes.PHOTO_LOAD_START, photoLoad),
         takeEvery(PhotoTypes.PHOTO_DELETE_START, photoDelete),
     ]);
 }

@@ -13,8 +13,9 @@ import { Dispatch } from "redux";
 import { photoDeleteCancel, photoDeleteStart } from "~redux/photos/actions";
 import { connect } from "react-redux";
 import { LoadingStub } from "~LoadingStub";
+import { RouteComponentProps, withRouter } from "react-router";
 
-export interface IPhotoCardComponentProps {
+export interface IPhotoCardComponentProps extends RouteComponentProps {
     photo: IPhotoReqJSON;
 
     deletePhoto: (photo: IPhotoReqJSON) => void;
@@ -47,11 +48,9 @@ export class PhotoCardComponent extends React.PureComponent<
             <Card
                 className="photoCard"
                 interactive={true}
-                /*
                 onClick={() =>
-                    this.props.history.push(`/docs/${this.props.doc.id}`)
+                    this.props.history.push(`/photos/${this.props.photo.id}`)
                 }
-            */
             >
                 {fileExists ? (
                     <img
@@ -91,4 +90,6 @@ function mapDispatchToProps(dispatch: Dispatch) {
     };
 }
 
-export const PhotoCard = connect(null, mapDispatchToProps)(PhotoCardComponent);
+export const PhotoCard = withRouter(
+    connect(null, mapDispatchToProps)(PhotoCardComponent),
+);
