@@ -3,7 +3,7 @@
 .viewComponent {
     position: absolute;
     max-width: 100%;
-    width: 50rem;
+    width: 80%;
     left: 0;
     right: 0;
     top: -$pt-navbar-height;
@@ -24,7 +24,7 @@
     .bp3-navbar {
         transition: 0.3s;
 
-        > * {
+        >* {
             // keeps the breadcrumbs from taking all the space
             max-width: 65%;
         }
