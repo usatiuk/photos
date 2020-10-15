@@ -54,7 +54,7 @@ describe("photos", function () {
 
         const photo = response.body.data as IPhotoReqJSON;
 
-        const usedPhoto = seed.dogPhoto.toReqJSON();
+        const usedPhoto = await seed.dogPhoto.toReqJSON();
 
         expect(photo).to.deep.equal(usedPhoto);
     });
@@ -126,7 +126,7 @@ describe("photos", function () {
         );
 
         const tokenSelfSigned = jwt.sign(
-            seed.dogPhoto.toReqJSON(),
+            await seed.dogPhoto.toReqJSON(),
             config.jwtSecret,
             {
                 expiresIn: "1m",
@@ -142,9 +142,13 @@ describe("photos", function () {
     });
 
     it("should not show a photo using expired access token", async function () {
-        const token = jwt.sign(seed.dogPhoto.toReqJSON(), config.jwtSecret, {
-            expiresIn: "0s",
-        });
+        const token = jwt.sign(
+            await seed.dogPhoto.toReqJSON(),
+            config.jwtSecret,
+            {
+                expiresIn: "0s",
+            },
+        );
 
         const response = await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}/${token}`)
@@ -239,7 +243,14 @@ describe("photos", function () {
                 size: dogSize,
                 format: dogFormat,
             } as IPhotosNewPostBody)
-            .expect(400);
+            .expect(200);
+
+        const dbPhoto = await Photo.find({
+            hash: dogHash,
+            size: dogSize,
+            user: { id: seed.user1.id },
+        });
+        expect(dbPhoto).to.have.lengthOf(1);
     });
 
     it("should not upload a photo twice", async function () {
@@ -488,8 +499,8 @@ describe("photos", function () {
         const photos = response.body.data as IPhotoReqJSON[];
 
         const userPhotos = [
-            seed.dogPhoto.toReqJSON(),
-            seed.catPhoto.toReqJSON(),
+            await seed.dogPhoto.toReqJSON(),
+            await seed.catPhoto.toReqJSON(),
         ];
 
         expect(photos).to.deep.equal(userPhotos);

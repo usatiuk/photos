@@ -44,7 +44,7 @@ photosRouter.post("/photos/new", async (ctx) => {
 
             ctx.body = {
                 error: false,
-                data: photo.toReqJSON(),
+                data: await photo.toReqJSON(),
             } as IPhotosNewRespBody;
             return;
         }
@@ -53,7 +53,7 @@ photosRouter.post("/photos/new", async (ctx) => {
 
     ctx.body = {
         error: false,
-        data: photo.toReqJSON(),
+        data: await photo.toReqJSON(),
     } as IPhotosNewRespBody;
 });
 
@@ -115,7 +115,7 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
     }
     ctx.body = {
         error: false,
-        data: photo.toReqJSON(),
+        data: await photo.toReqJSON(),
     } as IPhotosUploadRespBody;
 });
 
@@ -172,9 +172,13 @@ photosRouter.get("/photos/list", async (ctx) => {
 
     const photos = await Photo.find({ user });
 
+    const photosList: IPhotoReqJSON[] = await Promise.all(
+        photos.map(async (photo) => await photo.toReqJSON()),
+    );
+
     ctx.body = {
         error: false,
-        data: photos.map((photo) => photo.toReqJSON()),
+        data: photosList,
     } as IPhotosListRespBody;
 });
 
@@ -203,7 +207,7 @@ photosRouter.get("/photos/byID/:id", async (ctx) => {
 
     ctx.body = {
         error: false,
-        data: photo.toReqJSON(),
+        data: await photo.toReqJSON(),
     } as IPhotosByIDGetRespBody;
 });
 
@@ -288,7 +292,7 @@ photosRouter.get("/photos/getShowByIDToken/:id", async (ctx) => {
         return;
     }
 
-    const token = photo.getJWTToken();
+    const token = await photo.getJWTToken();
 
     ctx.body = { error: false, data: token } as IPhotosGetShowTokenByID;
 });

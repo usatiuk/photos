@@ -36,6 +36,7 @@ export interface IPhotoJSON {
     format: string;
     createdAt: number;
     editedAt: number;
+    shotAt: number;
 }
 
 export interface IPhotoReqJSON extends IPhotoJSON {
@@ -61,6 +62,15 @@ export class Photo extends BaseEntity {
     @Column({ length: 190 })
     @IsMimeType()
     public format: string;
+
+    @Column({ type: "varchar", length: 500 })
+    public accessToken: string;
+
+    @Column({ type: "timestamp", default: null })
+    public accessTokenExpiry: Date;
+
+    @Column({ type: "timestamp", default: null })
+    public shotAt: Date;
 
     @Column({ type: "timestamp", default: null })
     public createdAt: Date;
@@ -115,17 +125,31 @@ export class Photo extends BaseEntity {
         super();
         this.createdAt = new Date();
         this.editedAt = this.createdAt;
+        this.shotAt = this.createdAt;
+        this.accessTokenExpiry = this.createdAt;
+        this.accessToken = "";
         this.hash = hash;
         this.format = format;
         this.size = size;
         this.user = user;
     }
 
-    public getJWTToken(): string {
-        return jwt.sign(this.toJSON(), config.jwtSecret, {
-            expiresIn: "1h",
-            algorithm: "HS256",
-        });
+    public async getJWTToken(): Promise<string> {
+        const now = new Date().getTime();
+        const tokenExpiryOld = this.accessTokenExpiry.getTime();
+        // If expires in more than 10 minutes then get from cache
+        if (tokenExpiryOld - now - 60 * 10 * 1000 > 0) {
+            return this.accessToken;
+        } else {
+            const token = jwt.sign(this.toJSON(), config.jwtSecret, {
+                expiresIn: "1h",
+                algorithm: "HS256",
+            });
+            this.accessToken = token;
+            this.accessTokenExpiry = new Date(now + 60 * 60 * 1000);
+            await this.save();
+            return token;
+        }
     }
 
     public toJSON(): IPhotoJSON {
@@ -137,19 +161,12 @@ export class Photo extends BaseEntity {
             format: this.format,
             createdAt: this.createdAt.getTime(),
             editedAt: this.editedAt.getTime(),
+            shotAt: this.shotAt.getTime(),
         };
     }
 
-    public toReqJSON(): IPhotoReqJSON {
-        return {
-            id: this.id,
-            user: this.user.id,
-            hash: this.hash,
-            size: this.size,
-            format: this.format,
-            createdAt: this.createdAt.getTime(),
-            editedAt: this.editedAt.getTime(),
-            accessToken: this.getJWTToken(),
-        };
+    public async toReqJSON(): Promise<IPhotoReqJSON> {
+        const token = await this.getJWTToken();
+        return { ...this.toJSON(), accessToken: token };
     }
 }
