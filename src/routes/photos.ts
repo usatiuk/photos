@@ -35,6 +35,19 @@ photosRouter.post("/photos/new", async (ctx) => {
     try {
         await photo.save();
     } catch (e) {
+        if (e.code === "ER_DUP_ENTRY") {
+            const photo = await Photo.findOne({ hash, size, user });
+            if (!photo) {
+                ctx.throw(404);
+                return;
+            }
+
+            ctx.body = {
+                error: false,
+                data: photo.toReqJSON(),
+            } as IPhotosNewRespBody;
+            return;
+        }
         ctx.throw(400);
     }
 
@@ -96,6 +109,7 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
             // TODO: actually move file if it's on different filesystems
             await fs.rename(file.path, photo.getPath());
         } catch (e) {
+            console.log(e);
             ctx.throw(500);
         }
     }
