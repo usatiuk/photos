@@ -54,7 +54,10 @@ export class PhotoCardComponent extends React.PureComponent<
             */
             >
                 {fileExists ? (
-                    <img src={getPhotoThumbPath(this.props.photo, 512)}></img>
+                    <img
+                        loading="lazy"
+                        src={getPhotoThumbPath(this.props.photo, 512)}
+                    ></img>
                 ) : (
                     <Spinner />
                 )}
