@@ -1,11 +1,18 @@
-import { Card, ContextMenuTarget, Menu, MenuItem } from "@blueprintjs/core";
+import {
+    Card,
+    ContextMenuTarget,
+    Menu,
+    MenuItem,
+    Spinner,
+} from "@blueprintjs/core";
 import * as React from "react";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
-import { getPhotoImgPath } from "~redux/api/photos";
+import { getPhotoImgPath, getPhotoThumbPath } from "~redux/api/photos";
 import { showDeletionToast } from "~AppToaster";
 import { Dispatch } from "redux";
 import { photoDeleteCancel, photoDeleteStart } from "~redux/photos/actions";
 import { connect } from "react-redux";
+import { LoadingStub } from "~LoadingStub";
 
 export interface IPhotoCardComponentProps {
     photo: IPhotoReqJSON;
@@ -35,6 +42,7 @@ export class PhotoCardComponent extends React.PureComponent<
     }
     */
     public render(): JSX.Element {
+        const isUploaded = this.props.photo.uploaded;
         return (
             <Card
                 className="photoCard"
@@ -45,7 +53,11 @@ export class PhotoCardComponent extends React.PureComponent<
                 }
             */
             >
-                <img src={getPhotoImgPath(this.props.photo)}></img>
+                {isUploaded ? (
+                    <img src={getPhotoThumbPath(this.props.photo, 512)}></img>
+                ) : (
+                    <Spinner />
+                )}
             </Card>
         );
     }

@@ -82,6 +82,18 @@ describe("photos", function () {
         );
     });
 
+    it("should show a thumbnail", async function () {
+        const response = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}?size=512`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(200);
+        expect(parseInt(response.header["content-length"])).to.be.lessThan(
+            dogFileSize,
+        );
+    });
+
     it("should show a photo using access token", async function () {
         const listResp = await request(callback)
             .get(`/photos/list`)
@@ -524,6 +536,9 @@ describe("photos", function () {
 
     it("should delete a photo", async function () {
         const photoPath = seed.dogPhoto.getPath();
+        const photoSmallThumbPath = await seed.dogPhoto.getReadyThumbnailPath(
+            512,
+        );
         const response = await request(callback)
             .delete(`/photos/byID/${seed.dogPhoto.id}`)
             .set({
@@ -537,6 +552,7 @@ describe("photos", function () {
 
         try {
             await fs.access(photoPath, fsConstants.F_OK);
+            await fs.access(photoSmallThumbPath, fsConstants.F_OK);
             assert(false);
         } catch (e) {
             assert(true);

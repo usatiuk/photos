@@ -30,7 +30,7 @@ photosRouter.post("/photos/new", async (ctx) => {
         return;
     }
 
-    const photo = new Photo(user.id, hash, size, format);
+    const photo = new Photo(user, hash, size, format);
 
     try {
         await photo.save();
@@ -241,6 +241,12 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
         return;
     }
 
+    if (ctx.request.query["size"]) {
+        const size = parseInt(ctx.request.query["size"]);
+        await send(ctx, await photo.getReadyThumbnailPath(size));
+        return;
+    }
+
     await send(ctx, photo.getPath());
 });
 
@@ -263,6 +269,12 @@ photosRouter.get("/photos/showByID/:id", async (ctx) => {
 
     if (!photo || !(await photo.isUploaded())) {
         ctx.throw(404);
+        return;
+    }
+
+    if (ctx.request.query["size"]) {
+        const size = parseInt(ctx.request.query["size"]);
+        await send(ctx, await photo.getReadyThumbnailPath(size));
         return;
     }
 

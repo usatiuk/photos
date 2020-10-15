@@ -18,6 +18,14 @@ export async function getSize(file: string): Promise<string> {
     return `${metadata.width}x${metadata.height}`;
 }
 
+export async function resizeTo(
+    inPath: string,
+    outPath: string,
+    size: number,
+): Promise<void> {
+    await sharp(inPath).resize(size, size).withMetadata().toFile(outPath);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 export const getHashSync: (file: string) => string = deasync(getHash);
 // eslint-disable-next-line @typescript-eslint/no-misused-promises

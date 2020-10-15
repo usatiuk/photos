@@ -12,6 +12,12 @@ export function getPhotoImgPath(photo: IPhotoReqJSON): string {
     return `${apiRoot}/photos/showByID/${photo.id}/${photo.accessToken}`;
 }
 
+export function getPhotoThumbPath(photo: IPhotoReqJSON, size: number): string {
+    return `${apiRoot}/photos/showByID/${photo.id}/${
+        photo.accessToken
+    }?size=${size.toString()}`;
+}
+
 export async function fetchPhotosList(): Promise<IPhotosListRespBody> {
     return fetchJSONAuth("/photos/list", "GET");
 }
