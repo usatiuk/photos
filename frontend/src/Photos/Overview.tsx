@@ -7,13 +7,14 @@ import { photosLoadStart } from "~redux/photos/actions";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
 import { LoadingStub } from "~LoadingStub";
 import { PhotoCard } from "./PhotoCard";
-import { Button, Classes, Overlay } from "@blueprintjs/core";
+import { Button, Classes, Overlay, Spinner } from "@blueprintjs/core";
 import { UploadButton } from "./UploadButton";
 import { Photo } from "./Photo";
 
 export interface IOverviewComponentProps {
-    photos: IPhotoReqJSON[] | null;
-    overviewLoaded: boolean;
+    photos: IPhotoReqJSON[];
+    triedLoading: boolean;
+    allPhotosLoaded: boolean;
     overviewFetching: boolean;
     overviewFetchingError: string | null;
     overviewFetchingSpinner: boolean;
@@ -27,27 +28,38 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
     const [selectedPhoto, setSelectedPhoto] = React.useState<number>(0);
     const [isOverlayOpened, setOverlayOpen] = React.useState<boolean>(false);
 
-    if (!props.overviewLoaded && !props.overviewFetching) {
-        props.fetchPhotos();
-    }
-    if (!props.photos) {
-        return <LoadingStub spinner={props.overviewFetchingSpinner} />;
-    }
-
     const onCardClick = (id: number) => {
         setSelectedPhoto(id);
         setOverlayOpen(true);
     };
 
-    const photos = props.photos
-        .sort((a, b) => b.shotAt - a.shotAt)
-        .map((photo) => (
-            <PhotoCard
-                key={photo.id}
-                photo={photo}
-                onClick={() => onCardClick(photo.id)}
-            />
-        ));
+    if (
+        props.photos.length === 0 &&
+        !props.triedLoading &&
+        !props.overviewFetching
+    ) {
+        props.fetchPhotos();
+    }
+
+    const photos = props.photos.map((photo) => (
+        <PhotoCard
+            key={photo.id}
+            photo={photo}
+            onClick={() => onCardClick(photo.id)}
+        />
+    ));
+
+    function onLoaderScroll(e: React.UIEvent<HTMLElement>) {
+        if (
+            e.currentTarget.scrollTop + e.currentTarget.clientHeight >=
+            e.currentTarget.scrollHeight
+        ) {
+            console.log(props.allPhotosLoaded, props.overviewFetching);
+            if (!props.allPhotosLoaded && !props.overviewFetching) {
+                props.fetchPhotos();
+            }
+        }
+    }
 
     return (
         <>
@@ -65,11 +77,16 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
                     <Photo id={selectedPhoto} />
                 </div>
             </Overlay>
-            <div id="overview">
-                <div id="actionbar">
-                    <UploadButton />
+            <div id="overviewContainer" onScroll={onLoaderScroll}>
+                <div id="overview">
+                    <div id="actionbar">
+                        <UploadButton />
+                    </div>
+                    <div className="list">{photos}</div>
+                    <div className="photosLoader">
+                        {props.overviewFetching && <Spinner />}
+                    </div>
                 </div>
-                <div className="list">{photos}</div>
             </div>
         </>
     );
@@ -78,10 +95,11 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
 function mapStateToProps(state: IAppState) {
     return {
         photos: state.photos.photos,
-        overviewLoaded: state.photos.overviewLoaded,
+        allPhotosLoaded: state.photos.allPhotosLoaded,
         overviewFetching: state.photos.overviewFetching,
         overviewFetchingError: state.photos.overviewFetchingError,
         overviewFetchingSpinner: state.photos.overviewFetchingSpinner,
+        triedLoading: state.photos.triedLoading,
     };
 }
 

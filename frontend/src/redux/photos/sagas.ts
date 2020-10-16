@@ -42,6 +42,7 @@ import {
     photoUploadSuccess,
 } from "./actions";
 import { IPhotosNewRespBody } from "~../../src/routes/photos";
+import { IPhotosListPagination } from "~../../src/types";
 
 // Thanks, https://dev.to/qortex/compute-md5-checksum-for-a-file-in-typescript-59a4
 function computeChecksumMd5(file: File): Promise<string> {
@@ -108,21 +109,24 @@ function computeSize(f: File) {
     });
 }
 
+// Shouldn't be used anymore
 function* startSpinner() {
     yield delay(300);
     yield put(photosStartFetchingSpinner());
 }
 
 function* photosLoad() {
+    const state = yield select();
     try {
-        const spinner = yield fork(startSpinner);
+        //const spinner = yield fork(startSpinner);
 
+        const skip = state.photos.photos ? state.photos.photos.length : 0;
         const { response, timeout } = yield race({
-            response: call(fetchPhotosList),
+            response: call(fetchPhotosList, skip, IPhotosListPagination),
             timeout: delay(10000),
         });
 
-        yield cancel(spinner);
+        //yield cancel(spinner);
 
         if (timeout) {
             yield put(photosLoadFail("Timeout"));

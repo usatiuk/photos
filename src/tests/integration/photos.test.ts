@@ -571,7 +571,7 @@ describe("photos", function () {
         });
     */
 
-    it("should list photos", async function () {
+    it("should list photos, sorted", async function () {
         const response = await request(callback)
             .get("/photos/list")
             .set({
@@ -582,13 +582,18 @@ describe("photos", function () {
         expect(response.body.error).to.be.false;
 
         const photos = response.body.data as IPhotoReqJSON[];
-
         const userPhotos = [
             await seed.dogPhoto.toReqJSON(),
             await seed.catPhoto.toReqJSON(),
-        ];
+        ].sort((a, b) => b.shotAt - a.shotAt);
+
+        const photoIds = photos.map((p) => p.id);
+        const userPhotoIds = userPhotos.map((p) => p.id);
 
         expect(photos).to.deep.equal(userPhotos);
+        expect(photoIds).to.have.ordered.members(userPhotoIds);
+
+        //TODO: Test pagination
     });
 
     /*

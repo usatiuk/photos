@@ -10,3 +10,5 @@ interface IAPISuccessResponse<T> {
 }
 
 export type IAPIResponse<T> = IAPIErrorResponse<T> | IAPISuccessResponse<T>;
+
+export const IPhotosListPagination = 30;
