@@ -78,7 +78,7 @@ export class User extends BaseEntity {
 
     @AfterInsert()
     async createDataDir(): Promise<void> {
-        await fs.mkdir(this.getDataPath());
+        await fs.mkdir(this.getDataPath(), { recursive: true });
     }
 
     @BeforeRemove()

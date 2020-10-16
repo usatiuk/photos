@@ -39,7 +39,8 @@
 		"dbaeumer.vscode-eslint",
 		"mtxr.sqltools",
 		"mtxr.sqltools-driver-mysql",
-		"ms-vscode.vscode-typescript-tslint-plugin"
+		"visualstudioexptteam.vscodeintellicode",
+		"rvest.vs-code-prettier-eslint",
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [
@@ -49,5 +50,5 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm config set unsafe-perm=true && npm i && cd frontend && npm i",
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "node"
+	"remoteUser": "node"
 }
