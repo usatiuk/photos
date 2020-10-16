@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
 import { LoadingStub } from "~LoadingStub";
-import { getPhotoImgPath } from "~redux/api/photos";
+import { getPhotoImgPath, getPhotoThumbPath } from "~redux/api/photos";
 import { photoLoadStart } from "~redux/photos/actions";
 import { IPhotoState } from "~redux/photos/reducer";
 import { IAppState } from "~redux/reducers";
@@ -36,7 +36,7 @@ export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
                     <img
                         id="photo"
                         loading="lazy"
-                        src={getPhotoImgPath(props.photo)}
+                        src={getPhotoThumbPath(props.photo, 2048)}
                     />
                 </div>
             ) : (
