@@ -9,6 +9,7 @@ import {
     takeLatest,
     takeEvery,
     take,
+    select,
 } from "redux-saga/effects";
 import * as SparkMD5 from "spark-md5";
 import {
@@ -23,6 +24,8 @@ import {
     IPhotoLoadStartAction,
     IPhotosUploadStartAction,
     photoCreateFail,
+    photoCreateQueue,
+    photoCreateStart,
     photoCreateSuccess,
     photoDeleteFail,
     photoDeleteSuccess,
@@ -34,6 +37,8 @@ import {
     PhotoTypes,
     photoUploadFail,
     photoUploadFailWithFile,
+    photoUploadQueue,
+    photoUploadStart,
     photoUploadSuccess,
 } from "./actions";
 import { IPhotosNewRespBody } from "~../../src/routes/photos";
@@ -160,57 +165,84 @@ function* photoLoad(action: IPhotoLoadStartAction) {
     }
 }
 
-function* photoUpload(f: File) {
-    try {
-        const hash = yield call(computeChecksumMd5, f);
-        const size = yield call(computeSize, f);
-        const format = f.type;
-
-        const { response, timeout } = yield race({
-            response: call(createPhoto, hash, size, format),
-            timeout: delay(10000),
-        });
-
-        if (timeout) {
-            yield put(photoCreateFail(f, "Timeout"));
+function* photoCreate() {
+    const store = yield select();
+    const photosCreating = store.photos.photosCreating;
+    if (photosCreating < 2) {
+        const createQueue = store.photos.photoCreateQueue as File[];
+        if (createQueue.length === 0) {
             return;
         }
-        if (response.data || response.error === "Photo already exists") {
-            const photo = (response as IPhotosNewRespBody).data;
-            yield put(photoCreateSuccess(photo));
+        const f = createQueue[0];
+        yield put(photoCreateStart(f));
+        try {
+            const hash = yield call(computeChecksumMd5, f);
+            const size = yield call(computeSize, f);
+            const format = f.type;
 
-            try {
-                const { response, timeout } = yield race({
-                    response: call(uploadPhoto, f, photo.id),
-                    timeout: delay(10000),
-                });
+            const { response, timeout } = yield race({
+                response: call(createPhoto, hash, size, format),
+                timeout: delay(10000),
+            });
 
-                if (timeout) {
-                    yield put(photoUploadFailWithFile(photo, f, "Timeout"));
-                    return;
-                }
-                if (response.data) {
-                    const photo = response.data;
-                    yield put(photoUploadSuccess(photo));
-                } else {
-                    yield put(
-                        photoUploadFailWithFile(photo, f, response.error),
-                    );
-                }
-            } catch (e) {
-                yield put(photoUploadFailWithFile(photo, f, "Internal error"));
+            if (timeout) {
+                yield put(photoCreateFail(f, "Timeout"));
+                return;
             }
-        } else {
-            yield put(photoCreateFail(f, response.error));
+            if (response.data || response.error === "Photo already exists") {
+                const photo = (response as IPhotosNewRespBody).data;
+                yield put(photoCreateSuccess(photo, f));
+                yield put(photoUploadQueue(f, photo.id));
+            } else {
+                yield put(photoCreateFail(f, response.error));
+            }
+        } catch (e) {
+            yield put(photoCreateFail(f, "Internal error"));
         }
-    } catch (e) {
-        yield put(photoCreateFail(f, "Internal error"));
+    }
+}
+
+function* photoUpload() {
+    const store = yield select();
+    const photosUploading = store.photos.photosUploading;
+    if (photosUploading < 2) {
+        const createQueue = store.photos.photoUploadQueue as Record<
+            number,
+            File
+        >;
+        if (Object.keys(createQueue).length === 0) {
+            return;
+        }
+        const pId = parseInt(Object.keys(createQueue)[0]);
+        const f = createQueue[pId];
+        yield put(photoUploadStart(f, pId));
+        try {
+            const { response, timeout } = yield race({
+                response: call(uploadPhoto, f, pId),
+                timeout: delay(10000),
+            });
+
+            if (timeout) {
+                yield put(photoUploadFailWithFile(pId, f, "Timeout"));
+                return;
+            }
+            if (response.data) {
+                const photo = response.data;
+                yield put(photoUploadSuccess(photo));
+            } else {
+                yield put(photoUploadFailWithFile(pId, f, response.error));
+            }
+        } catch (e) {
+            yield put(photoUploadFailWithFile(pId, f, "Internal error"));
+        }
     }
 }
 
 function* photosUpload(action: IPhotosUploadStartAction) {
     const files = Array.from(action.files);
-    yield all(files.map((f) => call(photoUpload, f)));
+    for (const file of files) {
+        yield put(photoCreateQueue(file));
+    }
 }
 
 function* photoDelete(action: IPhotoDeleteStartAction) {
@@ -250,5 +282,11 @@ export function* photosSaga() {
         takeLatest(PhotoTypes.PHOTOS_UPLOAD_START, photosUpload),
         takeLatest(PhotoTypes.PHOTO_LOAD_START, photoLoad),
         takeEvery(PhotoTypes.PHOTO_DELETE_START, photoDelete),
+        takeEvery(PhotoTypes.PHOTO_CREATE_QUEUE, photoCreate),
+        takeEvery(PhotoTypes.PHOTO_CREATE_SUCCESS, photoCreate),
+        takeEvery(PhotoTypes.PHOTO_CREATE_FAIL, photoCreate),
+        takeEvery(PhotoTypes.PHOTO_UPLOAD_QUEUE, photoUpload),
+        takeEvery(PhotoTypes.PHOTO_UPLOAD_SUCCESS, photoUpload),
+        takeEvery(PhotoTypes.PHOTO_UPLOAD_FAIL, photoUpload),
     ]);
 }

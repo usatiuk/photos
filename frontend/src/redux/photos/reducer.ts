@@ -18,6 +18,11 @@ export interface IPhotosState {
     overviewFetchingError: string | null;
     overviewFetchingSpinner: boolean;
 
+    photoCreateQueue: File[];
+    photosCreating: number;
+    photoUploadQueue: Record<number, File>;
+    photosUploading: number;
+
     deleteCache: Record<number, IPhotoReqJSON>;
 }
 
@@ -27,6 +32,11 @@ const defaultPhotosState: IPhotosState = {
     overviewFetching: false,
     overviewFetchingError: null,
     overviewFetchingSpinner: false,
+
+    photoCreateQueue: [],
+    photosCreating: 0,
+    photoUploadQueue: {},
+    photosUploading: 0,
 
     photoStates: {},
 
@@ -104,31 +114,102 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
                 photoStates,
             };
         }
-        case PhotoTypes.PHOTO_CREATE_SUCCESS:
+        case PhotoTypes.PHOTO_CREATE_QUEUE: {
+            const { photoCreateQueue } = state;
+            return {
+                ...state,
+                photoCreateQueue: [...photoCreateQueue, action.file],
+            };
+            break;
+        }
+        case PhotoTypes.PHOTO_CREATE_START: {
+            const { photoCreateQueue } = state;
+            const cleanQueue = photoCreateQueue.filter((f) => f != action.file);
+
+            return {
+                ...state,
+                photosCreating: state.photosCreating + 1,
+                photoCreateQueue: cleanQueue,
+            };
+            break;
+        }
+        case PhotoTypes.PHOTO_UPLOAD_START: {
+            const newQueue = state.photoUploadQueue;
+            delete newQueue[action.id];
+
+            return {
+                ...state,
+                photosUploading: state.photosUploading + 1,
+                photoUploadQueue: newQueue,
+            };
+            break;
+        }
+        case PhotoTypes.PHOTO_UPLOAD_QUEUE: {
+            const newQueue = state.photoUploadQueue;
+            newQueue[action.id] = action.file;
+            return {
+                ...state,
+                photoUploadQueue: newQueue,
+            };
+            break;
+        }
+        case PhotoTypes.PHOTO_CREATE_SUCCESS: {
+            const { photoCreateQueue } = state;
+            const cleanQueue = photoCreateQueue.filter((f) => f != action.file);
+
             if (state.photos) {
                 const photos = state.photos;
                 const photosNoDup = photos.filter(
                     (p) => p.id !== action.photo.id,
                 );
                 const updPhotos = [action.photo, ...photosNoDup];
-                return { ...state, photos: updPhotos };
+                return {
+                    ...state,
+                    photos: updPhotos,
+                    photoCreateQueue: cleanQueue,
+                    photosCreating: state.photosCreating - 1,
+                };
             } else {
-                return state;
+                return {
+                    ...state,
+                    photoCreateQueue: cleanQueue,
+                    photosCreating: state.photosCreating - 1,
+                };
             }
-        case PhotoTypes.PHOTO_CREATE_FAIL:
+        }
+        case PhotoTypes.PHOTO_CREATE_FAIL: {
             // TODO: Handle photo create fail
-            return state;
-        case PhotoTypes.PHOTO_UPLOAD_SUCCESS:
+            const { photoCreateQueue } = state;
+            const cleanQueue = photoCreateQueue.filter((f) => f != action.file);
+            return {
+                ...state,
+                photoCreateQueue: cleanQueue,
+                photosCreating: state.photosCreating - 1,
+            };
+        }
+        case PhotoTypes.PHOTO_UPLOAD_SUCCESS: {
+            const newQueue = state.photoUploadQueue;
+            delete newQueue[action.photo.id];
             if (state.photos) {
                 const photos = state.photos;
                 const photosNoDup = photos.filter(
                     (p) => p.id !== action.photo.id,
                 );
                 const updPhotos = [action.photo, ...photosNoDup];
-                return { ...state, photos: updPhotos };
+                return {
+                    ...state,
+                    photos: updPhotos,
+                    photoUploadQueue: newQueue,
+                    photosUploading: state.photosUploading - 1,
+                };
             } else {
-                return state;
+                return {
+                    ...state,
+                    photoUploadQueue: newQueue,
+                    photosUploading: state.photosUploading - 1,
+                };
             }
+        }
         case PhotoTypes.PHOTO_DELETE_START:
             if (state.photos) {
                 const photos = state.photos;
@@ -172,9 +253,20 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
             return { ...state, deleteCache: delCache, photos };
             break;
         }
-        case PhotoTypes.PHOTO_UPLOAD_FAIL:
+        case PhotoTypes.PHOTO_UPLOAD_FAIL: {
             // TODO: Handle photo upload fail
-            return state;
+            const newQueue = state.photoUploadQueue;
+            if (typeof action.photo === "number") {
+                delete newQueue[action.photo];
+            } else {
+                delete newQueue[action.photo.id];
+            }
+            return {
+                ...state,
+                photoUploadQueue: newQueue,
+                photosUploading: state.photosUploading - 1,
+            };
+        }
         default:
             return state;
     }

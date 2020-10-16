@@ -14,8 +14,12 @@ export enum PhotoTypes {
     PHOTO_LOAD_SUCCESS = "PHOTO_LOAD_SUCCESS",
     PHOTO_LOAD_FAIL = "PHOTO_LOAD_FAIL",
     PHOTOS_UPLOAD_START = "PHOTOS_UPLOAD",
+    PHOTO_CREATE_QUEUE = "PHOTO_CREATE_QUEUE",
+    PHOTO_CREATE_START = "PHOTO_CREATE_START",
     PHOTO_CREATE_SUCCESS = "PHOTO_CREATE_SUCCESS",
     PHOTO_CREATE_FAIL = "PHOTO_CREATE_FAIL",
+    PHOTO_UPLOAD_QUEUE = "PHOTO_UPLOAD_QUEUE",
+    PHOTO_UPLOAD_START = "PHOTO_UPLOAD_START",
     PHOTO_UPLOAD_SUCCESS = "PHOTO_UPLOAD_SUCCESS",
     PHOTO_UPLOAD_FAIL = "PHOTO_UPLOAD_FAIL",
     PHOTOS_START_FETCHING_SPINNER = "PHOTOS_START_FETCHING_SPINNER",
@@ -60,6 +64,28 @@ export interface IPhotosUploadStartAction extends Action {
     files: FileList;
 }
 
+export interface IPhotoCreateQueue extends Action {
+    type: PhotoTypes.PHOTO_CREATE_QUEUE;
+    file: File;
+}
+
+export interface IPhotoUploadQueue extends Action {
+    type: PhotoTypes.PHOTO_UPLOAD_QUEUE;
+    file: File;
+    id: number;
+}
+
+export interface IPhotoCreateStart extends Action {
+    type: PhotoTypes.PHOTO_CREATE_START;
+    file: File;
+}
+
+export interface IPhotoUploadStart extends Action {
+    type: PhotoTypes.PHOTO_UPLOAD_START;
+    file: File;
+    id: number;
+}
+
 export interface IPhotoUploadSuccessAction extends Action {
     type: PhotoTypes.PHOTO_UPLOAD_SUCCESS;
     photo: IPhotoReqJSON;
@@ -67,13 +93,14 @@ export interface IPhotoUploadSuccessAction extends Action {
 
 export interface IPhotoUploadFailAction extends Action {
     type: PhotoTypes.PHOTO_UPLOAD_FAIL;
-    photo: IPhotoReqJSON;
+    photo: IPhotoReqJSON | number;
     error: string;
 }
 
 export interface IPhotoCreateSuccessAction extends Action {
     type: PhotoTypes.PHOTO_CREATE_SUCCESS;
     photo: IPhotoReqJSON;
+    file: File;
 }
 
 export interface IPhotoCreateFailAction extends Action {
@@ -107,6 +134,22 @@ export interface IPhotosStartFetchingSpinner extends Action {
     type: PhotoTypes.PHOTOS_START_FETCHING_SPINNER;
 }
 
+export function photoCreateQueue(file: File): IPhotoCreateQueue {
+    return { type: PhotoTypes.PHOTO_CREATE_QUEUE, file };
+}
+
+export function photoUploadQueue(file: File, id: number): IPhotoUploadQueue {
+    return { type: PhotoTypes.PHOTO_UPLOAD_QUEUE, file, id };
+}
+
+export function photoCreateStart(file: File): IPhotoCreateStart {
+    return { type: PhotoTypes.PHOTO_CREATE_START, file };
+}
+
+export function photoUploadStart(file: File, id: number): IPhotoUploadStart {
+    return { type: PhotoTypes.PHOTO_UPLOAD_START, file, id };
+}
+
 export function photosLoadStart(): IPhotosLoadStartAction {
     return { type: PhotoTypes.PHOTOS_LOAD_START };
 }
@@ -126,7 +169,7 @@ export function photoUploadSuccess(
 }
 
 export function photoUploadFail(
-    photo: IPhotoReqJSON,
+    photo: IPhotoReqJSON | number,
     error: string,
 ): IPhotoUploadFailAction {
     showPhotoUploadJSONFailToast(photo, error);
@@ -134,7 +177,7 @@ export function photoUploadFail(
 }
 
 export function photoUploadFailWithFile(
-    photo: IPhotoReqJSON,
+    photo: IPhotoReqJSON | number,
     file: File,
     error: string,
 ): IPhotoUploadFailAction {
@@ -144,8 +187,9 @@ export function photoUploadFailWithFile(
 
 export function photoCreateSuccess(
     photo: IPhotoReqJSON,
+    file: File,
 ): IPhotoCreateSuccessAction {
-    return { type: PhotoTypes.PHOTO_CREATE_SUCCESS, photo };
+    return { type: PhotoTypes.PHOTO_CREATE_SUCCESS, photo, file };
 }
 
 export function photoCreateFail(
@@ -172,8 +216,8 @@ export function photoLoadSuccess(
     return { type: PhotoTypes.PHOTO_LOAD_SUCCESS, photo };
 }
 
-export function photoLoadFail(id:number,error: string): IPhotoLoadFailAction {
-    return { type: PhotoTypes.PHOTO_LOAD_FAIL,id, error };
+export function photoLoadFail(id: number, error: string): IPhotoLoadFailAction {
+    return { type: PhotoTypes.PHOTO_LOAD_FAIL, id, error };
 }
 
 export function photoDeleteStart(
@@ -219,4 +263,8 @@ export type PhotoAction =
     | IPhotoDeleteCancelAction
     | IPhotoLoadFailAction
     | IPhotoLoadStartAction
-    | IPhotoLoadSuccessAction;
+    | IPhotoLoadSuccessAction
+    | IPhotoUploadQueue
+    | IPhotoCreateQueue
+    | IPhotoCreateStart
+    | IPhotoUploadStart;
