@@ -1,7 +1,6 @@
 import "./Photo.scss";
 import * as React from "react";
 import { connect } from "react-redux";
-import { RouteComponentProps, withRouter } from "react-router";
 import { Dispatch } from "redux";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
 import { LoadingStub } from "~LoadingStub";
@@ -10,25 +9,19 @@ import { photoLoadStart } from "~redux/photos/actions";
 import { IPhotoState } from "~redux/photos/reducer";
 import { IAppState } from "~redux/reducers";
 
-export interface IPhotoComponentProps extends RouteComponentProps {
+export interface IPhotoComponentProps {
+    id: number;
     photo: IPhotoReqJSON | undefined;
     photoState: IPhotoState | undefined;
 
     fetchPhoto: (id: number) => void;
 }
 
-function getId(props: RouteComponentProps) {
-    return parseInt((props.match?.params as { id: string }).id);
-}
-
 export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
     props,
 ) => {
-    const id = getId(props);
-
     if (!props.photo && !props.photoState?.fetching) {
-        console.log(props);
-        props.fetchPhoto(id);
+        props.fetchPhoto(props.id);
     }
     if (!props.photo) {
         return <LoadingStub spinner={false} />;
@@ -53,8 +46,8 @@ export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
     );
 };
 
-function mapStateToProps(state: IAppState, props: RouteComponentProps) {
-    const id = getId(props);
+function mapStateToProps(state: IAppState, props: IPhotoComponentProps) {
+    const { id } = props;
     let photo = undefined;
     let photoState = undefined;
 
@@ -74,6 +67,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
     return { fetchPhoto: (id: number) => dispatch(photoLoadStart(id)) };
 }
 
-export const Photo = withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(PhotoComponent),
-);
+// Because https://github.com/DefinitelyTyped/DefinitelyTyped/issues/16990
+export const Photo = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(PhotoComponent) as any;

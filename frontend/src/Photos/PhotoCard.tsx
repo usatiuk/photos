@@ -20,6 +20,7 @@ export interface IPhotoCardComponentProps extends RouteComponentProps {
 
     deletePhoto: (photo: IPhotoReqJSON) => void;
     cancelDelete: (photo: IPhotoReqJSON) => void;
+    onClick: () => void;
 }
 
 @ContextMenuTarget
@@ -48,9 +49,7 @@ export class PhotoCardComponent extends React.PureComponent<
             <Card
                 className="photoCard"
                 interactive={true}
-                onClick={() =>
-                    this.props.history.push(`/photos/${this.props.photo.id}`)
-                }
+                onClick={() => this.props.onClick()}
             >
                 {fileExists ? (
                     <img
