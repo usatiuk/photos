@@ -1,4 +1,5 @@
 import { Position, Toaster } from "@blueprintjs/core";
+import { isNumber } from "class-validator";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
 
 export const AppToaster = Toaster.create({
@@ -43,11 +44,12 @@ export function showPhotoCreateFailToast(f: File, e: string): void {
 }
 
 export function showPhotoUploadJSONFailToast(
-    p: IPhotoReqJSON,
+    p: IPhotoReqJSON | number,
     e: string,
 ): void {
+    const photoMsg = typeof p === "number" ? p : p.hash;
     AppToaster.show({
-        message: `Failed to upload ${p.hash}: ${e}`,
+        message: `Failed to upload ${photoMsg}: ${e}`,
         intent: "danger",
         timeout: 1000,
     });
