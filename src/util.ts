@@ -22,6 +22,9 @@ export async function getSize(file: string): Promise<string> {
 
 export async function getShotDate(file: string): Promise<Date | null> {
     const tags = ExifReader.load(await fs.readFile(file));
+    if (!tags || !tags["DateTimeOriginal"]) {
+        return null;
+    }
     const imageDate = tags["DateTimeOriginal"].description;
     if (!imageDate) {
         return null;
