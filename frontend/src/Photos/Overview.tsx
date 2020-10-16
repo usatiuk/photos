@@ -7,8 +7,9 @@ import { photosLoadStart } from "~redux/photos/actions";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
 import { LoadingStub } from "~LoadingStub";
 import { PhotoCard } from "./PhotoCard";
-import { Button } from "@blueprintjs/core";
+import { Button, Classes, Overlay } from "@blueprintjs/core";
 import { UploadButton } from "./UploadButton";
+import { Photo } from "./Photo";
 
 export interface IOverviewComponentProps {
     photos: IPhotoReqJSON[] | null;
@@ -23,6 +24,9 @@ export interface IOverviewComponentProps {
 export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps> = (
     props,
 ) => {
+    const [selectedPhoto, setSelectedPhoto] = React.useState<number>(0);
+    const [isOverlayOpened, setOverlayOpen] = React.useState<boolean>(false);
+
     if (!props.overviewLoaded && !props.overviewFetching) {
         props.fetchPhotos();
     }
@@ -30,17 +34,44 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
         return <LoadingStub spinner={props.overviewFetchingSpinner} />;
     }
 
+    const onCardClick = (id: number) => {
+        setSelectedPhoto(id);
+        setOverlayOpen(true);
+    };
+
     const photos = props.photos
         .sort((a, b) => b.shotAt - a.shotAt)
-        .map((photo) => <PhotoCard key={photo.id} photo={photo} />);
+        .map((photo) => (
+            <PhotoCard
+                key={photo.id}
+                photo={photo}
+                onClick={() => onCardClick(photo.id)}
+            />
+        ));
 
     return (
-        <div id="overview">
-            <div id="actionbar">
-                <UploadButton />
+        <>
+            <Overlay
+                autoFocus
+                enforceFocus
+                usePortal
+                isOpen={isOverlayOpened}
+                onClose={() => {
+                    setOverlayOpen(false);
+                }}
+                lazy
+            >
+                <div id="photoOverlayContainer">
+                    <Photo id={selectedPhoto} />
+                </div>
+            </Overlay>
+            <div id="overview">
+                <div id="actionbar">
+                    <UploadButton />
+                </div>
+                <div className="list">{photos}</div>
             </div>
-            <div className="list">{photos}</div>
-        </div>
+        </>
     );
 };
 

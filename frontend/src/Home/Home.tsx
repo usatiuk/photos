@@ -24,6 +24,7 @@ import { toggleDarkMode } from "~redux/localSettings/actions";
 import { IAppState } from "~redux/reducers";
 import { logoutUser } from "~redux/user/actions";
 import { Photo } from "~Photos/Photo";
+import { PhotoRoute } from "~Photos/PhotoRoute";
 
 export interface IHomeProps extends RouteComponentProps {
     user: IUserJSON | null;
@@ -103,7 +104,7 @@ export class HomeComponent extends React.PureComponent<IHomeProps> {
                                         />
                                         <Route
                                             path="/photos/:id"
-                                            component={Photo}
+                                            component={PhotoRoute}
                                         />
                                         <Route path="/" component={Overview} />
                                     </Switch>
