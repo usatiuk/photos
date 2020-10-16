@@ -10,8 +10,9 @@ afterEach(() => {
 const fetchPhotosFn = jest.fn();
 
 const overviewComponentDefaultProps: IOverviewComponentProps = {
-    photos: null,
-    overviewLoaded: false,
+    photos: [],
+    allPhotosLoaded: false,
+    triedLoading: false,
     overviewFetching: false,
     overviewFetchingError: null,
     overviewFetchingSpinner: false,
