@@ -39,7 +39,24 @@ export async function resizeTo(
     outPath: string,
     size: number,
 ): Promise<void> {
-    await sharp(inPath).resize(size, size).withMetadata().toFile(outPath);
+    const file = sharp(inPath);
+    const metadata = await file.metadata();
+    if (!(metadata.width && metadata.height)) {
+        throw new Error(
+            `The ${inPath} doesn't have width and height... how did we get there?`,
+        );
+    }
+    const wider = metadata.width > metadata.height;
+    const ratio = wider
+        ? metadata.height / metadata.width
+        : metadata.width / metadata.height;
+    const newWidth = Math.floor(wider ? size : size * ratio);
+    const newHeight = Math.floor(wider ? size * ratio : size);
+
+    await sharp(inPath)
+        .resize(newWidth, newHeight)
+        .withMetadata()
+        .toFile(outPath);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
