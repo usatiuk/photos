@@ -9,12 +9,13 @@ export interface IPhotoState {
 }
 
 export interface IPhotosState {
-    photos: IPhotoReqJSON[] | null;
+    photos: IPhotoReqJSON[];
 
     photoStates: Record<number, IPhotoState>;
 
     overviewFetching: boolean;
-    overviewLoaded: boolean;
+    allPhotosLoaded: boolean;
+    triedLoading: boolean;
     overviewFetchingError: string | null;
     overviewFetchingSpinner: boolean;
 
@@ -27,9 +28,10 @@ export interface IPhotosState {
 }
 
 const defaultPhotosState: IPhotosState = {
-    photos: null,
-    overviewLoaded: false,
+    photos: [],
+    allPhotosLoaded: false,
     overviewFetching: false,
+    triedLoading: false,
     overviewFetchingError: null,
     overviewFetchingSpinner: false,
 
@@ -52,21 +54,31 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
             return defaultPhotosState;
         case PhotoTypes.PHOTOS_LOAD_START:
             return {
-                ...defaultPhotosState,
+                ...state,
                 overviewFetching: true,
+                triedLoading: true,
                 overviewFetchingSpinner: false,
             };
         case PhotoTypes.PHOTOS_START_FETCHING_SPINNER:
             return { ...state, overviewFetchingSpinner: true };
-        case PhotoTypes.PHOTOS_LOAD_SUCCESS:
+        case PhotoTypes.PHOTOS_LOAD_SUCCESS: {
+            let { allPhotosLoaded } = state;
+            if (action.photos.length === 0) {
+                allPhotosLoaded = true;
+            }
+            const oldPhotos = state.photos ? state.photos : [];
             return {
-                ...defaultPhotosState,
-                photos: action.photos,
-                overviewLoaded: true,
+                ...state,
+                photos: [...oldPhotos, ...action.photos],
+                triedLoading: true,
+                allPhotosLoaded,
+                overviewFetching: false,
             };
+        }
         case PhotoTypes.PHOTOS_LOAD_FAIL:
             return {
                 ...defaultPhotosState,
+                triedLoading: true,
                 overviewFetchingError: action.error,
             };
 

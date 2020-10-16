@@ -1,7 +1,7 @@
 import * as Router from "@koa/router";
 import { IPhotoReqJSON, Photo } from "~entity/Photo";
 import { User } from "~entity/User";
-import { IAPIResponse } from "~types";
+import { IAPIResponse, IPhotosListPagination } from "~types";
 import * as fs from "fs/promises";
 import send = require("koa-send");
 import { getHash, getSize } from "~util";
@@ -171,7 +171,29 @@ photosRouter.get("/photos/list", async (ctx) => {
 
     const { user } = ctx.state;
 
-    const photos = await Photo.find({ user });
+    let { skip, num } = ctx.request.query as {
+        skip: string | number | undefined;
+        num: string | number | undefined;
+    };
+
+    if (typeof num === "string") {
+        num = parseInt(num);
+    }
+
+    if (typeof skip === "string") {
+        skip = parseInt(skip);
+    }
+
+    if (!num || num > IPhotosListPagination) {
+        num = IPhotosListPagination;
+    }
+
+    const photos = await Photo.find({
+        where: { user },
+        take: num,
+        skip: skip,
+        order: { shotAt: "DESC" },
+    });
 
     const photosList: IPhotoReqJSON[] = await Promise.all(
         photos.map(async (photo) => await photo.toReqJSON()),

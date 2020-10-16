@@ -19,8 +19,15 @@ export function getPhotoThumbPath(photo: IPhotoReqJSON, size: number): string {
     }?size=${size.toString()}`;
 }
 
-export async function fetchPhotosList(): Promise<IPhotosListRespBody> {
-    return fetchJSONAuth("/photos/list", "GET");
+export async function fetchPhotosList(
+    skip: number,
+    num: number,
+): Promise<IPhotosListRespBody> {
+    const params = new URLSearchParams({
+        skip: skip.toString(),
+        num: num.toString(),
+    });
+    return fetchJSONAuth(`/photos/list?${params.toString()}`, "GET");
 }
 
 export async function fetchPhoto(id: number): Promise<IPhotosByIDGetRespBody> {
