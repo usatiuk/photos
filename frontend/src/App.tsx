@@ -4,12 +4,16 @@ import { AuthScreen } from "~Auth/AuthScreen";
 import { requireAuth } from "~Auth/AuthWrapper";
 import { Home } from "~Home/Home";
 
+// Somehow, if we do it like this then App doesn't rerender every time
+// the route changes, and animations work
+const protectedHome = requireAuth(Home);
+
 export const AppComponent: React.FunctionComponent<RouteComponentProps> = () => {
     return (
         <Switch>
             <Route path="/signup" component={AuthScreen} />,
             <Route path="/login" component={AuthScreen} />,
-            <Route path="/" component={requireAuth(Home)} />,
+            <Route path="/" component={protectedHome} />,
         </Switch>
     );
 };
