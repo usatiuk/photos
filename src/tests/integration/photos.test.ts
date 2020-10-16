@@ -18,6 +18,11 @@ import {
     dogPath,
     dogSize,
     ISeed,
+    pngFileSize,
+    pngFormat,
+    pngHash,
+    pngPath,
+    pngSize,
     prepareMetadata,
     seedDB,
 } from "./util";
@@ -233,6 +238,66 @@ describe("photos", function () {
 
         expect(parseInt(showResp.header["content-length"])).to.equal(
             dogFileSize,
+        );
+    });
+
+    it("should create, upload and show a png file", async function () {
+        const response = await request(callback)
+            .post("/photos/new")
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .send({
+                hash: pngHash,
+                size: pngSize,
+                format: pngFormat,
+            } as IPhotosNewPostBody)
+            .expect(200);
+
+        expect(response.body.error).to.be.false;
+
+        const photo = response.body.data as IPhotoReqJSON;
+
+        expect(photo.hash).to.be.equal(pngHash);
+        const dbPhoto = await Photo.findOneOrFail({
+            id: photo.id,
+            user: seed.user1.id as any,
+        });
+        expect(dbPhoto.hash).to.be.equal(pngHash);
+
+        expect(await dbPhoto.fileExists()).to.be.equal(false);
+
+        await request(callback)
+            .post(`/photos/upload/${photo.id}`)
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .attach("photo", pngPath)
+            .expect(200);
+
+        const dbPhotoUpl = await Photo.findOneOrFail({
+            id: photo.id,
+            user: seed.user1.id as any,
+        });
+        expect(dbPhotoUpl.hash).to.be.equal(pngHash);
+        expect(dbPhotoUpl.format).to.be.equal(pngFormat);
+        expect(await dbPhotoUpl.fileExists()).to.be.equal(true);
+        expect(dbPhotoUpl.shotAt.getTime()).to.be.approximately(
+            new Date().getTime(),
+            10000,
+        );
+
+        const showResp = await request(callback)
+            .get(`/photos/showByID/${photo.id}`)
+            .set({
+                Authorization: `Bearer ${seed.user1.toJWT()}`,
+            })
+            .expect(200);
+
+        expect(parseInt(showResp.header["content-length"])).to.equal(
+            pngFileSize,
         );
     });
 

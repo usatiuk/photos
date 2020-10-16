@@ -6,6 +6,7 @@ import { getHash, getSize } from "~util";
 
 export const dogPath = "./src/tests/integration/photos/dog.jpg";
 export const catPath = "./src/tests/integration/photos/cat.jpg";
+export const pngPath = "./src/tests/integration/photos/ee.png";
 
 export interface ISeed {
     user1: User;
@@ -22,6 +23,10 @@ export let catHash = "";
 export let catSize = "";
 export let catFileSize = 0;
 export const catFormat = "image/jpeg";
+export let pngHash = "";
+export let pngSize = "";
+export let pngFileSize = 0;
+export const pngFormat = "image/png";
 
 export async function prepareMetadata(): Promise<void> {
     dogHash = await getHash(dogPath);
@@ -30,6 +35,9 @@ export async function prepareMetadata(): Promise<void> {
     catHash = await getHash(catPath);
     catSize = await getSize(catPath);
     catFileSize = (await fs.stat(catPath)).size;
+    pngHash = await getHash(pngPath);
+    pngSize = await getSize(pngPath);
+    pngFileSize = (await fs.stat(pngPath)).size;
 }
 
 export async function seedDB(): Promise<ISeed> {
