@@ -9,7 +9,16 @@
     #photo {
         max-height: 100%;
         max-width: 100%;
+
+        &.notLoaded {
+            opacity: 0;
+        }
+
+        &.loaded {
+            opacity: 1;
+        }
     }
+
 }
 
 .bp3-dark {

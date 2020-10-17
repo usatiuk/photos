@@ -1,3 +1,5 @@
+import "./PhotoCard.scss";
+
 import {
     Card,
     ContextMenuTarget,
@@ -23,15 +25,30 @@ export interface IPhotoCardComponentProps extends RouteComponentProps {
     onClick: () => void;
 }
 
+export interface IPhotoCardComponentState {
+    loaded: boolean;
+}
+
+const defaultPhotoCardState: IPhotoCardComponentState = {
+    loaded: false,
+};
+
 @ContextMenuTarget
 export class PhotoCardComponent extends React.PureComponent<
-    IPhotoCardComponentProps
+    IPhotoCardComponentProps,
+    IPhotoCardComponentState
 > {
     constructor(props: IPhotoCardComponentProps) {
         super(props);
 
         this.handleDelete = this.handleDelete.bind(this);
+        this.setLoaded = this.setLoaded.bind(this);
         //this.handleEdit = this.handleEdit.bind(this);
+        this.state = defaultPhotoCardState;
+    }
+
+    private setLoaded(loaded: boolean) {
+        this.setState({ ...this.state, loaded });
     }
 
     public handleDelete(): void {
@@ -61,6 +78,8 @@ export class PhotoCardComponent extends React.PureComponent<
                     <img
                         loading="lazy"
                         src={getPhotoThumbPath(this.props.photo, 512)}
+                        className={this.state.loaded ? "loaded" : "notLoaded"}
+                        onLoad={() => this.setLoaded(true)}
                         onMouseEnter={() =>
                             preloadImage(
                                 getPhotoThumbPath(this.props.photo, 2048),

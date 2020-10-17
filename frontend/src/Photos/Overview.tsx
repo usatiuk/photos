@@ -55,7 +55,6 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
             e.currentTarget.scrollTop + e.currentTarget.clientHeight >=
             e.currentTarget.scrollHeight - 100
         ) {
-            console.log(props.allPhotosLoaded, props.overviewFetching);
             if (!props.allPhotosLoaded && !props.overviewFetching) {
                 props.fetchPhotos();
             }
