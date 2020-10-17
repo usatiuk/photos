@@ -29,7 +29,7 @@ import {
     validateOrReject,
 } from "class-validator";
 import { config } from "~config";
-import { getShotDate, resizeTo } from "~util";
+import { fileCheck, getShotDate, resizeToJpeg } from "~util";
 
 export interface IPhotoJSON {
     id: number;
@@ -101,7 +101,7 @@ export class Photo extends BaseEntity {
 
     private getThumbFileName(size: number): string {
         return `${this.user.id.toString()}-${this.hash}-${this.size}-${size}.${
-            mime.extension(this.format) as string
+            mime.extension("image/jpeg") as string
         }`;
     }
 
@@ -142,14 +142,13 @@ export class Photo extends BaseEntity {
 
     // Checks if file exists and updates the DB
     public async fileExists(): Promise<boolean> {
-        try {
-            await fs.access(this.getPath(), fsConstants.F_OK);
+        if (await fileCheck(this.getPath())) {
             if (!this.uploaded) {
                 this.uploaded = true;
                 await this.save();
             }
             return true;
-        } catch (e) {
+        } else {
             if (this.uploaded) {
                 this.uploaded = false;
                 this.generatedThumbs = [];
@@ -174,7 +173,7 @@ export class Photo extends BaseEntity {
         if (!(await this.fileExists())) {
             return;
         }
-        await resizeTo(this.getPath(), this.getThumbPath(size), size);
+        await resizeToJpeg(this.getPath(), this.getThumbPath(size), size);
         this.generatedThumbs.push(size.toString());
         await this.save();
     }
@@ -184,7 +183,10 @@ export class Photo extends BaseEntity {
             throw new Error("Wrong thumbnail size");
         }
         const path = this.getThumbPath(size);
-        if (!this.generatedThumbs.includes(size.toString())) {
+        if (
+            !this.generatedThumbs.includes(size.toString()) ||
+            !(await fileCheck(path))
+        ) {
             await this.generateThumbnail(size);
         }
         return path;
