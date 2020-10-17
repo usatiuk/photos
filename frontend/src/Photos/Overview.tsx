@@ -71,10 +71,21 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
                 onClose={() => {
                     setOverlayOpen(false);
                 }}
+                transitionDuration={500}
                 lazy
             >
                 <div id="photoOverlayContainer">
-                    <Photo id={selectedPhoto} />
+                    <div id="photo">
+                        <Photo id={selectedPhoto} />
+                    </div>
+                    <div id="photoOverlayDrawer">
+                        <Button
+                            icon="cross"
+                            onClick={() => {
+                                setOverlayOpen(false);
+                            }}
+                        />
+                    </div>
                 </div>
             </Overlay>
             <div id="overviewContainer" onScroll={onLoaderScroll}>
