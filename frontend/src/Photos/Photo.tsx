@@ -20,6 +20,8 @@ export interface IPhotoComponentProps {
 export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
     props,
 ) => {
+    const [loaded, setLoaded] = React.useState<boolean>(false);
+
     if (!props.photo && !props.photoState?.fetching) {
         props.fetchPhoto(props.id);
     }
@@ -36,6 +38,8 @@ export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
                     <img
                         id="photo"
                         loading="lazy"
+                        className={loaded ? "loaded" : "notLoaded"}
+                        onLoad={() => setLoaded(true)}
                         src={getPhotoThumbPath(props.photo, 2048)}
                     />
                 </div>

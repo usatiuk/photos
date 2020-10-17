@@ -1,0 +1,13 @@
+.photoCard {
+    img {
+        transition: all 0.3s;
+    }
+
+    .notLoaded {
+        opacity: 0;
+    }
+
+    .loaded {
+        opacity: 1;
+    }
+}
