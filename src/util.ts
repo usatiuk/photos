@@ -3,6 +3,7 @@ import { fromFile } from "hasha";
 import * as ExifReader from "exifreader";
 import * as sharp from "sharp";
 import * as fs from "fs/promises";
+import { constants as fsConstants } from "fs";
 
 export async function getHash(file: string): Promise<string> {
     return await fromFile(file, {
@@ -34,7 +35,7 @@ export async function getShotDate(file: string): Promise<Date | null> {
     return date;
 }
 
-export async function resizeTo(
+export async function resizeToJpeg(
     inPath: string,
     outPath: string,
     size: number,
@@ -56,7 +57,17 @@ export async function resizeTo(
     await sharp(inPath)
         .resize(newWidth, newHeight)
         .withMetadata()
+        .jpeg({ progressive: true })
         .toFile(outPath);
+}
+
+export async function fileCheck(file: string) {
+    try {
+        await fs.access(file, fsConstants.F_OK);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
