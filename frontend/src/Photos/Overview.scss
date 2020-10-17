@@ -14,7 +14,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: $pt-elevation-shadow-4;
+
+        img {
+            box-shadow: $pt-elevation-shadow-4;
+        }
+
+        transition: transform 0.3s;
     }
 
     #photoOverlayDrawer {
@@ -29,13 +34,17 @@
         padding: 1rem;
         background-color: $light-gray5;
         box-shadow: $pt-elevation-shadow-4;
-        transition: transform 0.5s;
+        transition: transform 0.3s;
     }
 }
 
 .bp3-overlay-enter,
 .bp3-overlay-appear {
     opacity: 0;
+
+    #photo {
+        transform: scale(0.95, 0.95);
+    }
 
     #photoOverlayDrawer {
         transform: translate(10rem);
@@ -46,6 +55,10 @@
 .bp3-overlay-appear-active {
     opacity: 1;
 
+    #photo {
+        transform: scale(1, 1);
+    }
+
     #photoOverlayDrawer {
         transform: translate(0rem);
     }
@@ -55,6 +68,10 @@
 .bp3-overlay-exit {
     opacity: 1;
 
+    #photo {
+        transform: scale(1, 1);
+    }
+
     #photoOverlayDrawer {
         transform: translate(0rem);
     }
@@ -63,9 +80,12 @@
 .bp3-overlay-exit-active {
     opacity: 0;
 
+    #photo {
+        transform: scale(0.95, 0.95);
+    }
+
     #photoOverlayDrawer {
         transform: translate(10rem);
-
     }
 }
 

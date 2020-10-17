@@ -45,6 +45,12 @@ export class PhotoCardComponent extends React.PureComponent<
     */
     public render(): JSX.Element {
         const fileExists = this.props.photo.uploaded;
+
+        const preloadImage = (url: string) => {
+            const img = new Image();
+            img.src = url;
+        };
+
         return (
             <Card
                 className="photoCard"
@@ -55,6 +61,11 @@ export class PhotoCardComponent extends React.PureComponent<
                     <img
                         loading="lazy"
                         src={getPhotoThumbPath(this.props.photo, 512)}
+                        onMouseEnter={() =>
+                            preloadImage(
+                                getPhotoThumbPath(this.props.photo, 2048),
+                            )
+                        }
                     ></img>
                 ) : (
                     <Spinner />

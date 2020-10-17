@@ -10,6 +10,7 @@ import { PhotoCard } from "./PhotoCard";
 import { Button, Classes, Overlay, Spinner } from "@blueprintjs/core";
 import { UploadButton } from "./UploadButton";
 import { Photo } from "./Photo";
+import { getPhotoThumbPath } from "~redux/api/photos";
 
 export interface IOverviewComponentProps {
     photos: IPhotoReqJSON[];
@@ -71,7 +72,7 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
                 onClose={() => {
                     setOverlayOpen(false);
                 }}
-                transitionDuration={500}
+                transitionDuration={300}
                 lazy
             >
                 <div id="photoOverlayContainer">
