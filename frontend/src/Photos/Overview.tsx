@@ -52,7 +52,7 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
     function onLoaderScroll(e: React.UIEvent<HTMLElement>) {
         if (
             e.currentTarget.scrollTop + e.currentTarget.clientHeight >=
-            e.currentTarget.scrollHeight
+            e.currentTarget.scrollHeight - 100
         ) {
             console.log(props.allPhotosLoaded, props.overviewFetching);
             if (!props.allPhotosLoaded && !props.overviewFetching) {
