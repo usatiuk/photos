@@ -1,31 +1,55 @@
 @import "~@blueprintjs/core/lib/scss/variables";
 
+:root {
+    --photoOverlayDrawerWidth: 5rem;
+}
+
 #photoOverlayContainer {
     width: 100%;
     height: 100%;
-    display: flex;
     align-items: center;
     justify-content: center;
     transition: 0.3s;
 
     #photo {
+        width: calc(100vw - var(--photoOverlayDrawerWidth));
         height: 100%;
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
 
-        img {
-            box-shadow: $pt-elevation-shadow-4;
+        #photoView {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            #photoImg {
+                object-fit: contain;
+                max-height: 100%;
+                max-width: 100%;
+                width: auto;
+                height: auto;
+                box-shadow: $pt-elevation-shadow-4;
+                transition: all 0.3s;
+
+                &.notLoaded {
+                    opacity: 0;
+                }
+
+                &.loaded {
+                    opacity: 1;
+                }
+            }
+
         }
-
-        transition: all 0.3s;
     }
 
+
     #photoOverlayDrawer {
-        height: 100%;
-        align-self: flex-end;
-        justify-self: flex-end;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: var(--photoOverlayDrawerWidth);
+        height: 100vh;
         margin-left: auto;
         display: flex;
         flex-direction: row;
@@ -42,7 +66,7 @@
 .bp3-overlay-appear {
     opacity: 0;
 
-    #photo {
+    #photoImg {
         transform: scale(0.95, 0.95);
     }
 
@@ -55,7 +79,7 @@
 .bp3-overlay-appear-active {
     opacity: 1;
 
-    #photo {
+    #photoImg {
         transform: scale(1, 1);
     }
 
@@ -68,7 +92,7 @@
 .bp3-overlay-exit {
     opacity: 1;
 
-    #photo {
+    #photoImg {
         transform: scale(1, 1);
     }
 
@@ -80,7 +104,7 @@
 .bp3-overlay-exit-active {
     opacity: 0;
 
-    #photo {
+    #photoImg {
         transform: scale(0.95, 0.95);
     }
 

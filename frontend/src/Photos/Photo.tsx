@@ -36,7 +36,7 @@ export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
             {fileExists ? (
                 <div id="photoView">
                     <img
-                        id="photo"
+                        id="photoImg"
                         loading="lazy"
                         className={loaded ? "loaded" : "notLoaded"}
                         onLoad={() => setLoaded(true)}
