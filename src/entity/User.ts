@@ -26,7 +26,7 @@ import {
     validateOrReject,
 } from "class-validator";
 
-export type IUserJSON = Pick<User, "id" | "username">;
+export type IUserJSON = Pick<User, "id" | "username" | "isAdmin">;
 
 export interface IUserJWT extends IUserJSON {
     ext: number;
@@ -57,6 +57,9 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Photo, (photo) => photo.user)
     photos: Promise<Photo[]>;
+
+    @Column({ default: false })
+    public isAdmin: boolean;
 
     constructor(username: string, email: string) {
         super();
@@ -97,13 +100,13 @@ export class User extends BaseEntity {
     }
 
     public toJSON(): IUserJSON {
-        const { id, username } = this;
-        return { id, username };
+        const { id, username, isAdmin } = this;
+        return { id, username, isAdmin };
     }
 
     public toAuthJSON(): IUserAuthJSON {
-        const { id, username } = this;
-        return { id, username, jwt: this.toJWT() };
+        const json = this.toJSON();
+        return { ...json, jwt: this.toJWT() };
     }
 
     public toJWT(): string {

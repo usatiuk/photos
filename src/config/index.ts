@@ -69,14 +69,6 @@ const production: IConfig = {
 const development: IConfig = {
     ...production,
     env: EnvType.development,
-    dbConnectionOptions:
-        process.env.NODE_ENV === "development"
-            ? fs.existsSync("./ormconfig.dev.json")
-                ? (JSON.parse(
-                      fs.readFileSync("./ormconfig.dev.json").toString(),
-                  ) as ConnectionOptions)
-                : null
-            : null,
 };
 
 const test: IConfig = {

@@ -3,6 +3,8 @@ import * as fs from "fs/promises";
 import { User } from "entity/User";
 import { Photo } from "~entity/Photo";
 import { getHash, getSize } from "~util";
+import { Config, ConfigKey, setConfigValue } from "~entity/Config";
+import { config } from "chai";
 
 export const dogPath = "./src/tests/integration/photos/dog.jpg";
 export const catPath = "./src/tests/integration/photos/cat.jpg";
@@ -48,6 +50,7 @@ export async function seedDB(): Promise<ISeed> {
 
     await Photo.remove(await Photo.find());
     await User.remove(await User.find());
+    await Config.remove(await Config.find());
 
     const user1 = new User("User1", "user1@users.com");
     await user1.setPassword("User1");
@@ -67,4 +70,8 @@ export async function seedDB(): Promise<ISeed> {
     await catPhoto.save();
 
     return { user1, user2, dogPhoto, catPhoto };
+}
+
+export async function allowSignups(): Promise<void> {
+    await setConfigValue(ConfigKey.signupAllowed, "yes");
 }

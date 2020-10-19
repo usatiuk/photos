@@ -90,7 +90,10 @@ export class Photo extends BaseEntity {
     @Column({ type: "timestamp", default: null })
     public editedAt: Date;
 
-    @ManyToOne(() => User, (user) => user.photos, { eager: true })
+    @ManyToOne(() => User, (user) => user.photos, {
+        eager: true,
+        onDelete: "CASCADE",
+    })
     public user: User;
 
     public getFileName(): string {

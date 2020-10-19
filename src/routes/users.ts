@@ -1,4 +1,5 @@
 import * as Router from "@koa/router";
+import { getConfigValue, ConfigKey } from "~entity/Config";
 import { IUserAuthJSON, IUserJWT, User } from "~entity/User";
 import { IAPIResponse } from "~types";
 
@@ -70,6 +71,17 @@ userRouter.post("/users/signup", async (ctx) => {
     }
 
     const user = new User(username, email);
+    const users = await User.find();
+
+    if (users.length === 0) {
+        user.isAdmin = true;
+    }
+    if ((await getConfigValue(ConfigKey.signupAllowed)) !== "yes") {
+        if (users.length !== 0) {
+            ctx.throw(400, "Signups not allowed");
+        }
+    }
+
     await user.setPassword(password);
 
     try {
