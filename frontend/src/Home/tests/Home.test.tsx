@@ -4,7 +4,7 @@ import * as React from "react";
 import { HomeComponent, IHomeProps } from "../Home";
 
 const defaultHomeProps: IHomeProps = {
-    user: { id: 1, username: "test" },
+    user: { id: 1, username: "test", isAdmin: false },
 
     darkMode: false,
 
