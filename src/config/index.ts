@@ -12,6 +12,7 @@ export interface IConfig {
     port: number;
     jwtSecret: string;
     dataDir: string;
+    https: boolean;
     dbConnectionOptions: ConnectionOptions | null;
 }
 
@@ -59,6 +60,7 @@ function getDataDir(): string {
 const production: IConfig = {
     env: EnvType.production,
     port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+    https: process.env.HTTPS ? process.env.HTTPS === "yes" : false,
     jwtSecret: getJwtSecret(),
     dataDir: getDataDir(),
     dbConnectionOptions: null,
