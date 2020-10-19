@@ -48,7 +48,8 @@ photosRouter.post("/photos/new", async (ctx) => {
             } as IPhotosNewRespBody;
             return;
         }
-        ctx.throw(400);
+        console.log(e);
+        ctx.throw(500);
     }
 
     ctx.body = {

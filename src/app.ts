@@ -23,8 +23,8 @@ const tmpPath = path.join(config.dataDir, "tmp");
 // Create both data dir if it doesn't exist and temp dir
 fs.mkdirSync(tmpPath, { recursive: true });
 
-app.use(cors());
 app.use(logger());
+app.use(cors());
 app.use(
     bodyParser({
         multipart: true,

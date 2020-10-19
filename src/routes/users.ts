@@ -90,6 +90,8 @@ userRouter.post("/users/signup", async (ctx) => {
         if (e.code === "ER_DUP_ENTRY") {
             ctx.throw(400, "User already exists");
         }
+        console.log(e);
+        ctx.throw(500);
     }
 
     ctx.body = { error: false, data: user.toAuthJSON() } as IUserSignupRespBody;
@@ -130,7 +132,8 @@ userRouter.post("/users/edit", async (ctx) => {
     try {
         await user.save();
     } catch (e) {
-        ctx.throw(400);
+        console.log(e);
+        ctx.throw(500);
     }
 
     ctx.body = { error: false, data: user.toAuthJSON() } as IUserEditRespBody;
