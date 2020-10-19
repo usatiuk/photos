@@ -18,7 +18,7 @@
     "prettier-check": "prettier src/**/*.ts frontend/src/**/*.ts frontend/src/**/*.tsx --check",
     "prettify": "prettier src/**/*.ts frontend/src/**/*.ts frontend/src/**/*.tsx  --write",
     "typeorm-dev": "cross-env NODE_ENV=development ts-node -T -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-    "typeorm": "cross-env NODE_ENV=development ts-node -T -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "typeorm": "cross-env NODE_ENV=production ts-node -T -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "license": "MIT",
   "dependencies": {

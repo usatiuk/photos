@@ -34,6 +34,7 @@ ENV TYPEORM_MIGRATIONS_DIR=src/migration
 ENV TYPEORM_SUBSCRIBERS=src/subscriber/**/*.ts
 ENV TYPEORM_SUBSCRIBERS_DIR=src/subscriber
 ENV TYPEORM_DRIVER_EXTRA='{"charset": "utf8mb4"}'
+ENV NODE_ENV=production
 
 EXPOSE 8080
 
