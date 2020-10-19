@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   photosapp:
-    image: stepanusatiuk/photos:stable
+    image: stepanusatiuk/photos:latest
     ports:
       - "8080:8080"
     volumes:
