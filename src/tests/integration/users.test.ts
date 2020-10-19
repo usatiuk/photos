@@ -14,7 +14,7 @@ import {
     IUserSignupRespBody,
 } from "~routes/users";
 
-import { ISeed, seedDB } from "./util";
+import { allowSignups, ISeed, seedDB } from "./util";
 
 const callback = app.callback();
 
@@ -87,6 +87,8 @@ describe("users", function () {
     });
 
     it("should signup user", async function () {
+        await allowSignups();
+
         const response = await request(callback)
             .post("/users/signup")
             .set({ "Content-Type": "application/json" })
@@ -110,7 +112,121 @@ describe("users", function () {
         expect(user).to.deep.equal(newUser.toJSON());
     });
 
+    it("should not signup user if other exist (by default)", async function () {
+        const response = await request(callback)
+            .post("/users/signup")
+            .set({ "Content-Type": "application/json" })
+            .send({
+                username: "NUser1",
+                password: "NUser1",
+                email: "nuser1@users.com",
+            } as IUserSignupBody)
+            .expect("Content-Type", /json/)
+            .expect(400);
+
+        const body = response.body as IUserSignupRespBody;
+
+        expect(body.error).to.be.equal("Signups not allowed");
+        expect(body.data).to.be.false;
+    });
+
+    it("should signup first user and it should be admin, do not signup new users (by default)", async function () {
+        await User.remove(await User.find());
+
+        const response = await request(callback)
+            .post("/users/signup")
+            .set({ "Content-Type": "application/json" })
+            .send({
+                username: "NUser1",
+                password: "NUser1",
+                email: "nuser1@users.com",
+            } as IUserSignupBody)
+            .expect("Content-Type", /json/)
+            .expect(200);
+
+        const body = response.body as IUserSignupRespBody;
+
+        if (body.error !== false) {
+            assert(false);
+            return;
+        }
+
+        const { jwt: _, ...user } = body.data;
+        const newUser = await User.findOneOrFail({ username: "NUser1" });
+        expect(user).to.deep.equal(newUser.toJSON());
+        expect(user.isAdmin).to.be.true;
+
+        const response2 = await request(callback)
+            .post("/users/signup")
+            .set({ "Content-Type": "application/json" })
+            .send({
+                username: "NUser2",
+                password: "NUser2",
+                email: "nuser2@users.com",
+            } as IUserSignupBody)
+            .expect("Content-Type", /json/)
+            .expect(400);
+
+        const body2 = response2.body as IUserSignupRespBody;
+
+        expect(body2.error).to.be.equal("Signups not allowed");
+        expect(body2.data).to.be.false;
+    });
+
+    it("should signup first user and it should be admin, but not new ones", async function () {
+        await allowSignups();
+        await User.remove(await User.find());
+
+        const response = await request(callback)
+            .post("/users/signup")
+            .set({ "Content-Type": "application/json" })
+            .send({
+                username: "NUser1",
+                password: "NUser1",
+                email: "nuser1@users.com",
+            } as IUserSignupBody)
+            .expect("Content-Type", /json/)
+            .expect(200);
+
+        const body = response.body as IUserSignupRespBody;
+
+        if (body.error !== false) {
+            assert(false);
+            return;
+        }
+
+        const { jwt: jwt1, ...user } = body.data;
+        const newUser = await User.findOneOrFail({ username: "NUser1" });
+        expect(user).to.deep.equal(newUser.toJSON());
+        expect(user.isAdmin).to.be.true;
+
+        const response2 = await request(callback)
+            .post("/users/signup")
+            .set({ "Content-Type": "application/json" })
+            .send({
+                username: "NUser2",
+                password: "NUser2",
+                email: "nuser2@users.com",
+            } as IUserSignupBody)
+            .expect("Content-Type", /json/)
+            .expect(200);
+
+        const body2 = response2.body as IUserSignupRespBody;
+
+        if (body2.error !== false) {
+            assert(false);
+            return;
+        }
+
+        const { jwt: jwt2, ...user2 } = body2.data;
+        const newUser2 = await User.findOneOrFail({ username: "NUser2" });
+        expect(user2).to.deep.equal(newUser2.toJSON());
+        expect(user2.isAdmin).to.be.false;
+    });
+
     it("should not signup user with duplicate username", async function () {
+        await allowSignups();
+
         const response = await request(callback)
             .post("/users/signup")
             .set({ "Content-Type": "application/json" })
