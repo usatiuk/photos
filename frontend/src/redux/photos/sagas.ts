@@ -172,7 +172,8 @@ function* photoLoad(action: IPhotoLoadStartAction) {
 function* photoCreate() {
     const store = yield select();
     const photosCreating = store.photos.photosCreating;
-    if (photosCreating < 2) {
+    const photosUploadQueue = Object.keys(store.photos.photoUploadQueue).length;
+    if (photosCreating < 2 && photosUploadQueue < 4) {
         const createQueue = store.photos.photoCreateQueue as File[];
         if (createQueue.length === 0) {
             return;
@@ -292,5 +293,7 @@ export function* photosSaga() {
         takeEvery(PhotoTypes.PHOTO_UPLOAD_QUEUE, photoUpload),
         takeEvery(PhotoTypes.PHOTO_UPLOAD_SUCCESS, photoUpload),
         takeEvery(PhotoTypes.PHOTO_UPLOAD_FAIL, photoUpload),
+        takeEvery(PhotoTypes.PHOTO_UPLOAD_SUCCESS, photoCreate),
+        takeEvery(PhotoTypes.PHOTO_UPLOAD_FAIL, photoCreate),
     ]);
 }
