@@ -223,7 +223,7 @@ function* photoUpload() {
         try {
             const { response, timeout } = yield race({
                 response: call(uploadPhoto, f, pId),
-                timeout: delay(10000),
+                timeout: delay(240000),
             });
 
             if (timeout) {
