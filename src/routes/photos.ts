@@ -7,6 +7,7 @@ import send = require("koa-send");
 import { getHash, getSize } from "~util";
 import * as jwt from "jsonwebtoken";
 import { config } from "~config";
+import { ValidationError } from "class-validator";
 
 export const photosRouter = new Router();
 
@@ -46,6 +47,13 @@ photosRouter.post("/photos/new", async (ctx) => {
                 error: false,
                 data: await photo.toReqJSON(),
             } as IPhotosNewRespBody;
+            return;
+        }
+        if (
+            e.name === "ValidationError" ||
+            (Array.isArray(e) && e.some((e) => e instanceof ValidationError))
+        ) {
+            ctx.throw(400);
             return;
         }
         console.log(e);
