@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  photosapp:
+    image: docker.io/stepanusatiuk/photos_test
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/usr/src/app/data
+    environment:
+      - JWT_SECRET=huegrhuigerhupoiervw
+      - API_ROOT=http://localhost:8080
+      - WEB_ROOT=http://localhost:8080
+    env_file:
+      - db.env
+    depends_on:
+      - db
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - ./dbdata:/var/lib/mysql
+    env_file:
+      - db.env
+

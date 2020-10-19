@@ -32,7 +32,7 @@ app.use(
     }),
 );
 
-if (config.env === EnvType.production) {
+if (config.https) {
     app.use(sslify({ resolver: xForwardedProtoResolver }));
 }
 app.use(

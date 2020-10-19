@@ -5,7 +5,7 @@
     "username": "photos",
     "password": "photos",
     "database": "photos",
-    "synchronize": true,
+    "synchronize": false,
     "logging": false,
     "entities": [
         "src/entity/**/*.ts"
