@@ -25,6 +25,7 @@ import { IAppState } from "~redux/reducers";
 import { logoutUser } from "~redux/user/actions";
 import { Photo } from "~Photos/Photo";
 import { PhotoRoute } from "~Photos/PhotoRoute";
+import { UploadStatus } from "./UploadStatus";
 
 export interface IHomeProps extends RouteComponentProps {
     user: IUserJSON | null;
@@ -59,6 +60,7 @@ export class HomeComponent extends React.PureComponent<IHomeProps> {
                             <Navbar.Divider />
                         </Navbar.Group>
                         <Navbar.Group align={Alignment.RIGHT}>
+                            <UploadStatus />
                             <Popover
                                 target={
                                     <Button id="userButton">
