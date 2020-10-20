@@ -93,7 +93,9 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
                     <div id="actionbar">
                         <UploadButton />
                     </div>
-                    <div className="list">{photos}</div>
+                    <div className="list">
+                        {photos} <div className="photoStub" />
+                    </div>
                     <div className="photosLoader">
                         {props.overviewFetching && <Spinner />}
                     </div>

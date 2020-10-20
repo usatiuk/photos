@@ -140,6 +140,10 @@
             align-items: flex-end;
             justify-content: center;
             width: 100%;
+
+            button {
+                margin: 0.25rem;
+            }
         }
 
         .list {
@@ -154,14 +158,14 @@
             }
 
             .photoCard {
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                flex-grow: 1;
+                transition: all 0.3s;
+
                 transition: 0.3s;
                 user-select: none;
                 height: 15rem;
-                width: 20rem;
-                margin: 1rem;
+                min-width: 10rem;
+                margin: 0.25rem;
                 padding: 0rem;
                 overflow: hidden;
 
@@ -174,6 +178,10 @@
                     height: auto;
                     object-fit: cover;
                 }
+            }
+
+            .photoStub {
+                flex-grow: 100;
             }
         }
     }
