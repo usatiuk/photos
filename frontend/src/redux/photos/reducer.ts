@@ -1,5 +1,5 @@
 import { Reducer } from "redux";
-import { IPhotoReqJSON } from "~../../src/entity/Photo";
+import { IPhotoJSON, IPhotoReqJSON } from "~../../src/entity/Photo";
 import { UserAction, UserTypes } from "~redux/user/actions";
 import { PhotoAction, PhotoTypes } from "./actions";
 
@@ -45,6 +45,10 @@ const defaultPhotosState: IPhotosState = {
     deleteCache: {},
 };
 
+export function sortPhotos(photos: IPhotoReqJSON[]): IPhotoReqJSON[] {
+    return [...photos].sort((a, b) => b.shotAt - a.shotAt);
+}
+
 export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
     state: IPhotosState = defaultPhotosState,
     action: PhotoAction | UserAction,
@@ -67,9 +71,10 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
                 allPhotosLoaded = true;
             }
             const oldPhotos = state.photos ? state.photos : [];
+            const updPhotos = sortPhotos([...oldPhotos, ...action.photos]);
             return {
                 ...state,
-                photos: [...oldPhotos, ...action.photos],
+                photos: updPhotos,
                 triedLoading: true,
                 allPhotosLoaded,
                 overviewFetching: false,
@@ -99,21 +104,10 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
                 fetching: false,
                 fetchingError: null,
             };
-            if (state.photos) {
-                const photos = state.photos;
-                const photosNoDup = photos.filter(
-                    (p) => p.id !== action.photo.id,
-                );
-                const updPhotos = [action.photo, ...photosNoDup];
-                return { ...state, photos: updPhotos, photoStates };
-            } else {
-                const photos = [action.photo];
-                return {
-                    ...state,
-                    photos,
-                    photoStates,
-                };
-            }
+            const photos = state.photos;
+            const photosNoDup = photos.filter((p) => p.id !== action.photo.id);
+            const updPhotos = sortPhotos([action.photo, ...photosNoDup]);
+            return { ...state, photos: updPhotos, photoStates };
         }
         case PhotoTypes.PHOTO_LOAD_FAIL: {
             const { photoStates } = state;
@@ -169,25 +163,15 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
             const { photoCreateQueue } = state;
             const cleanQueue = photoCreateQueue.filter((f) => f != action.file);
 
-            if (state.photos) {
-                const photos = state.photos;
-                const photosNoDup = photos.filter(
-                    (p) => p.id !== action.photo.id,
-                );
-                const updPhotos = [action.photo, ...photosNoDup];
-                return {
-                    ...state,
-                    photos: updPhotos,
-                    photoCreateQueue: cleanQueue,
-                    photosCreating: state.photosCreating - 1,
-                };
-            } else {
-                return {
-                    ...state,
-                    photoCreateQueue: cleanQueue,
-                    photosCreating: state.photosCreating - 1,
-                };
-            }
+            const photos = state.photos;
+            const photosNoDup = photos.filter((p) => p.id !== action.photo.id);
+            const updPhotos = sortPhotos([action.photo, ...photosNoDup]);
+            return {
+                ...state,
+                photos: updPhotos,
+                photoCreateQueue: cleanQueue,
+                photosCreating: state.photosCreating - 1,
+            };
         }
         case PhotoTypes.PHOTO_CREATE_FAIL: {
             // TODO: Handle photo create fail
@@ -202,47 +186,34 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
         case PhotoTypes.PHOTO_UPLOAD_SUCCESS: {
             const newQueue = state.photoUploadQueue;
             delete newQueue[action.photo.id];
-            if (state.photos) {
-                const photos = state.photos;
-                const photosNoDup = photos.filter(
+            const photos = state.photos;
+            const photosNoDup = photos.filter((p) => p.id !== action.photo.id);
+            const updPhotos = sortPhotos([action.photo, ...photosNoDup]);
+            return {
+                ...state,
+                photos: updPhotos,
+                photoUploadQueue: newQueue,
+                photosUploading: state.photosUploading - 1,
+            };
+        }
+        case PhotoTypes.PHOTO_DELETE_START: {
+            const photos = state.photos;
+            const delPhoto = photos.find((p) => p.id === action.photo.id);
+            if (delPhoto) {
+                const photosCleaned = photos.filter(
                     (p) => p.id !== action.photo.id,
                 );
-                const updPhotos = [action.photo, ...photosNoDup];
+                const delCache = { ...state.deleteCache };
+                delCache[delPhoto?.id] = delPhoto;
                 return {
                     ...state,
-                    photos: updPhotos,
-                    photoUploadQueue: newQueue,
-                    photosUploading: state.photosUploading - 1,
+                    photos: sortPhotos(photosCleaned),
+                    deleteCache: delCache,
                 };
-            } else {
-                return {
-                    ...state,
-                    photoUploadQueue: newQueue,
-                    photosUploading: state.photosUploading - 1,
-                };
-            }
-        }
-        case PhotoTypes.PHOTO_DELETE_START:
-            if (state.photos) {
-                const photos = state.photos;
-                const delPhoto = photos.find((p) => p.id === action.photo.id);
-                if (delPhoto) {
-                    const photosCleaned = photos.filter(
-                        (p) => p.id !== action.photo.id,
-                    );
-                    const delCache = { ...state.deleteCache };
-                    delCache[delPhoto?.id] = delPhoto;
-                    return {
-                        ...state,
-                        photos: photosCleaned,
-                        deleteCache: delCache,
-                    };
-                } else {
-                    return state;
-                }
             } else {
                 return state;
             }
+        }
         case PhotoTypes.PHOTO_DELETE_SUCCESS: {
             const delCache = { ...state.deleteCache };
             if (delCache[action.photo.id]) {
@@ -254,12 +225,9 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
         case PhotoTypes.PHOTO_DELETE_FAIL:
         case PhotoTypes.PHOTO_DELETE_CANCEL: {
             const delCache = { ...state.deleteCache };
-            let photos: IPhotoReqJSON[] = [];
-            if (state.photos) {
-                photos = [...state.photos];
-            }
+            let photos: IPhotoReqJSON[] = [...state.photos];
             if (delCache[action.photo.id]) {
-                photos = [...photos, delCache[action.photo.id]];
+                photos = sortPhotos([...photos, delCache[action.photo.id]]);
                 delete delCache[action.photo.id];
             }
             return { ...state, deleteCache: delCache, photos };
