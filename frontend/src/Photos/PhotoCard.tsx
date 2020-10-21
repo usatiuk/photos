@@ -76,7 +76,6 @@ export class PhotoCardComponent extends React.PureComponent<
             >
                 {fileExists ? (
                     <img
-                        loading="lazy"
                         src={getPhotoThumbPath(this.props.photo, 512)}
                         className={this.state.loaded ? "loaded" : "notLoaded"}
                         onLoad={() => this.setLoaded(true)}
