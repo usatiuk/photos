@@ -7,7 +7,15 @@ import { photosLoadStart } from "~redux/photos/actions";
 import { IPhotoReqJSON } from "~../../src/entity/Photo";
 import { LoadingStub } from "~LoadingStub";
 import { PhotoCard } from "./PhotoCard";
-import { Button, Classes, Overlay, Spinner } from "@blueprintjs/core";
+import {
+    Button,
+    Classes,
+    H1,
+    H2,
+    H3,
+    Overlay,
+    Spinner,
+} from "@blueprintjs/core";
 import { UploadButton } from "./UploadButton";
 import { Photo } from "./Photo";
 import { getPhotoThumbPath } from "~redux/api/photos";
@@ -42,13 +50,71 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
         props.fetchPhotos();
     }
 
-    const photos = props.photos.map((photo) => (
-        <PhotoCard
-            key={photo.id}
-            photo={photo}
-            onClick={() => onCardClick(photo.id)}
-        />
-    ));
+    const dates = props.photos.reduce(
+        (
+            acc: Record<
+                string,
+                Record<string, Record<string, IPhotoReqJSON[]>>
+            >,
+            photo,
+        ) => {
+            const date = new Date(photo.shotAt);
+            const year = date.toLocaleString("default", { year: "numeric" });
+            const month = date.toLocaleString("default", { month: "long" });
+            const day = date.toLocaleString("default", { day: "numeric" });
+
+            acc[year] = acc[year] || {};
+            acc[year][month] = acc[year][month] || {};
+            acc[year][month][day] = acc[year][month][day] || [];
+            acc[year][month][day].push(photo);
+
+            return acc;
+        },
+        {},
+    );
+
+    const photos = Object.keys(dates).reduce(
+        (acc: JSX.Element[], year): JSX.Element[] => {
+            const els = Object.keys(dates[year]).reduce(
+                (accMonths: JSX.Element[], month): JSX.Element[] => {
+                    const photos = Object.values(dates[year][month]).reduce(
+                        (accDays: IPhotoReqJSON[], day) => {
+                            return [...day, ...accDays];
+                        },
+                        [],
+                    );
+                    const photosEls = photos.map((photo) => {
+                        return (
+                            <PhotoCard
+                                key={photo.id}
+                                photo={photo}
+                                onClick={() => onCardClick(photo.id)}
+                            />
+                        );
+                    });
+                    return [
+                        ...accMonths,
+                        <div className="month" key={`${year}${month}`}>
+                            <H3>{month}</H3>
+                            <div className="list">
+                                {photosEls}
+                                <div className="photoStub" />
+                            </div>
+                        </div>,
+                    ];
+                },
+                [],
+            );
+            return [
+                <div className="year" key={year}>
+                    <H2>{year}</H2>
+                </div>,
+                ...els,
+                ...acc,
+            ];
+        },
+        [],
+    );
 
     function onLoaderScroll(e: React.UIEvent<HTMLElement>) {
         if (
@@ -93,9 +159,7 @@ export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps>
                     <div id="actionbar">
                         <UploadButton />
                     </div>
-                    <div className="list">
-                        {photos} <div className="photoStub" />
-                    </div>
+                    {photos}
                     <div className="photosLoader">
                         {props.overviewFetching && <Spinner />}
                     </div>
