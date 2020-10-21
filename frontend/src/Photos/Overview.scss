@@ -146,6 +146,18 @@
             }
         }
 
+        .month,
+        .year {
+
+            h3,
+            h2 {
+
+                margin-top: 1rem;
+                margin-left: 0.25rem;
+            }
+
+        }
+
         .list {
             display: flex;
             flex-shrink: 0;
@@ -158,6 +170,10 @@
             }
 
             .photoCard {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
                 flex-grow: 1;
                 transition: all 0.3s;
 
