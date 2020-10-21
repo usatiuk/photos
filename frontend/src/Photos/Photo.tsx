@@ -37,7 +37,6 @@ export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
                 <div id="photoView">
                     <img
                         id="photoImg"
-                        loading="lazy"
                         className={loaded ? "loaded" : "notLoaded"}
                         onLoad={() => setLoaded(true)}
                         src={getPhotoThumbPath(props.photo, 2048)}
