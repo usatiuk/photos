@@ -16,6 +16,7 @@ import { photoDeleteCancel, photoDeleteStart } from "~redux/photos/actions";
 import { connect } from "react-redux";
 import { LoadingStub } from "~LoadingStub";
 import { RouteComponentProps, withRouter } from "react-router";
+import { LargeSize, PreviewSize } from "./helper";
 
 export interface IPhotoCardComponentProps extends RouteComponentProps {
     photo: IPhotoReqJSON;
@@ -76,12 +77,12 @@ export class PhotoCardComponent extends React.PureComponent<
             >
                 {fileExists ? (
                     <img
-                        src={getPhotoThumbPath(this.props.photo, 512)}
+                        src={getPhotoThumbPath(this.props.photo, PreviewSize)}
                         className={this.state.loaded ? "loaded" : "notLoaded"}
                         onLoad={() => this.setLoaded(true)}
                         onMouseEnter={() =>
                             preloadImage(
-                                getPhotoThumbPath(this.props.photo, 2048),
+                                getPhotoThumbPath(this.props.photo, LargeSize),
                             )
                         }
                     ></img>
