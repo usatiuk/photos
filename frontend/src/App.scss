@@ -6,8 +6,9 @@
     bottom: 0;
     left: 0;
     right: 0;
-    overflow-x: hidden;
-    overflow: hidden;
+    //  why doesn't this work????
+    //  https://stackoverflow.com/questions/26751963/cant-scroll-website-in-firefox/26752544#26752544
+    // overflow-x: hidden;
 }
 
 .loadingWrapper {
