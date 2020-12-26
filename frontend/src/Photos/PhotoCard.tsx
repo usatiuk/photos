@@ -80,11 +80,13 @@ export class PhotoCardComponent extends React.PureComponent<
                         src={getPhotoThumbPath(this.props.photo, PreviewSize)}
                         className={this.state.loaded ? "loaded" : "notLoaded"}
                         onLoad={() => this.setLoaded(true)}
+                        /*
                         onMouseEnter={() =>
                             preloadImage(
                                 getPhotoThumbPath(this.props.photo, LargeSize),
                             )
                         }
+                        */
                     ></img>
                 ) : (
                     <Spinner />
