@@ -25,36 +25,66 @@ export interface IPhotoComponentProps {
 export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
     props,
 ) => {
+    const [
+        smallPreviewFetching,
+        setSmallPreviewFetching,
+    ] = React.useState<boolean>(false);
+    const [
+        largePreviewFetching,
+        setLargePreviewFetching,
+    ] = React.useState<boolean>(false);
+    const [originalFetching, setOriginalFetching] = React.useState<boolean>(
+        false,
+    );
+
     const [smallPreview, setSmallPreview] = React.useState<string | null>(null);
     const [largePreview, setLargePreview] = React.useState<string | null>(null);
     const [original, setOriginal] = React.useState<string | null>(null);
     const imgRef = React.useRef<HTMLImageElement>(null);
 
     React.useEffect(() => {
-        async function fetchSizes() {
-            if (props.photo && !smallPreview) {
+        async function fetchSmall() {
+            if (props.photo && !smallPreview && !smallPreviewFetching) {
+                setSmallPreviewFetching(true);
                 const smallPreviewFetch = await fetch(
                     getPhotoThumbPath(props.photo, PreviewSize),
                 );
                 setSmallPreview(
                     URL.createObjectURL(await smallPreviewFetch.blob()),
                 );
+                //console.log("got small");
             }
-            if (props.photo && !largePreview) {
+        }
+        void fetchSmall();
+    }, [smallPreview, smallPreviewFetching]);
+
+    React.useEffect(() => {
+        async function fetchLarge() {
+            if (props.photo && !largePreview && !largePreviewFetching) {
+                setLargePreviewFetching(true);
                 const largePreviewFetch = await fetch(
                     getPhotoThumbPath(props.photo, LargeSize),
                 );
                 setLargePreview(
                     URL.createObjectURL(await largePreviewFetch.blob()),
                 );
-            }
-            if (props.photo && !original) {
-                const originalFetch = await fetch(getPhotoImgPath(props.photo));
-                setOriginal(URL.createObjectURL(await originalFetch.blob()));
+                //console.log("got large");
             }
         }
-        void fetchSizes();
-    });
+        void fetchLarge();
+    }, [largePreview, largePreviewFetching]);
+
+    React.useEffect(() => {
+        async function fetchOriginal() {
+            if (props.photo && !original && !originalFetching) {
+                setOriginalFetching(true);
+                const originalFetch = await fetch(getPhotoImgPath(props.photo));
+                setOriginal(URL.createObjectURL(await originalFetch.blob()));
+                //console.log("got original");
+            }
+        }
+        void fetchOriginal();
+    }, [original, originalFetching]);
 
     if (!props.photo && !props.photoState?.fetching) {
         props.fetchPhoto(props.id);
