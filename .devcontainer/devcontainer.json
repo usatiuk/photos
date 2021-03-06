@@ -8,39 +8,11 @@
 	"workspaceFolder": "/workspace",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
-		"terminal.integrated.shell.linux": "/bin/bash",
-		"sqltools.connections": [
-			{
-				"name": "MySQL",
-				"server": "db",
-				"driver": "MySQL",
-				"port": 3306,
-				"database": "photos",
-				"username": "photos",
-				"askForPassword": false,
-				"password": "photos",
-				"connectionTimeout": 15
-			},
-			{
-				"name": "MySQL",
-				"server": "dbtest",
-				"driver": "MySQL",
-				"port": 3306,
-				"database": "photos_test",
-				"username": "photos",
-				"askForPassword": false,
-				"password": "photos",
-				"connectionTimeout": 15
-			}
-		]
+		"terminal.integrated.shell.linux": "/bin/bash"
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"dbaeumer.vscode-eslint",
-		"mtxr.sqltools",
-		"mtxr.sqltools-driver-mysql",
-		"visualstudioexptteam.vscodeintellicode",
-		"rvest.vs-code-prettier-eslint",
+		"dbaeumer.vscode-eslint"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [
