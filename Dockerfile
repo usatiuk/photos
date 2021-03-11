@@ -16,7 +16,7 @@ WORKDIR frontend
 RUN npm run build
 WORKDIR ../
 
-ENV PORT=8080
+#ENV PORT=8080
 ENV DATA_DIR=data
 
 ENV TYPEORM_CONNECTION=mariadb
@@ -36,7 +36,7 @@ ENV TYPEORM_SUBSCRIBERS_DIR=src/subscriber
 ENV TYPEORM_DRIVER_EXTRA='{"charset": "utf8mb4"}'
 ENV NODE_ENV=production
 
-EXPOSE 8080
+#EXPOSE 8080
 
 RUN ["chmod", "+x", "dockerentry.sh"]
 
