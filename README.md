@@ -32,7 +32,9 @@ is listening at http://localhost:1234, and koa at http://localhost:3000)
 The suggested way to host this is, agian, using Docker: you can find a
 docker-compose example in `dockercomposeexample` folder
 
-### Config options (for docker container)
+### Config options
+
+* `PORT` - web server port
 
 * `TYPEORM_HOST` - mariadb hostname
 
@@ -48,6 +50,6 @@ docker-compose example in `dockercomposeexample` folder
 
 * `HTTPS` (`"yes"`/`"no"`) - whether the server enforce HTTPS or not
 
-### Config options (the rest of them)
+### Additional config options if you're not using docker
 
 * `DATA_DIR` - data directory for photos and uploaded files

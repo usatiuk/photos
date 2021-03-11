@@ -9,6 +9,7 @@ services:
       - ./data:/usr/src/app/data
     environment:
       - JWT_SECRET=huegrhuigerhupoiervw
+      - PORT=8080
     env_file:
       - db.env
     depends_on:
