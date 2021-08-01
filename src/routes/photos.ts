@@ -73,7 +73,7 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
     }
 
     const { id } = ctx.params as {
-        id: number | undefined;
+        id: string | undefined;
     };
 
     if (!id) {
@@ -82,7 +82,7 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
     }
 
     const { user } = ctx.state;
-    const photo = await Photo.findOne({ id, user });
+    const photo = await Photo.findOne({ id: parseInt(id), user });
     if (!photo) {
         ctx.throw(404);
         return;
@@ -221,16 +221,17 @@ photosRouter.get("/photos/byID/:id", async (ctx) => {
     }
 
     const { id } = ctx.params as {
-        id: number | undefined;
+        id: string | undefined;
     };
 
     if (!id) {
         ctx.throw(400);
+        return;
     }
 
     const { user } = ctx.state;
 
-    const photo = await Photo.findOne({ id, user });
+    const photo = await Photo.findOne({ id: parseInt(id), user });
 
     if (!photo) {
         ctx.throw(404);
@@ -245,7 +246,7 @@ photosRouter.get("/photos/byID/:id", async (ctx) => {
 
 photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
     const { id, token } = ctx.params as {
-        id: number | undefined;
+        id: string | undefined;
         token: string | undefined;
     };
 
@@ -264,7 +265,7 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
     const { user } = photoReqJSON;
 
     const photo = await Photo.findOne({
-        id,
+        id: parseInt(id),
         user: { id: user },
     });
 
@@ -273,7 +274,7 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
         return;
     }
 
-    if (ctx.request.query["size"]) {
+    if (ctx.request.query["size"] && typeof ctx.request.query["size"] == "string") {
         const size = parseInt(ctx.request.query["size"]);
         await send(ctx, await photo.getReadyThumbnailPath(size));
         return;
@@ -288,23 +289,24 @@ photosRouter.get("/photos/showByID/:id", async (ctx) => {
     }
 
     const { id } = ctx.params as {
-        id: number | undefined;
+        id: string | undefined;
     };
 
     if (!id) {
         ctx.throw(400);
+        return;
     }
 
     const { user } = ctx.state;
 
-    const photo = await Photo.findOne({ id, user });
+    const photo = await Photo.findOne({ id: parseInt(id), user });
 
     if (!photo || !(await photo.fileExists())) {
         ctx.throw(404);
         return;
     }
 
-    if (ctx.request.query["size"]) {
+    if (ctx.request.query["size"] && typeof ctx.request.query["size"] == "string") {
         const size = parseInt(ctx.request.query["size"]);
         await send(ctx, await photo.getReadyThumbnailPath(size));
         return;
@@ -321,16 +323,17 @@ photosRouter.get("/photos/getShowByIDToken/:id", async (ctx) => {
     }
 
     const { id } = ctx.params as {
-        id: number | undefined;
+        id: string | undefined;
     };
 
     if (!id) {
         ctx.throw(400);
+        return;
     }
 
     const { user } = ctx.state;
 
-    const photo = await Photo.findOne({ id, user });
+    const photo = await Photo.findOne({ id: parseInt(id), user });
     if (!photo || !(await photo.fileExists())) {
         ctx.throw(404);
         return;
@@ -348,16 +351,17 @@ photosRouter.delete("/photos/byID/:id", async (ctx) => {
     }
 
     const { id } = ctx.params as {
-        id: number | undefined;
+        id: string | undefined;
     };
 
     if (!id) {
         ctx.throw(400);
+        return;
     }
 
     const { user } = ctx.state;
 
-    const photo = await Photo.findOne({ id, user });
+    const photo = await Photo.findOne({ id: parseInt(id), user });
 
     if (!photo) {
         ctx.throw(404);
