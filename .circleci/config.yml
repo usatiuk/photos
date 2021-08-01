@@ -72,9 +72,51 @@ jobs:
           name: test frontend
           command: cd frontend && npm test
 
+  test-frontend-build:
+    docker:
+      - image: circleci/node:14
+          
+    working_directory: ~/photos/frontend
+
+    steps:
+      - checkout:
+
+      - restore_cache:
+          keys:
+            - backend-dependencies-{{ checksum "package.json" }}
+
+      - run: 
+          name: install backend deps
+          command: npm i
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: backend-dependencies-{{ checksum "package.json" }}
+
+      - restore_cache:
+          keys:
+            - frontend-dependencies-{{ checksum "package.json" }}
+
+      - run: 
+          name: install frontend deps
+          command: cd frontend && npm i
+
+      - save_cache:
+          paths:
+            - frontend/node_modules
+          key: frontend-dependencies-{{ checksum "package.json" }}
+
+      - run: 
+          name: test frontend
+          command: cd frontend && npm run build
+
 workflows:
   version: 2
   test:
     jobs:
       - test-backend
       - test-frontend
+      - test-frontend-build:
+          requires:
+            - test-frontend

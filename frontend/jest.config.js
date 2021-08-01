@@ -16,4 +16,5 @@ module.exports = {
         "react-spring": "<rootDir>/node_modules/react-spring/web.cjs",
     },
     setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
+    testEnvironment: "jsdom",
 };
