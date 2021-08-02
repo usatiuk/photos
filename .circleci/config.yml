@@ -1,122 +1,151 @@
 version: 2
 jobs:
-  test-backend:
-    docker:
-      - image: circleci/node:14
-      - image: circleci/mariadb:latest
-        environment:
-          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
-          MYSQL_DATABASE: photos_test
-          MYSQL_USER: photos
-          MYSQL_PASSWORD: photos
-          MYSQL_HOST: "localhost"
-          
-    working_directory: ~/photos
+    test-backend:
+        docker:
+            - image: circleci/node:14
+            - image: circleci/mariadb:latest
+              environment:
+                  MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+                  MYSQL_DATABASE: photos_test
+                  MYSQL_USER: photos
+                  MYSQL_PASSWORD: photos
+                  MYSQL_HOST: "localhost"
 
-    steps:
-      - checkout
+        working_directory: ~/photos
 
-      - restore_cache:
-          keys:
-            - backend-dependencies-{{ checksum "package.json" }}
+        steps:
+            - checkout
 
-      - run: 
-          name: install backend deps
-          command: npm i
+            - restore_cache:
+                  keys:
+                      - backend-dependencies-{{ checksum "package.json" }}
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: backend-dependencies-{{ checksum "package.json" }}
+            - run:
+                  name: install backend deps
+                  command: npm i
 
-      - run: 
-          name: test backend
-          command: npm test
-  
-  test-frontend:
-    docker:
-      - image: circleci/node:14
-          
-    working_directory: ~/photos/frontend
+            - save_cache:
+                  paths:
+                      - node_modules
+                  key: backend-dependencies-{{ checksum "package.json" }}
 
-    steps:
-      - checkout:
+            - run:
+                  name: test backend
+                  command: npm test
 
-      - restore_cache:
-          keys:
-            - backend-dependencies-{{ checksum "package.json" }}
+    test-frontend:
+        docker:
+            - image: circleci/node:14
 
-      - run: 
-          name: install backend deps
-          command: npm i
+        working_directory: ~/photos/frontend
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: backend-dependencies-{{ checksum "package.json" }}
+        steps:
+            - checkout:
 
-      - restore_cache:
-          keys:
-            - frontend-dependencies-{{ checksum "package.json" }}
+            - restore_cache:
+                  keys:
+                      - backend-dependencies-{{ checksum "package.json" }}
 
-      - run: 
-          name: install frontend deps
-          command: cd frontend && npm i
+            - run:
+                  name: install backend deps
+                  command: npm i
 
-      - save_cache:
-          paths:
-            - frontend/node_modules
-          key: frontend-dependencies-{{ checksum "package.json" }}
+            - save_cache:
+                  paths:
+                      - node_modules
+                  key: backend-dependencies-{{ checksum "package.json" }}
 
-      - run: 
-          name: test frontend
-          command: cd frontend && npm test
+            - restore_cache:
+                  keys:
+                      - frontend-dependencies-{{ checksum "package.json" }}
 
-  test-frontend-build:
-    docker:
-      - image: circleci/node:14
-          
-    working_directory: ~/photos/frontend
+            - run:
+                  name: install frontend deps
+                  command: cd frontend && npm i
 
-    steps:
-      - checkout:
+            - save_cache:
+                  paths:
+                      - frontend/node_modules
+                  key: frontend-dependencies-{{ checksum "package.json" }}
 
-      - restore_cache:
-          keys:
-            - backend-dependencies-{{ checksum "package.json" }}
+            - run:
+                  name: test frontend
+                  command: cd frontend && npm test
 
-      - run: 
-          name: install backend deps
-          command: npm i
+    test-frontend-build:
+        docker:
+            - image: circleci/node:14
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: backend-dependencies-{{ checksum "package.json" }}
+        working_directory: ~/photos/frontend
 
-      - restore_cache:
-          keys:
-            - frontend-dependencies-{{ checksum "package.json" }}
+        steps:
+            - checkout:
 
-      - run: 
-          name: install frontend deps
-          command: cd frontend && npm i
+            - restore_cache:
+                  keys:
+                      - backend-dependencies-{{ checksum "package.json" }}
 
-      - save_cache:
-          paths:
-            - frontend/node_modules
-          key: frontend-dependencies-{{ checksum "package.json" }}
+            - run:
+                  name: install backend deps
+                  command: npm i
 
-      - run: 
-          name: test frontend
-          command: cd frontend && npm run build
+            - save_cache:
+                  paths:
+                      - node_modules
+                  key: backend-dependencies-{{ checksum "package.json" }}
+
+            - restore_cache:
+                  keys:
+                      - frontend-dependencies-{{ checksum "package.json" }}
+
+            - run:
+                  name: install frontend deps
+                  command: cd frontend && npm i
+
+            - save_cache:
+                  paths:
+                      - frontend/node_modules
+                  key: frontend-dependencies-{{ checksum "package.json" }}
+
+            - run:
+                  name: build frontend
+                  command: cd frontend && npm run build
+
+    build:
+        machine:
+            image: ubuntu-2004:202107-01
+        working_directory: ~/photos
+
+        steps:
+            - checkout
+            - run:
+                  name: log in to docker hub
+                  command: echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USERNAME --password-stdin
+
+            - run:
+                  name: install emulators
+                  command: docker run --privileged --rm tonistiigi/binfmt --install all
+
+            - run:
+                  name: create docker builder
+                  command: docker buildx create --use
+
+            - run:
+                  name: build and push to docker hub
+                  #command: docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag stepanusatiuk/photos:latest .
+                  command: docker buildx build --push --platform linux/amd64 --tag stepanusatiuk/photos:latest .
 
 workflows:
-  version: 2
-  test:
-    jobs:
-      - test-backend
-      - test-frontend
-      - test-frontend-build:
-          requires:
+    version: 2
+    test-build:
+        jobs:
+            - test-backend
             - test-frontend
+            - test-frontend-build:
+                  requires:
+                      - test-frontend
+            - build:
+                  requires:
+                      - test-backend
+                      - test-frontend
+                      - test-frontend-build
