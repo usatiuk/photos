@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 import { persistReducer } from "redux-persist";
 import { PersistPartial } from "redux-persist/es/persistReducer";
 import storage from "redux-persist/lib/storage";
-import { authReducer, IAuthState } from "~redux/auth/reducer";
+import { authReducer, IAuthState } from "../redux/auth/reducer";
 import {
     ILocalSettingsState,
     localSettingsReducer,

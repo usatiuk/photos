@@ -1,10 +1,10 @@
 import { Action } from "redux";
-import { IPhotoReqJSON, Photo } from "~../../src/entity/Photo";
+import { IPhotoReqJSON, Photo } from "../../../../src/entity/Photo";
 import {
     showPhotoCreateFailToast,
     showPhotoUploadFileFailToast,
     showPhotoUploadJSONFailToast,
-} from "~AppToaster";
+} from "../../AppToaster";
 
 export enum PhotoTypes {
     PHOTOS_LOAD_START = "PHOTOS_LOAD",

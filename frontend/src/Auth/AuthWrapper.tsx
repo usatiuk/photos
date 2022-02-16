@@ -1,8 +1,8 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router";
-import { webRoot } from "~env";
-import { IAppState } from "~redux/reducers";
+import { webRoot } from "../env";
+import { IAppState } from "../redux/reducers";
 
 interface IAuthWrapperComponentProps {
     loggedIn: boolean;

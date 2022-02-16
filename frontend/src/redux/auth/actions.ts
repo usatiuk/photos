@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { IUserAuthJSON } from "~../../src/entity/User";
+import { IUserAuthJSON } from "../../../../src/entity/User";
 
 export enum AuthTypes {
     AUTH_START = "AUTH_START",

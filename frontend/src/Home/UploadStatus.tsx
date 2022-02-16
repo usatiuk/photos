@@ -1,7 +1,7 @@
 import { Button, Icon, Popover, Spinner } from "@blueprintjs/core";
 import * as React from "react";
 import { connect } from "react-redux";
-import { IAppState } from "~redux/reducers";
+import { IAppState } from "../redux/reducers";
 import pluralize from "pluralize";
 
 export interface IUploadStatusComponentProps {

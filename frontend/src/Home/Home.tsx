@@ -17,14 +17,14 @@ import { connect } from "react-redux";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router";
 import { animated, config, Transition } from "react-spring/renderprops";
 import { Dispatch } from "redux";
-import { IUserJSON } from "~../../src/entity/User";
-import { Account } from "~Account/Account";
-import { Overview } from "~Photos/Overview";
-import { toggleDarkMode } from "~redux/localSettings/actions";
-import { IAppState } from "~redux/reducers";
-import { logoutUser } from "~redux/user/actions";
-import { Photo } from "~Photos/Photo";
-import { PhotoRoute } from "~Photos/PhotoRoute";
+import { IUserJSON } from "../../../src/entity/User";
+import { Account } from "../Account/Account";
+import { Overview } from "../Photos/Overview";
+import { toggleDarkMode } from "../redux/localSettings/actions";
+import { IAppState } from "../redux/reducers";
+import { logoutUser } from "../redux/user/actions";
+import { Photo } from "../Photos/Photo";
+import { PhotoRoute } from "../Photos/PhotoRoute";
 import { UploadStatus } from "./UploadStatus";
 
 export interface IHomeProps extends RouteComponentProps {

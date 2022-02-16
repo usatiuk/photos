@@ -2,16 +2,16 @@ import "./Photo.scss";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { IPhotoReqJSON } from "~../../src/entity/Photo";
-import { LoadingStub } from "~LoadingStub";
+import { IPhotoReqJSON } from "../../../src/entity/Photo";
+import { LoadingStub } from "../LoadingStub";
 import {
     fetchPhoto,
     getPhotoImgPath,
     getPhotoThumbPath,
-} from "~redux/api/photos";
-import { photoLoadStart } from "~redux/photos/actions";
-import { IPhotoState } from "~redux/photos/reducer";
-import { IAppState } from "~redux/reducers";
+} from "../redux/api/photos";
+import { photoLoadStart } from "../redux/photos/actions";
+import { IPhotoState } from "../redux/photos/reducer";
+import { IAppState } from "../redux/reducers";
 import { LargeSize, PreviewSize } from "./helper";
 
 export interface IPhotoComponentProps {

@@ -2,7 +2,7 @@ import { Button } from "@blueprintjs/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { photosUploadStart } from "~redux/photos/actions";
+import { photosUploadStart } from "../redux/photos/actions";
 
 export interface IUploadButtonComponentProps {
     startUpload: (files: FileList) => void;

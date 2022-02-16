@@ -2,10 +2,10 @@ import "./Overview.scss";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { IAppState } from "~redux/reducers";
-import { photosLoadStart } from "~redux/photos/actions";
-import { IPhotoReqJSON } from "~../../src/entity/Photo";
-import { LoadingStub } from "~LoadingStub";
+import { IAppState } from "../redux/reducers";
+import { photosLoadStart } from "../redux/photos/actions";
+import { IPhotoReqJSON } from "../../../src/entity/Photo";
+import { LoadingStub } from "../LoadingStub";
 import { PhotoCard } from "./PhotoCard";
 import {
     Button,
@@ -18,7 +18,7 @@ import {
 } from "@blueprintjs/core";
 import { UploadButton } from "./UploadButton";
 import { Photo } from "./Photo";
-import { getPhotoThumbPath } from "~redux/api/photos";
+import { getPhotoThumbPath } from "../redux/api/photos";
 
 export interface IOverviewComponentProps {
     photos: IPhotoReqJSON[];
