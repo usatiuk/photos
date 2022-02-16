@@ -1,5 +1,5 @@
 import { fetchJSONAuth } from "../utils";
-import { IUserEditRespBody, IUserGetRespBody } from "~../../src/routes/users";
+import { IUserEditRespBody, IUserGetRespBody } from "../../../../../src/routes/users";
 
 export async function fetchUser(): Promise<IUserGetRespBody> {
     return (fetchJSONAuth("/users/user", "GET") as unknown) as Promise<

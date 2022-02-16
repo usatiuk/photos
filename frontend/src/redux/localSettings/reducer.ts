@@ -1,5 +1,5 @@
 import { Reducer } from "react";
-import { UserAction, UserTypes } from "~redux/user/actions";
+import { UserAction, UserTypes } from "../../redux/user/actions";
 
 import { LocalSettingsAction, LocalSettingsTypes } from "./actions";
 

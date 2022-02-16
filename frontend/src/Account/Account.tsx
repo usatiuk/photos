@@ -2,8 +2,8 @@ import { Button, Card, FormGroup, H2, InputGroup } from "@blueprintjs/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { IAppState } from "~redux/reducers";
-import { userPassChange } from "~redux/user/actions";
+import { IAppState } from "../redux/reducers";
+import { userPassChange } from "../redux/user/actions";
 
 export interface IAccountComponentProps {
     username: string | undefined;

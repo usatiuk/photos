@@ -18,7 +18,7 @@ import {
     fetchPhoto,
     fetchPhotosList,
     uploadPhoto,
-} from "~redux/api/photos";
+} from "../../redux/api/photos";
 import {
     IPhotoDeleteStartAction,
     IPhotoLoadStartAction,
@@ -41,8 +41,8 @@ import {
     photoUploadStart,
     photoUploadSuccess,
 } from "./actions";
-import { IPhotosNewRespBody } from "~../../src/routes/photos";
-import { IPhotosListPagination } from "~../../src/types";
+import { IPhotosNewRespBody } from "../../../../src/routes/photos";
+import { IPhotosListPagination } from "../../../../src/types";
 
 // Thanks, https://dev.to/qortex/compute-md5-checksum-for-a-file-in-typescript-59a4
 function computeChecksumMd5(file: File): Promise<string> {

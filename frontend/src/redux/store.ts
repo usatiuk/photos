@@ -2,7 +2,7 @@ import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { persistStore } from "redux-persist";
 import createSagaMiddlware from "redux-saga";
-import { rootReducer } from "~redux/reducers";
+import { rootReducer } from "../redux/reducers";
 
 import { setToken } from "./api/utils";
 import { authSaga } from "./auth/sagas";

@@ -1,6 +1,6 @@
 import { Action } from "redux";
-import { IUserAuthJSON, IUserJSON } from "~../../src/entity/User";
-import { showPasswordNotSavedToast, showPasswordSavedToast } from "~AppToaster";
+import { IUserAuthJSON, IUserJSON } from "../../../../src/entity/User";
+import { showPasswordNotSavedToast, showPasswordSavedToast } from "../../AppToaster";
 
 export enum UserTypes {
     USER_GET = "USER_GET",

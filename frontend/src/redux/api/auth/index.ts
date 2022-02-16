@@ -1,7 +1,7 @@
 import {
     IUserLoginRespBody,
     IUserSignupRespBody,
-} from "~../../src/routes/users";
+} from "../../../../../src/routes/users";
 import { fetchJSON } from "../utils";
 
 export async function login(

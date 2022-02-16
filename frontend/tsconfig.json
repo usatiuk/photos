@@ -17,12 +17,7 @@
         "strictFunctionTypes": true,
         "strictNullChecks": true,
         "skipLibCheck": true,
-        "baseUrl": "./src",
-        "paths": {
-            "~*": [
-                "./*"
-            ]
-        }
+        "isolatedModules": true,
     },
     "include": [
         "./src/**/*.ts",

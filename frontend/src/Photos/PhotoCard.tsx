@@ -8,13 +8,13 @@ import {
     Spinner,
 } from "@blueprintjs/core";
 import * as React from "react";
-import { IPhotoReqJSON } from "~../../src/entity/Photo";
-import { getPhotoImgPath, getPhotoThumbPath } from "~redux/api/photos";
-import { showDeletionToast } from "~AppToaster";
+import { IPhotoReqJSON } from "../../../src/entity/Photo";
+import { getPhotoImgPath, getPhotoThumbPath } from "../redux/api/photos";
+import { showDeletionToast } from "../AppToaster";
 import { Dispatch } from "redux";
-import { photoDeleteCancel, photoDeleteStart } from "~redux/photos/actions";
+import { photoDeleteCancel, photoDeleteStart } from "../redux/photos/actions";
 import { connect } from "react-redux";
-import { LoadingStub } from "~LoadingStub";
+import { LoadingStub } from "../LoadingStub";
 import { RouteComponentProps, withRouter } from "react-router";
 import { LargeSize, PreviewSize } from "./helper";
 

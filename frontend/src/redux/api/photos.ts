@@ -1,12 +1,12 @@
-import { IPhotoReqJSON } from "~../../src/entity/Photo";
+import { IPhotoReqJSON } from "../../../../src/entity/Photo";
 import {
     IPhotosByIDDeleteRespBody,
     IPhotosByIDGetRespBody,
     IPhotosListRespBody,
     IPhotosNewRespBody,
     IPhotosUploadRespBody,
-} from "~../../src/routes/photos";
-import { apiRoot } from "~env";
+} from "../../../../src/routes/photos";
+import { apiRoot } from "../../env";
 import { fetchJSONAuth } from "./utils";
 
 export function getPhotoImgPath(photo: IPhotoReqJSON): string {

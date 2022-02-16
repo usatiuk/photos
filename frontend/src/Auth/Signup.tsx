@@ -5,8 +5,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router";
 import { Dispatch } from "redux";
-import { signupStart } from "~redux/auth/actions";
-import { IAppState } from "~redux/reducers";
+import { signupStart } from "../redux/auth/actions";
+import { IAppState } from "../redux/reducers";
 
 interface ISignupComponentProps extends RouteComponentProps {
     inProgress: boolean;

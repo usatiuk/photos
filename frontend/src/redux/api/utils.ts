@@ -1,4 +1,4 @@
-import { apiRoot } from "~env";
+import { apiRoot } from "../../env";
 
 let token: string | null;
 

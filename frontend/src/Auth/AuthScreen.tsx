@@ -8,7 +8,7 @@ import {
     withRouter,
 } from "react-router";
 import { animated, Transition } from "react-spring/renderprops";
-import { IAppState } from "~redux/reducers";
+import { IAppState } from "../redux/reducers";
 
 import { Login } from "./Login";
 import { Signup } from "./Signup";

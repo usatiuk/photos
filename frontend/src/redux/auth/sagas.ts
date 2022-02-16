@@ -8,7 +8,7 @@ import {
     race,
     takeLatest,
 } from "redux-saga/effects";
-import { login, signup } from "~redux/api/auth";
+import { login, signup } from "../../redux/api/auth";
 
 import {
     authFail,
