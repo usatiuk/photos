@@ -51,6 +51,9 @@ app.use(async (ctx, next) => {
             await Promise.all(
                 filesVals.map(async (f) => {
                     try {
+                        if (Array.isArray(f)) {
+                            throw "more than one file uploaded";
+                        }
                         await fs.promises.unlink(f.path);
                     } catch (e) {
                         if (e.code !== "ENOENT") {
