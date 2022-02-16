@@ -17,7 +17,7 @@
         "strictFunctionTypes": true,
         "strictNullChecks": true,
         "skipLibCheck": true,
-        "isolatedModules": true,
+        "isolatedModules": true
     },
     "include": [
         "./src/**/*.ts",
