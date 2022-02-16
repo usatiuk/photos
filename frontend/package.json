@@ -51,8 +51,7 @@
         "autoprefixer": "^10.4.2",
         "postcss": "^8.4.6",
         "@parcel/config-default": "^2.3.1",
-        "@parcel/transformer-sass": "^2.3.1",
-        "@parcel/transformer-typescript-tsc": "^2.3.1"
+        "@parcel/transformer-sass": "^2.3.1"
     },
     "devDependencies": {
         "@types/autoprefixer": "^9.7.2",
