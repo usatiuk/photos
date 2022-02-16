@@ -105,6 +105,9 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
             return;
         }
         const file = Object.values(files)[0];
+        if (Array.isArray(file)) {
+            throw "more than one file uploaded";
+        }
 
         const photoHash = await getHash(file.path);
         const photoSize = await getSize(file.path);
