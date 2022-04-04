@@ -31,9 +31,9 @@ export interface IOverviewComponentProps {
     fetchPhotos: () => void;
 }
 
-export const OverviewComponent: React.FunctionComponent<IOverviewComponentProps> = (
-    props,
-) => {
+export const OverviewComponent: React.FunctionComponent<
+    IOverviewComponentProps
+> = (props) => {
     const [selectedPhoto, setSelectedPhoto] = React.useState<number>(0);
     const [isOverlayOpened, setOverlayOpen] = React.useState<boolean>(false);
 
