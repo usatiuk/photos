@@ -20,22 +20,18 @@ export interface IPhotoComponentProps {
     photoState: IPhotoState | undefined;
 
     fetchPhoto: (id: number) => void;
+    close: () => void;
 }
 
 export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
     props,
 ) => {
-    const [
-        smallPreviewFetching,
-        setSmallPreviewFetching,
-    ] = React.useState<boolean>(false);
-    const [
-        largePreviewFetching,
-        setLargePreviewFetching,
-    ] = React.useState<boolean>(false);
-    const [originalFetching, setOriginalFetching] = React.useState<boolean>(
-        false,
-    );
+    const [smallPreviewFetching, setSmallPreviewFetching] =
+        React.useState<boolean>(false);
+    const [largePreviewFetching, setLargePreviewFetching] =
+        React.useState<boolean>(false);
+    const [originalFetching, setOriginalFetching] =
+        React.useState<boolean>(false);
 
     const [smallPreview, setSmallPreview] = React.useState<string | null>(null);
     const [largePreview, setLargePreview] = React.useState<string | null>(null);
@@ -97,7 +93,13 @@ export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
     return (
         <>
             {fileExists ? (
-                <div id="photoView">
+                <div
+                    id="photoView"
+                    onClick={(e: React.MouseEvent) => {
+                        if ((e.target as HTMLElement).tagName !== "IMG")
+                            props.close();
+                    }}
+                >
                     <img
                         ref={imgRef}
                         id="photoImg"
