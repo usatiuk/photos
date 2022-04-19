@@ -85,13 +85,11 @@ export const OverviewComponent: React.FunctionComponent<
                     );
                     const photosEls = photos.map((photo) => {
                         return (
-                            <>
-                                <PhotoCard
-                                    key={photo.id}
-                                    photo={photo}
-                                    onClick={() => onCardClick(photo.id)}
-                                />
-                            </>
+                            <PhotoCard
+                                key={photo.id}
+                                photo={photo}
+                                onClick={() => onCardClick(photo.id)}
+                            />
                         );
                     });
                     return [
@@ -144,7 +142,12 @@ export const OverviewComponent: React.FunctionComponent<
             >
                 <div id="photoOverlayContainer">
                     <div id="photo">
-                        <Photo id={selectedPhoto} />
+                        <Photo
+                            id={selectedPhoto}
+                            close={() => {
+                                setOverlayOpen(false);
+                            }}
+                        />
                     </div>
                     <div id="photoOverlayDrawer">
                         <Button
