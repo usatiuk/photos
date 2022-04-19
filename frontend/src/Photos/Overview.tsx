@@ -85,11 +85,13 @@ export const OverviewComponent: React.FunctionComponent<
                     );
                     const photosEls = photos.map((photo) => {
                         return (
-                            <PhotoCard
-                                key={photo.id}
-                                photo={photo}
-                                onClick={() => onCardClick(photo.id)}
-                            />
+                            <>
+                                <PhotoCard
+                                    key={photo.id}
+                                    photo={photo}
+                                    onClick={() => onCardClick(photo.id)}
+                                />
+                            </>
                         );
                     });
                     return [
