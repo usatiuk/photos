@@ -90,6 +90,7 @@ if (config.env === EnvType.development) {
 }
 
 app.on("error", (err, ctx) => {
+    console.log(err);
     ctx.body = {
         error: err.message,
         data: false,
