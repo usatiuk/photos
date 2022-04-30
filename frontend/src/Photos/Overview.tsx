@@ -31,15 +31,33 @@ export interface IOverviewComponentProps {
     fetchPhotos: () => void;
 }
 
+const PhotoCardM = React.memo(PhotoCard);
+
 export const OverviewComponent: React.FunctionComponent<
     IOverviewComponentProps
 > = (props) => {
     const [selectedPhoto, setSelectedPhoto] = React.useState<number>(0);
     const [isOverlayOpened, setOverlayOpen] = React.useState<boolean>(false);
-
-    const onCardClick = (id: number) => {
-        setSelectedPhoto(id);
-        setOverlayOpen(true);
+    const [selectedPhotos, setSelectedPhotos] = React.useState<Set<number>>(
+        new Set(),
+    );
+    const selectedPhotosRef = React.useRef<Set<number>>(selectedPhotos);
+    selectedPhotosRef.current = selectedPhotos;
+    const onCardClick = (e: React.MouseEvent<HTMLElement>, id: number) => {
+        if (e.ctrlKey) {
+            const newSelectedPhotos = new Set<number>([
+                ...selectedPhotosRef.current,
+            ]);
+            if (newSelectedPhotos.has(id)) {
+                newSelectedPhotos.delete(id);
+            } else {
+                newSelectedPhotos.add(id);
+            }
+            setSelectedPhotos(newSelectedPhotos);
+        } else {
+            setSelectedPhoto(id);
+            setOverlayOpen(true);
+        }
     };
 
     if (
@@ -73,6 +91,10 @@ export const OverviewComponent: React.FunctionComponent<
         {},
     );
 
+    const onClick = React.useCallback((e: React.MouseEvent<HTMLElement>) => {
+        onCardClick(e, Number(e.currentTarget.id));
+    }, []);
+
     const photos = Object.keys(dates).reduce(
         (acc: JSX.Element[], year): JSX.Element[] => {
             const els = Object.keys(dates[year]).reduce(
@@ -85,10 +107,12 @@ export const OverviewComponent: React.FunctionComponent<
                     );
                     const photosEls = photos.map((photo) => {
                         return (
-                            <PhotoCard
-                                key={photo.id}
+                            <PhotoCardM
+                                selected={selectedPhotos.has(photo.id)}
+                                key={"p" + photo.id}
+                                id={String(photo.id)}
                                 photo={photo}
-                                onClick={() => onCardClick(photo.id)}
+                                onClick={onClick}
                             />
                         );
                     });
