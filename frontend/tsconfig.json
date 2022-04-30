@@ -1,9 +1,6 @@
 {
     "compilerOptions": {
-        "lib": [
-            "es2017",
-            "dom"
-        ],
+        "lib": ["es2017", "dom"],
         "jsx": "react",
         "target": "es5",
         "module": "commonjs",
@@ -17,11 +14,8 @@
         "strictFunctionTypes": true,
         "strictNullChecks": true,
         "skipLibCheck": true,
-        "isolatedModules": true
+        "isolatedModules": true,
+        "downlevelIteration": true
     },
-    "include": [
-        "./src/**/*.ts",
-        "./src/**/*.tsx",
-        "./jest.config.js"
-    ]
+    "include": ["./src/**/*.ts", "./src/**/*.tsx", "./jest.config.js"]
 }

@@ -2,6 +2,10 @@
     img {
         transition: all 0.3s;
     }
+    .selected {
+        padding: 1rem;
+        border-radius: 1.5rem;
+    }
 
     .notLoaded {
         opacity: 0;
@@ -10,4 +14,5 @@
     .loaded {
         opacity: 1;
     }
+
 }

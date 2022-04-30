@@ -20,10 +20,12 @@ import { LargeSize, PreviewSize } from "./helper";
 
 export interface IPhotoCardComponentProps extends RouteComponentProps {
     photo: IPhotoReqJSON;
+    selected: boolean;
+    id: string;
 
     deletePhoto: (photo: IPhotoReqJSON) => void;
     cancelDelete: (photo: IPhotoReqJSON) => void;
-    onClick: () => void;
+    onClick: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
 export interface IPhotoCardComponentState {
@@ -73,12 +75,18 @@ export class PhotoCardComponent extends React.PureComponent<
             <Card
                 className="photoCard"
                 interactive={true}
-                onClick={() => this.props.onClick()}
+                id={this.props.id}
+                onClick={(e: React.MouseEvent<HTMLElement>) =>
+                    this.props.onClick(e)
+                }
             >
                 {fileExists ? (
                     <img
                         src={getPhotoThumbPath(this.props.photo, PreviewSize)}
-                        className={this.state.loaded ? "loaded" : "notLoaded"}
+                        className={
+                            (this.state.loaded ? "loaded " : "notLoaded ") +
+                            (this.props.selected ? "selected " : " ")
+                        }
                         onLoad={() => this.setLoaded(true)}
                         /*
                         onMouseEnter={() =>
