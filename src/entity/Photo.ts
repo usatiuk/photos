@@ -79,15 +79,15 @@ export class Photo extends BaseEntity {
     public accessToken: string;
 
     @Column({ type: "timestamp", default: null })
-    public accessTokenExpiry: Date;
+    public accessTokenExpiry: Date | null;
 
-    @Column({ type: "timestamp", default: null })
+    @Column({ type: "timestamp", default: new Date(0) })
     public shotAt: Date;
 
-    @Column({ type: "timestamp", default: null })
+    @Column({ type: "timestamp", default: new Date(0) })
     public createdAt: Date;
 
-    @Column({ type: "timestamp", default: null })
+    @Column({ type: "timestamp", default: new Date(0) })
     public editedAt: Date;
 
     @ManyToOne(() => User, (user) => user.photos, {
@@ -211,9 +211,9 @@ export class Photo extends BaseEntity {
 
     public async getJWTToken(): Promise<string> {
         const now = new Date().getTime();
-        const tokenExpiryOld = this.accessTokenExpiry.getTime();
+        const tokenExpiryOld = this.accessTokenExpiry?.getTime();
         // If expires in more than 10 minutes then get from cache
-        if (tokenExpiryOld - now - 60 * 10 * 1000 > 0) {
+        if (tokenExpiryOld && tokenExpiryOld - now - 60 * 10 * 1000 > 0) {
             return this.accessToken;
         } else {
             const token = jwt.sign(await this.toJSON(), config.jwtSecret, {
@@ -239,7 +239,10 @@ export class Photo extends BaseEntity {
             format: this.format,
             createdAt: this.createdAt.getTime(),
             editedAt: this.editedAt.getTime(),
-            shotAt: this.shotAt.getTime(),
+            // workaround weird bug where this.shotAt is null
+            shotAt: this.shotAt
+                ? this.shotAt.getTime()
+                : this.createdAt.getTime(),
             uploaded: this.uploaded,
         };
     }
