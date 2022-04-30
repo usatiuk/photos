@@ -81,13 +81,13 @@ export class Photo extends BaseEntity {
     @Column({ type: "timestamp", default: null })
     public accessTokenExpiry: Date | null;
 
-    @Column({ type: "timestamp", default: new Date(0) })
+    @Column({ type: "timestamp", default: null })
     public shotAt: Date;
 
-    @Column({ type: "timestamp", default: new Date(0) })
+    @Column({ type: "timestamp", default: null })
     public createdAt: Date;
 
-    @Column({ type: "timestamp", default: new Date(0) })
+    @Column({ type: "timestamp", default: null })
     public editedAt: Date;
 
     @ManyToOne(() => User, (user) => user.photos, {
