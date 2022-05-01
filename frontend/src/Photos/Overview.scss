@@ -63,8 +63,8 @@
     }
 }
 
-.bp3-overlay-enter,
-.bp3-overlay-appear {
+.bp4-overlay-enter,
+.bp4-overlay-appear {
     opacity: 0;
 
     #photoImg {
@@ -76,8 +76,8 @@
     }
 }
 
-.bp3-overlay-enter-active,
-.bp3-overlay-appear-active {
+.bp4-overlay-enter-active,
+.bp4-overlay-appear-active {
     opacity: 1;
 
     #photoImg {
@@ -90,7 +90,7 @@
 }
 
 
-.bp3-overlay-exit {
+.bp4-overlay-exit {
     opacity: 1;
 
     #photoImg {
@@ -102,7 +102,7 @@
     }
 }
 
-.bp3-overlay-exit-active {
+.bp4-overlay-exit-active {
     opacity: 0;
 
     #photoImg {
@@ -206,6 +206,6 @@
 
 }
 
-.bp3-dark {
+.bp4-dark {
     #overview {}
 }

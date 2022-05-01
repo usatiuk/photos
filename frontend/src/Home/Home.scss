@@ -21,7 +21,7 @@
         transition: 0.3s;
     }
 
-    .bp3-navbar {
+    .bp4-navbar {
         transition: 0.3s;
 
         >* {
@@ -39,7 +39,7 @@
     }
 }
 
-#mainContainer.bp3-dark {
+#mainContainer.bp4-dark {
     transition: 0.3s;
 
     #MainScreen {
@@ -47,7 +47,7 @@
         background: $dark-gray3;
     }
 
-    .bp3-navbar {
+    .bp4-navbar {
         transition: 0.3s;
     }
 }
