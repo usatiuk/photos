@@ -8,6 +8,7 @@ import {
     IBreadcrumbProps,
     Icon,
     Menu,
+    MenuItem,
     Navbar,
     Popover,
     Spinner,
@@ -94,24 +95,28 @@ export class HomeComponent extends React.PureComponent<IHomeProps> {
                                 transform: "translate3d(400px,0,0)",
                             }}
                         >
-                            {(_location: any) => (style: any) => (
-                                <animated.div
-                                    style={style}
-                                    className="viewComponent"
-                                >
-                                    <Switch location={_location}>
-                                        <Route
-                                            path="/account"
-                                            component={Account}
-                                        />
-                                        <Route
-                                            path="/photos/:id"
-                                            component={PhotoRoute}
-                                        />
-                                        <Route path="/" component={Overview} />
-                                    </Switch>
-                                </animated.div>
-                            )}
+                            {(_location: any) => (style: any) =>
+                                (
+                                    <animated.div
+                                        style={style}
+                                        className="viewComponent"
+                                    >
+                                        <Switch location={_location}>
+                                            <Route
+                                                path="/account"
+                                                component={Account}
+                                            />
+                                            <Route
+                                                path="/photos/:id"
+                                                component={PhotoRoute}
+                                            />
+                                            <Route
+                                                path="/"
+                                                component={Overview}
+                                            />
+                                        </Switch>
+                                    </animated.div>
+                                )}
                         </Transition>
                     </div>
                 </div>
@@ -122,24 +127,24 @@ export class HomeComponent extends React.PureComponent<IHomeProps> {
     private menu() {
         return (
             <Menu>
-                <Menu.Item
+                <MenuItem
                     icon="user"
                     text="Account"
                     onClick={() => this.props.history.push("/account")}
                 />
-                <Menu.Item
+                <MenuItem
                     icon="log-out"
                     text="Logout"
                     onClick={this.props.logout}
                 />
                 {this.props.darkMode ? (
-                    <Menu.Item
+                    <MenuItem
                         icon="flash"
                         text="Light Mode"
                         onClick={this.props.dispatchToggleDarkMode}
                     />
                 ) : (
-                    <Menu.Item
+                    <MenuItem
                         icon="moon"
                         text="Dark Mode"
                         onClick={this.props.dispatchToggleDarkMode}
