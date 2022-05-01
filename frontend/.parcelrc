@@ -3,14 +3,6 @@
     "transformers": {
         "*.{ts,tsx}": [
             "@parcel/transformer-typescript-tsc"
-        ],
-        "*.css": [
-            "@parcel/transformer-postcss"
-        ]
-    },
-    "optimizers": {
-        "*.css": [
-            "@parcel/optimizer-cssnano"
         ]
     }
 }
