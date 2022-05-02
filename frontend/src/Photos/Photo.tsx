@@ -120,18 +120,9 @@ export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
 
 function mapStateToProps(state: IAppState, props: IPhotoComponentProps) {
     const { id } = props;
-    let photo = undefined;
-    let photoState = undefined;
-
-    if (state.photos.photos) {
-        photo = state.photos.photos.find((p) => p.id === id);
-    }
-    if (state.photos.photoStates[id]) {
-        photoState = state.photos.photoStates[id];
-    }
     return {
-        photo,
-        photoState,
+        photo: state.photos?.photos?.find((p) => p.id === id),
+        photoState: state.photos?.photoStates?.[id],
     };
 }
 
