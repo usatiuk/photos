@@ -8,6 +8,8 @@ afterEach(() => {
 });
 
 const fetchPhotosFn = jest.fn();
+const startDeletePhotosFn = jest.fn();
+const cancelDeleteFn = jest.fn();
 
 const overviewComponentDefaultProps: IOverviewComponentProps = {
     photos: [],
@@ -16,8 +18,11 @@ const overviewComponentDefaultProps: IOverviewComponentProps = {
     overviewFetching: false,
     overviewFetchingError: null,
     overviewFetchingSpinner: false,
+    darkMode: false,
 
     fetchPhotos: fetchPhotosFn,
+    startDeletePhotos: startDeletePhotosFn,
+    cancelDelete: cancelDeleteFn,
 };
 
 describe("<Overview />", () => {
