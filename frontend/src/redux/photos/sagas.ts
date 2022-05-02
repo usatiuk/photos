@@ -14,21 +14,21 @@ import {
 import * as SparkMD5 from "spark-md5";
 import {
     createPhoto,
-    deletePhoto,
+    deletePhotos,
     fetchPhoto,
     fetchPhotosList,
     uploadPhoto,
 } from "../../redux/api/photos";
 import {
-    IPhotoDeleteStartAction,
+    IPhotosDeleteStartAction,
     IPhotoLoadStartAction,
     IPhotosUploadStartAction,
     photoCreateFail,
     photoCreateQueue,
     photoCreateStart,
     photoCreateSuccess,
-    photoDeleteFail,
-    photoDeleteSuccess,
+    photosDeleteFail,
+    photosDeleteSuccess,
     photoLoadFail,
     photoLoadSuccess,
     photosLoadFail,
@@ -250,34 +250,35 @@ function* photosUpload(action: IPhotosUploadStartAction) {
     }
 }
 
-function* photoDelete(action: IPhotoDeleteStartAction) {
+function* photosDelete(action: IPhotosDeleteStartAction) {
     try {
         const { cancelled } = yield race({
             timeout: delay(3000),
-            cancelled: take(PhotoTypes.PHOTO_DELETE_CANCEL),
+            //FIXME: what happens if we delete multiple photos and then cancel some of them?
+            cancelled: take(PhotoTypes.PHOTOS_DELETE_CANCEL),
         });
 
         if (!cancelled) {
             const { response, timeout } = yield race({
-                response: call(deletePhoto, action.photo),
+                response: call(deletePhotos, action.photos),
                 timeout: delay(10000),
             });
 
             if (timeout) {
-                yield put(photoDeleteFail(action.photo, "Timeout"));
+                yield put(photosDeleteFail(action.photos, "Timeout"));
                 return;
             }
 
             if (response) {
                 if (response.data == null) {
-                    yield put(photoDeleteFail(action.photo, response.error));
+                    yield put(photosDeleteFail(action.photos, response.error));
                 } else {
-                    yield put(photoDeleteSuccess(action.photo));
+                    yield put(photosDeleteSuccess(action.photos));
                 }
             }
         }
     } catch (e) {
-        yield put(photoDeleteFail(action.photo, "Internal error"));
+        yield put(photosDeleteFail(action.photos, "Internal error"));
     }
 }
 
@@ -286,7 +287,7 @@ export function* photosSaga() {
         takeLatest(PhotoTypes.PHOTOS_LOAD_START, photosLoad),
         takeLatest(PhotoTypes.PHOTOS_UPLOAD_START, photosUpload),
         takeLatest(PhotoTypes.PHOTO_LOAD_START, photoLoad),
-        takeEvery(PhotoTypes.PHOTO_DELETE_START, photoDelete),
+        takeEvery(PhotoTypes.PHOTOS_DELETE_START, photosDelete),
         takeEvery(PhotoTypes.PHOTO_CREATE_QUEUE, photoCreate),
         takeEvery(PhotoTypes.PHOTO_CREATE_SUCCESS, photoCreate),
         takeEvery(PhotoTypes.PHOTO_CREATE_FAIL, photoCreate),

@@ -8,6 +8,7 @@ import { getHash, getSize } from "~util";
 import * as jwt from "jsonwebtoken";
 import { config } from "~config";
 import { ValidationError } from "class-validator";
+import { In } from "typeorm";
 
 export const photosRouter = new Router();
 
@@ -277,7 +278,10 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
         return;
     }
 
-    if (ctx.request.query["size"] && typeof ctx.request.query["size"] == "string") {
+    if (
+        ctx.request.query["size"] &&
+        typeof ctx.request.query["size"] == "string"
+    ) {
         const size = parseInt(ctx.request.query["size"]);
         await send(ctx, await photo.getReadyThumbnailPath(size));
         return;
@@ -309,7 +313,10 @@ photosRouter.get("/photos/showByID/:id", async (ctx) => {
         return;
     }
 
-    if (ctx.request.query["size"] && typeof ctx.request.query["size"] == "string") {
+    if (
+        ctx.request.query["size"] &&
+        typeof ctx.request.query["size"] == "string"
+    ) {
         const size = parseInt(ctx.request.query["size"]);
         await send(ctx, await photo.getReadyThumbnailPath(size));
         return;
@@ -347,7 +354,7 @@ photosRouter.get("/photos/getShowByIDToken/:id", async (ctx) => {
     ctx.body = { error: false, data: token } as IPhotosGetShowTokenByID;
 });
 
-export type IPhotosByIDDeleteRespBody = IAPIResponse<boolean>;
+export type IPhotoByIDDeleteRespBody = IAPIResponse<boolean>;
 photosRouter.delete("/photos/byID/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -376,5 +383,42 @@ photosRouter.delete("/photos/byID/:id", async (ctx) => {
     ctx.body = {
         error: false,
         data: true,
-    } as IPhotosByIDDeleteRespBody;
+    } as IPhotoByIDDeleteRespBody;
+});
+
+export interface IPhotosDeleteBody {
+    photos: IPhotoReqJSON[];
+}
+
+export type IPhotosDeleteRespBody = IAPIResponse<boolean>;
+photosRouter.post("/photos/delete", async (ctx) => {
+    if (!ctx.state.user) {
+        ctx.throw(401);
+    }
+
+    const body = ctx.request.body as IPhotosDeleteBody;
+    const { photos } = body;
+
+    if (!photos || !Array.isArray(photos) || photos.length == 0) {
+        ctx.throw(400);
+        return;
+    }
+
+    const { user } = ctx.state;
+    try {
+        await Photo.delete({
+            id: In(photos.map((photo) => photo.id)),
+            user,
+        });
+
+        ctx.body = {
+            error: false,
+            data: true,
+        } as IPhotosDeleteRespBody;
+    } catch (e) {
+        ctx.body = {
+            data: null,
+            error: "Internal server error",
+        } as IPhotosDeleteRespBody;
+    }
 });

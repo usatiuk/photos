@@ -23,10 +23,10 @@ export enum PhotoTypes {
     PHOTO_UPLOAD_SUCCESS = "PHOTO_UPLOAD_SUCCESS",
     PHOTO_UPLOAD_FAIL = "PHOTO_UPLOAD_FAIL",
     PHOTOS_START_FETCHING_SPINNER = "PHOTOS_START_FETCHING_SPINNER",
-    PHOTO_DELETE_START = "PHOTO_DELETE_START",
-    PHOTO_DELETE_SUCCESS = "PHOTO_DELETE_SUCCESS",
-    PHOTO_DELETE_FAIL = "PHOTO_DELETE_FAIL",
-    PHOTO_DELETE_CANCEL = "PHOTO_DELETE_CANCEL",
+    PHOTOS_DELETE_START = "PHOTOS_DELETE_START",
+    PHOTOS_DELETE_SUCCESS = "PHOTOS_DELETE_SUCCESS",
+    PHOTOS_DELETE_FAIL = "PHOTOS_DELETE_FAIL",
+    PHOTOS_DELETE_CANCEL = "PHOTOS_DELETE_CANCEL",
 }
 
 export interface IPhotosLoadStartAction extends Action {
@@ -109,25 +109,25 @@ export interface IPhotoCreateFailAction extends Action {
     error: string;
 }
 
-export interface IPhotoDeleteStartAction extends Action {
-    type: PhotoTypes.PHOTO_DELETE_START;
-    photo: IPhotoReqJSON;
+export interface IPhotosDeleteStartAction extends Action {
+    type: PhotoTypes.PHOTOS_DELETE_START;
+    photos: IPhotoReqJSON[];
 }
 
-export interface IPhotoDeleteSuccessAction extends Action {
-    type: PhotoTypes.PHOTO_DELETE_SUCCESS;
-    photo: IPhotoReqJSON;
+export interface IPhotosDeleteSuccessAction extends Action {
+    type: PhotoTypes.PHOTOS_DELETE_SUCCESS;
+    photos: IPhotoReqJSON[];
 }
 
-export interface IPhotoDeleteFailAction extends Action {
-    type: PhotoTypes.PHOTO_DELETE_FAIL;
-    photo: IPhotoReqJSON;
+export interface IPhotosDeleteFailAction extends Action {
+    type: PhotoTypes.PHOTOS_DELETE_FAIL;
+    photos: IPhotoReqJSON[];
     error?: string;
 }
 
-export interface IPhotoDeleteCancelAction extends Action {
-    type: PhotoTypes.PHOTO_DELETE_CANCEL;
-    photo: IPhotoReqJSON;
+export interface IPhotosDeleteCancelAction extends Action {
+    type: PhotoTypes.PHOTOS_DELETE_CANCEL;
+    photos: IPhotoReqJSON[];
 }
 
 export interface IPhotosStartFetchingSpinner extends Action {
@@ -220,27 +220,27 @@ export function photoLoadFail(id: number, error: string): IPhotoLoadFailAction {
     return { type: PhotoTypes.PHOTO_LOAD_FAIL, id, error };
 }
 
-export function photoDeleteStart(
-    photo: IPhotoReqJSON,
-): IPhotoDeleteStartAction {
-    return { type: PhotoTypes.PHOTO_DELETE_START, photo };
+export function photosDeleteStart(
+    photos: IPhotoReqJSON[],
+): IPhotosDeleteStartAction {
+    return { type: PhotoTypes.PHOTOS_DELETE_START, photos };
 }
-export function photoDeleteSuccess(
-    photo: IPhotoReqJSON,
-): IPhotoDeleteSuccessAction {
-    return { type: PhotoTypes.PHOTO_DELETE_SUCCESS, photo };
+export function photosDeleteSuccess(
+    photos: IPhotoReqJSON[],
+): IPhotosDeleteSuccessAction {
+    return { type: PhotoTypes.PHOTOS_DELETE_SUCCESS, photos };
 }
-export function photoDeleteFail(
-    photo: IPhotoReqJSON,
+export function photosDeleteFail(
+    photos: IPhotoReqJSON[],
     error?: string,
-): IPhotoDeleteFailAction {
-    return { type: PhotoTypes.PHOTO_DELETE_FAIL, photo, error };
+): IPhotosDeleteFailAction {
+    return { type: PhotoTypes.PHOTOS_DELETE_FAIL, photos, error };
 }
 
-export function photoDeleteCancel(
-    photo: IPhotoReqJSON,
-): IPhotoDeleteCancelAction {
-    return { type: PhotoTypes.PHOTO_DELETE_CANCEL, photo };
+export function photosDeleteCancel(
+    photos: IPhotoReqJSON[],
+): IPhotosDeleteCancelAction {
+    return { type: PhotoTypes.PHOTOS_DELETE_CANCEL, photos };
 }
 
 export function photosStartFetchingSpinner(): IPhotosStartFetchingSpinner {
@@ -257,10 +257,10 @@ export type PhotoAction =
     | IPhotoCreateSuccessAction
     | IPhotoUploadFailAction
     | IPhotoUploadSuccessAction
-    | IPhotoDeleteFailAction
-    | IPhotoDeleteStartAction
-    | IPhotoDeleteSuccessAction
-    | IPhotoDeleteCancelAction
+    | IPhotosDeleteFailAction
+    | IPhotosDeleteStartAction
+    | IPhotosDeleteSuccessAction
+    | IPhotosDeleteCancelAction
     | IPhotoLoadFailAction
     | IPhotoLoadStartAction
     | IPhotoLoadSuccessAction

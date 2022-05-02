@@ -3,22 +3,29 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IAppState } from "../redux/reducers";
-import { photosLoadStart } from "../redux/photos/actions";
+import {
+    photosDeleteCancel,
+    photosDeleteStart,
+    photosLoadStart,
+} from "../redux/photos/actions";
 import { IPhotoReqJSON } from "../../../src/entity/Photo";
 import { LoadingStub } from "../LoadingStub";
 import { PhotoCard } from "./PhotoCard";
 import {
+    Alignment,
     Button,
     Classes,
     H1,
     H2,
     H3,
+    Navbar,
     Overlay,
     Spinner,
 } from "@blueprintjs/core";
 import { UploadButton } from "./UploadButton";
 import { Photo } from "./Photo";
 import { getPhotoThumbPath } from "../redux/api/photos";
+import { showDeletionToast } from "../AppToaster";
 
 export interface IOverviewComponentProps {
     photos: IPhotoReqJSON[];
@@ -27,8 +34,11 @@ export interface IOverviewComponentProps {
     overviewFetching: boolean;
     overviewFetchingError: string | null;
     overviewFetchingSpinner: boolean;
+    darkMode: boolean;
 
     fetchPhotos: () => void;
+    startDeletePhotos: (photos: IPhotoReqJSON[]) => void;
+    cancelDelete: (photos: IPhotoReqJSON[]) => void;
 }
 
 const PhotoCardM = React.memo(PhotoCard);
@@ -183,6 +193,49 @@ export const OverviewComponent: React.FunctionComponent<
                     </div>
                 </div>
             </Overlay>
+            <Overlay
+                lazy
+                usePortal
+                isOpen={selectedPhotos.size > 0}
+                transitionDuration={300}
+                hasBackdrop={false}
+            >
+                <div className={"operationsOverlay"}>
+                    <Navbar
+                        className={props.darkMode ? Classes.DARK : undefined}
+                    >
+                        <Navbar.Group align={Alignment.LEFT}>
+                            <Button minimal={true} icon="edit">
+                                Select
+                            </Button>
+                            <Navbar.Divider />
+                        </Navbar.Group>
+
+                        <Navbar.Group align={Alignment.RIGHT}>
+                            <Button
+                                className="bp4-minimal"
+                                icon="trash"
+                                text="Delete"
+                                onClick={() => {
+                                    const photosObjectsWithIds =
+                                        props.photos.filter((p) =>
+                                            selectedPhotosRef.current.has(p.id),
+                                        );
+                                    showDeletionToast(() =>
+                                        props.cancelDelete(
+                                            photosObjectsWithIds,
+                                        ),
+                                    );
+                                    props.startDeletePhotos(
+                                        photosObjectsWithIds,
+                                    );
+                                    selectedPhotosRef.current.clear();
+                                }}
+                            />
+                        </Navbar.Group>
+                    </Navbar>
+                </div>
+            </Overlay>
             <div id="overviewContainer" onScroll={onLoaderScroll}>
                 <div id="overview">
                     <div id="actionbar">
@@ -206,11 +259,18 @@ function mapStateToProps(state: IAppState) {
         overviewFetchingError: state.photos.overviewFetchingError,
         overviewFetchingSpinner: state.photos.overviewFetchingSpinner,
         triedLoading: state.photos.triedLoading,
+        darkMode: state.localSettings.darkMode,
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
-    return { fetchPhotos: () => dispatch(photosLoadStart()) };
+    return {
+        fetchPhotos: () => dispatch(photosLoadStart()),
+        startDeletePhotos: (photos: IPhotoReqJSON[]) =>
+            dispatch(photosDeleteStart(photos)),
+        cancelDelete: (photos: IPhotoReqJSON[]) =>
+            dispatch(photosDeleteCancel(photos)),
+    };
 }
 
 export const Overview = connect(

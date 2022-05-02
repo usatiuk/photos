@@ -12,7 +12,7 @@ import { IPhotoReqJSON } from "../../../src/entity/Photo";
 import { getPhotoImgPath, getPhotoThumbPath } from "../redux/api/photos";
 import { showDeletionToast } from "../AppToaster";
 import { Dispatch } from "redux";
-import { photoDeleteCancel, photoDeleteStart } from "../redux/photos/actions";
+import { photosDeleteCancel, photosDeleteStart } from "../redux/photos/actions";
 import { connect } from "react-redux";
 import { LoadingStub } from "../LoadingStub";
 import { RouteComponentProps, withRouter } from "react-router";
@@ -23,8 +23,8 @@ export interface IPhotoCardComponentProps extends RouteComponentProps {
     selected: boolean;
     id: string;
 
-    deletePhoto: (photo: IPhotoReqJSON) => void;
-    cancelDelete: (photo: IPhotoReqJSON) => void;
+    deletePhoto: (photos: IPhotoReqJSON[]) => void;
+    cancelDelete: (photos: IPhotoReqJSON[]) => void;
     onClick: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
@@ -55,8 +55,8 @@ export class PhotoCardComponent extends React.PureComponent<
     }
 
     public handleDelete(): void {
-        showDeletionToast(() => this.props.cancelDelete(this.props.photo));
-        this.props.deletePhoto(this.props.photo);
+        showDeletionToast(() => this.props.cancelDelete([this.props.photo]));
+        this.props.deletePhoto([this.props.photo]);
     }
     /*
     public handleEdit() {
@@ -122,10 +122,10 @@ export class PhotoCardComponent extends React.PureComponent<
 
 function mapDispatchToProps(dispatch: Dispatch) {
     return {
-        deletePhoto: (photo: IPhotoReqJSON) =>
-            dispatch(photoDeleteStart(photo)),
-        cancelDelete: (photo: IPhotoReqJSON) =>
-            dispatch(photoDeleteCancel(photo)),
+        deletePhoto: (photos: IPhotoReqJSON[]) =>
+            dispatch(photosDeleteStart(photos)),
+        cancelDelete: (photos: IPhotoReqJSON[]) =>
+            dispatch(photosDeleteCancel(photos)),
     };
 }
 

@@ -1,7 +1,7 @@
 import { IPhotoReqJSON } from "../../../../src/entity/Photo";
 import {
-    IPhotosByIDDeleteRespBody,
     IPhotosByIDGetRespBody,
+    IPhotosDeleteRespBody,
     IPhotosListRespBody,
     IPhotosNewRespBody,
     IPhotosUploadRespBody,
@@ -49,8 +49,8 @@ export async function uploadPhoto(
     return fetchJSONAuth(`/photos/upload/${id}`, "POST", file);
 }
 
-export async function deletePhoto(
-    photo: IPhotoReqJSON,
-): Promise<IPhotosByIDDeleteRespBody> {
-    return fetchJSONAuth(`/photos/byID/${photo.id}`, "DELETE");
+export async function deletePhotos(
+    photos: IPhotoReqJSON[],
+): Promise<IPhotosDeleteRespBody> {
+    return fetchJSONAuth(`/photos/delete`, "POST", { photos });
 }
