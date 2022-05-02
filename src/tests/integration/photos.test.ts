@@ -4,7 +4,11 @@ import * as request from "supertest";
 import { getConnection } from "typeorm";
 import { app } from "~app";
 import { Photo, IPhotoReqJSON } from "~entity/Photo";
-import { IPhotosListRespBody, IPhotosNewPostBody } from "~routes/photos";
+import {
+    IPhotosDeleteBody,
+    IPhotosListRespBody,
+    IPhotosNewPostBody,
+} from "~routes/photos";
 import * as fs from "fs/promises";
 import { constants as fsConstants } from "fs";
 import * as jwt from "jsonwebtoken";
@@ -618,10 +622,14 @@ describe("photos", function () {
             512,
         );
         const response = await request(callback)
-            .delete(`/photos/byID/${seed.dogPhoto.id}`)
+            .post(`/photos/delete`)
             .set({
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
+                "Content-Type": "application/json",
             })
+            .send({
+                photos: [await seed.dogPhoto.toReqJSON()],
+            } as IPhotosDeleteBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
@@ -631,6 +639,46 @@ describe("photos", function () {
         try {
             await fs.access(photoPath, fsConstants.F_OK);
             await fs.access(photoSmallThumbPath, fsConstants.F_OK);
+            assert(false);
+        } catch (e) {
+            assert(true);
+        }
+    });
+
+    it("should delete two photos", async function () {
+        const photo1Path = seed.dogPhoto.getPath();
+        const photo2Path = seed.catPhoto.getPath();
+        const photo1SmallThumbPath = await seed.dogPhoto.getReadyThumbnailPath(
+            512,
+        );
+        const photo2SmallThumbPath = await seed.catPhoto.getReadyThumbnailPath(
+            512,
+        );
+        const response = await request(callback)
+            .post(`/photos/delete`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+                "Content-Type": "application/json",
+            })
+            .send({
+                photos: [
+                    await seed.dogPhoto.toReqJSON(),
+                    await seed.catPhoto.toReqJSON(),
+                ],
+            } as IPhotosDeleteBody)
+            .expect(200);
+
+        expect(response.body.error).to.be.false;
+        const dbPhoto1 = await Photo.findOne(seed.dogPhoto.id);
+        expect(dbPhoto1).to.be.undefined;
+        const dbPhoto2 = await Photo.findOne(seed.catPhoto.id);
+        expect(dbPhoto2).to.be.undefined;
+
+        try {
+            await fs.access(photo1Path, fsConstants.F_OK);
+            await fs.access(photo1SmallThumbPath, fsConstants.F_OK);
+            await fs.access(photo2Path, fsConstants.F_OK);
+            await fs.access(photo2SmallThumbPath, fsConstants.F_OK);
             assert(false);
         } catch (e) {
             assert(true);

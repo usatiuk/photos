@@ -196,15 +196,18 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
                 photosUploading: state.photosUploading - 1,
             };
         }
-        case PhotoTypes.PHOTO_DELETE_START: {
+        case PhotoTypes.PHOTOS_DELETE_START: {
             const photos = state.photos;
-            const delPhoto = photos.find((p) => p.id === action.photo.id);
-            if (delPhoto) {
+            const photoIds = action.photos.map((p) => p.id);
+            const delPhotos = photos.find((p) => photoIds.includes(p.id));
+            if (delPhotos) {
                 const photosCleaned = photos.filter(
-                    (p) => p.id !== action.photo.id,
+                    (p) => !photoIds.includes(p.id),
                 );
                 const delCache = { ...state.deleteCache };
-                delCache[delPhoto?.id] = delPhoto;
+                for (const photo of action.photos) {
+                    delCache[photo.id] = photo;
+                }
                 return {
                     ...state,
                     photos: sortPhotos(photosCleaned),
@@ -214,21 +217,25 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
                 return state;
             }
         }
-        case PhotoTypes.PHOTO_DELETE_SUCCESS: {
+        case PhotoTypes.PHOTOS_DELETE_SUCCESS: {
             const delCache = { ...state.deleteCache };
-            if (delCache[action.photo.id]) {
-                delete delCache[action.photo.id];
+            for (const photo of action.photos) {
+                if (delCache[photo.id]) {
+                    delete delCache[photo.id];
+                }
             }
             return { ...state, deleteCache: delCache };
             break;
         }
-        case PhotoTypes.PHOTO_DELETE_FAIL:
-        case PhotoTypes.PHOTO_DELETE_CANCEL: {
+        case PhotoTypes.PHOTOS_DELETE_FAIL:
+        case PhotoTypes.PHOTOS_DELETE_CANCEL: {
             const delCache = { ...state.deleteCache };
             let photos: IPhotoReqJSON[] = [...state.photos];
-            if (delCache[action.photo.id]) {
-                photos = sortPhotos([...photos, delCache[action.photo.id]]);
-                delete delCache[action.photo.id];
+            for (const photo of action.photos) {
+                if (delCache[photo.id]) {
+                    photos = sortPhotos([...photos, delCache[photo.id]]);
+                    delete delCache[photo.id];
+                }
             }
             return { ...state, deleteCache: delCache, photos };
             break;
