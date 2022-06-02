@@ -50,6 +50,10 @@ docker-compose example in `dockercomposeexample` folder
 
 * `HTTPS` (`"yes"`/`"no"`) - whether the server enforce HTTPS or not
 
+* `API_ROOT`
+
+* `WEB_ROOT`
+
 ### Additional config options if you're not using docker
 
 * `DATA_DIR` - data directory for photos and uploaded files
