@@ -47,7 +47,8 @@ export interface IPhotoReqJSON extends IPhotoJSON {
     accessToken: string;
 }
 
-export const ThumbSizes = ["512", "1024", "2048"];
+export const thumbSizes = ["512", "1024", "2048", "original"];
+export type ThumbSize = typeof thumbSizes[number];
 
 @Entity()
 @Index(["hash", "size", "user"], { unique: true })
@@ -72,8 +73,8 @@ export class Photo extends BaseEntity {
     @Column({ default: false })
     public uploaded: boolean;
 
-    @Column({ type: "set", enum: ThumbSizes, default: [] })
-    public generatedThumbs: string[];
+    @Column({ type: "set", enum: thumbSizes, default: [] })
+    public generatedThumbs: ThumbSize[];
 
     @Column({ type: "varchar", length: 500 })
     public accessToken: string;
@@ -102,7 +103,7 @@ export class Photo extends BaseEntity {
         }`;
     }
 
-    private getThumbFileName(size: number): string {
+    private getThumbFileName(size: ThumbSize): string {
         return `${this.user.id.toString()}-${this.hash}-${this.size}-${size}.${
             mime.extension("image/jpeg") as string
         }`;
@@ -112,7 +113,7 @@ export class Photo extends BaseEntity {
         return path.join(this.user.getDataPath(), this.getFileName());
     }
 
-    private getThumbPath(size: number): string {
+    public getThumbPath(size: ThumbSize): string {
         return path.join(this.user.getDataPath(), this.getThumbFileName(size));
     }
 
@@ -132,37 +133,28 @@ export class Photo extends BaseEntity {
             await fs.unlink(this.getPath());
             await Promise.all(
                 this.generatedThumbs.map(
-                    async (size) =>
-                        await fs.unlink(this.getThumbPath(parseInt(size))),
+                    async (size) => await fs.unlink(this.getThumbPath(size)),
                 ),
             );
         } catch (e) {
-            if (e.code !== "ENOENT") {
+            if (e.code !== "ENOENT" && e.code !== "NotFoundError") {
                 throw e;
             }
         }
     }
 
-    // Checks if file exists and updates the DB
-    public async fileExists(): Promise<boolean> {
+    // Checks if file exists
+    public async origFileExists(): Promise<boolean> {
         if (await fileCheck(this.getPath())) {
-            if (!this.uploaded) {
-                this.uploaded = true;
-                await this.save();
-            }
             return true;
         } else {
-            if (this.uploaded) {
-                this.uploaded = false;
-                this.generatedThumbs = [];
-                await this.save();
-            }
             return false;
         }
     }
 
-    public async processUpload(): Promise<void> {
-        await this.fileExists();
+    public async processUpload(origFile: string): Promise<void> {
+        await fs.rename(origFile, this.getPath());
+        this.uploaded = true;
         const date = await getShotDate(this.getPath());
         if (date !== null) {
             this.shotAt = date;
@@ -172,25 +164,38 @@ export class Photo extends BaseEntity {
         await this.save();
     }
 
-    private async generateThumbnail(size: number): Promise<void> {
-        if (!(await this.fileExists())) {
-            return;
+    private async generateThumbnail(size: ThumbSize): Promise<void> {
+        if (!(await this.origFileExists())) {
+            await this.remove();
+            throw new Error("Photo file not found");
         }
-        await resizeToJpeg(this.getPath(), this.getThumbPath(size), size);
-        this.generatedThumbs.push(size.toString());
+        await resizeToJpeg(
+            this.getPath(),
+            this.getThumbPath(size),
+            parseInt(size),
+        );
+        this.generatedThumbs.push(size);
         await this.save();
     }
 
-    public async getReadyThumbnailPath(size: number): Promise<string> {
-        if (!ThumbSizes.includes(size.toString())) {
+    public async getReadyPath(size: ThumbSize): Promise<string> {
+        if (!thumbSizes.includes(size)) {
             throw new Error("Wrong thumbnail size");
         }
-        const path = this.getThumbPath(size);
+        const path =
+            size === "original" ? this.getPath() : this.getThumbPath(size);
         if (
-            !this.generatedThumbs.includes(size.toString()) ||
-            !(await fileCheck(path))
+            size !== "original" &&
+            (!this.generatedThumbs.includes(size.toString()) ||
+                !(await fileCheck(path)))
         ) {
             await this.generateThumbnail(size);
+        }
+        if (size === "original") {
+            if (!(await fileCheck(path))) {
+                await this.remove();
+                throw new Error("Photo file not found");
+            }
         }
         return path;
     }

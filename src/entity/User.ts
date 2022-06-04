@@ -86,7 +86,8 @@ export class User extends BaseEntity {
 
     @BeforeRemove()
     async removeDataDir(): Promise<void> {
-        await fs.rmdir(this.getDataPath(), { recursive: true });
+        // force because otherwise it will fail if directory already doesn't exist
+        await fs.rm(this.getDataPath(), { recursive: true, force: true });
     }
 
     @BeforeInsert()

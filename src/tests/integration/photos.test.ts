@@ -91,6 +91,55 @@ describe("photos", function () {
         );
     });
 
+    it("should delete a photo after file has been deleted", async function () {
+        const response = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(200);
+        expect(parseInt(response.header["content-length"])).to.equal(
+            dogFileSize,
+        );
+
+        await fs.unlink(await seed.dogPhoto.getReadyPath("original"));
+        const response2 = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(500);
+        const dbPhoto = await Photo.findOne(seed.dogPhoto.id);
+        expect(dbPhoto).to.be.undefined;
+    });
+
+    it("should delete a photo after file has been deleted (thumbnail access)", async function () {
+        const response = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}?size=512`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(200);
+        const dogSmallThumbSize = (
+            await fs.stat(await seed.dogPhoto.getThumbPath("512"))
+        ).size;
+        expect(parseInt(response.header["content-length"])).to.equal(
+            dogSmallThumbSize,
+        );
+
+        await fs.unlink(await seed.dogPhoto.getReadyPath("512"));
+        await fs.unlink(await seed.dogPhoto.getReadyPath("original"));
+        const response2 = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}?size=512`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(500);
+
+        const dbPhoto = await Photo.findOne(seed.dogPhoto.id);
+        expect(dbPhoto).to.be.undefined;
+    });
+
     it("should show a thumbnail", async function () {
         const response = await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}?size=512`)
@@ -100,6 +149,35 @@ describe("photos", function () {
             .expect(200);
         expect(parseInt(response.header["content-length"])).to.be.lessThan(
             dogFileSize,
+        );
+    });
+
+    it("should show a thumbnail after it was deleted", async function () {
+        const response = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}?size=512`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(200);
+        const dogSmallThumbSize = (
+            await fs.stat(await seed.dogPhoto.getThumbPath("512"))
+        ).size;
+        expect(parseInt(response.header["content-length"])).to.equal(
+            dogSmallThumbSize,
+        );
+
+        await fs.unlink(seed.dogPhoto.getThumbPath("512"));
+        const response2 = await request(callback)
+            .get(`/photos/showByID/${seed.dogPhoto.id}?size=512`)
+            .set({
+                Authorization: `Bearer ${seed.user2.toJWT()}`,
+            })
+            .expect(200);
+        const dogSmallThumbSize2 = (
+            await fs.stat(await seed.dogPhoto.getThumbPath("512"))
+        ).size;
+        expect(parseInt(response.header["content-length"])).to.equal(
+            dogSmallThumbSize2,
         );
     });
 
@@ -212,7 +290,7 @@ describe("photos", function () {
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
-        expect(await dbPhoto.fileExists()).to.be.equal(false);
+        expect(await dbPhoto.origFileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -228,7 +306,7 @@ describe("photos", function () {
             user: seed.user1.id as any,
         });
         expect(dbPhotoUpl.hash).to.be.equal(dogHash);
-        expect(await dbPhotoUpl.fileExists()).to.be.equal(true);
+        expect(await dbPhotoUpl.origFileExists()).to.be.equal(true);
         expect(dbPhotoUpl.shotAt.toISOString()).to.be.equal(
             new Date("2020-10-05T14:20:18").toISOString(),
         );
@@ -270,7 +348,7 @@ describe("photos", function () {
         });
         expect(dbPhoto.hash).to.be.equal(pngHash);
 
-        expect(await dbPhoto.fileExists()).to.be.equal(false);
+        expect(await dbPhoto.origFileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -287,7 +365,7 @@ describe("photos", function () {
         });
         expect(dbPhotoUpl.hash).to.be.equal(pngHash);
         expect(dbPhotoUpl.format).to.be.equal(pngFormat);
-        expect(await dbPhotoUpl.fileExists()).to.be.equal(true);
+        expect(await dbPhotoUpl.origFileExists()).to.be.equal(true);
         expect(dbPhotoUpl.shotAt.getTime()).to.be.approximately(
             new Date().getTime(),
             10000,
@@ -367,7 +445,7 @@ describe("photos", function () {
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
-        expect(await dbPhoto.fileExists()).to.be.equal(false);
+        expect(await dbPhoto.origFileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -378,7 +456,7 @@ describe("photos", function () {
             .attach("photo", dogPath)
             .expect(200);
 
-        expect(await dbPhoto.fileExists()).to.be.equal(true);
+        expect(await dbPhoto.origFileExists()).to.be.equal(true);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -426,7 +504,7 @@ describe("photos", function () {
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
-        expect(await dbPhoto.fileExists()).to.be.equal(false);
+        expect(await dbPhoto.origFileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -437,14 +515,14 @@ describe("photos", function () {
             .attach("photo", catPath)
             .expect(400);
 
-        expect(await dbPhoto.fileExists()).to.be.equal(false);
+        expect(await dbPhoto.origFileExists()).to.be.equal(false);
 
         const showResp = await request(callback)
             .get(`/photos/showByID/${photo.id}`)
             .set({
                 Authorization: `Bearer ${seed.user1.toJWT()}`,
             })
-            .expect(404);
+            .expect(500);
     });
 
     it("should create a photo but not upload for other user", async function () {
@@ -471,7 +549,7 @@ describe("photos", function () {
             user: seed.user1.id as any,
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
-        expect(await dbPhoto.fileExists()).to.be.equal(false);
+        expect(await dbPhoto.origFileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -482,7 +560,7 @@ describe("photos", function () {
             .attach("photo", dogPath)
             .expect(404);
 
-        expect(await dbPhoto.fileExists()).to.be.equal(false);
+        expect(await dbPhoto.origFileExists()).to.be.equal(false);
     });
 
     it("should create, upload but not show a photo to another user", async function () {
@@ -509,7 +587,7 @@ describe("photos", function () {
             user: seed.user1.id as any,
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
-        expect(await dbPhoto.fileExists()).to.be.equal(false);
+        expect(await dbPhoto.origFileExists()).to.be.equal(false);
 
         await request(callback)
             .post(`/photos/upload/${photo.id}`)
@@ -520,7 +598,7 @@ describe("photos", function () {
             .attach("photo", dogPath)
             .expect(200);
 
-        expect(await dbPhoto.fileExists()).to.be.equal(true);
+        expect(await dbPhoto.origFileExists()).to.be.equal(true);
 
         await request(callback)
             .get(`/photos/showByID/${photo.id}`)
@@ -618,9 +696,7 @@ describe("photos", function () {
 
     it("should delete a photo", async function () {
         const photoPath = seed.dogPhoto.getPath();
-        const photoSmallThumbPath = await seed.dogPhoto.getReadyThumbnailPath(
-            512,
-        );
+        const photoSmallThumbPath = await seed.dogPhoto.getReadyPath("512");
         const response = await request(callback)
             .post(`/photos/delete`)
             .set({
@@ -648,12 +724,8 @@ describe("photos", function () {
     it("should delete two photos", async function () {
         const photo1Path = seed.dogPhoto.getPath();
         const photo2Path = seed.catPhoto.getPath();
-        const photo1SmallThumbPath = await seed.dogPhoto.getReadyThumbnailPath(
-            512,
-        );
-        const photo2SmallThumbPath = await seed.catPhoto.getReadyThumbnailPath(
-            512,
-        );
+        const photo1SmallThumbPath = await seed.dogPhoto.getReadyPath("512");
+        const photo2SmallThumbPath = await seed.catPhoto.getReadyPath("512");
         const response = await request(callback)
             .post(`/photos/delete`)
             .set({
