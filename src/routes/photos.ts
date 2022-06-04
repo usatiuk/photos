@@ -94,7 +94,7 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
         return;
     }
 
-    if (await photo.fileExists()) {
+    if (photo.uploaded) {
         ctx.throw(400, "Already uploaded");
         return;
     }
@@ -120,8 +120,7 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
 
         try {
             // TODO: actually move file if it's on different filesystems
-            await fs.rename(file.path, photo.getPath());
-            await photo.processUpload();
+            await photo.processUpload(file.path);
         } catch (e) {
             console.log(e);
             ctx.throw(500);
@@ -273,7 +272,7 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
         user: { id: user },
     });
 
-    if (!photo || !(await photo.fileExists())) {
+    if (!photo) {
         ctx.throw(404);
         return;
     }
@@ -282,12 +281,12 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
         ctx.request.query["size"] &&
         typeof ctx.request.query["size"] == "string"
     ) {
-        const size = parseInt(ctx.request.query["size"]);
-        await send(ctx, await photo.getReadyThumbnailPath(size));
+        const size = ctx.request.query["size"];
+        await send(ctx, await photo.getReadyPath(size));
         return;
     }
 
-    await send(ctx, photo.getPath());
+    await send(ctx, await photo.getReadyPath("original"));
 });
 
 photosRouter.get("/photos/showByID/:id", async (ctx) => {
@@ -308,7 +307,7 @@ photosRouter.get("/photos/showByID/:id", async (ctx) => {
 
     const photo = await Photo.findOne({ id: parseInt(id), user });
 
-    if (!photo || !(await photo.fileExists())) {
+    if (!photo) {
         ctx.throw(404);
         return;
     }
@@ -317,12 +316,12 @@ photosRouter.get("/photos/showByID/:id", async (ctx) => {
         ctx.request.query["size"] &&
         typeof ctx.request.query["size"] == "string"
     ) {
-        const size = parseInt(ctx.request.query["size"]);
-        await send(ctx, await photo.getReadyThumbnailPath(size));
+        const size = ctx.request.query["size"];
+        await send(ctx, await photo.getReadyPath(size));
         return;
     }
 
-    await send(ctx, photo.getPath());
+    await send(ctx, await photo.getReadyPath("original"));
 });
 
 export type IPhotoShowToken = string;
@@ -344,7 +343,7 @@ photosRouter.get("/photos/getShowByIDToken/:id", async (ctx) => {
     const { user } = ctx.state;
 
     const photo = await Photo.findOne({ id: parseInt(id), user });
-    if (!photo || !(await photo.fileExists())) {
+    if (!photo) {
         ctx.throw(404);
         return;
     }
