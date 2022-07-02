@@ -29,7 +29,6 @@ services:
 
   db:
     image: mariadb:latest
-    restart: unless-stopped
     volumes:
       - photosmariadb-data:/var/lib/mysql
     environment:
@@ -40,7 +39,6 @@ services:
 
   dbtest:
     image: mariadb:latest
-    restart: unless-stopped
     volumes:
       - photosmariadbtest-data:/var/lib/mysql
     environment:
