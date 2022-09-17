@@ -1,4 +1,5 @@
 import "./Overview.scss";
+
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -54,7 +55,7 @@ export const OverviewComponent: React.FunctionComponent<
     const selectedPhotosRef = React.useRef<Set<number>>(selectedPhotos);
     selectedPhotosRef.current = selectedPhotos;
     const onCardClick = (e: React.MouseEvent<HTMLElement>, id: number) => {
-        if (e.ctrlKey) {
+        if (e.ctrlKey || e.metaKey) {
             const newSelectedPhotos = new Set<number>([
                 ...selectedPhotosRef.current,
             ]);
