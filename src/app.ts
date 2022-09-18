@@ -54,7 +54,7 @@ app.use(async (ctx, next) => {
                         if (Array.isArray(f)) {
                             throw "more than one file uploaded";
                         }
-                        await fs.promises.unlink(f.path);
+                        await fs.promises.unlink(f.filepath);
                     } catch (e) {
                         if (e.code !== "ENOENT") {
                             throw e;
