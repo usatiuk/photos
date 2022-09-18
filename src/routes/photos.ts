@@ -110,8 +110,8 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
             throw "more than one file uploaded";
         }
 
-        const photoHash = await getHash(file.path);
-        const photoSize = await getSize(file.path);
+        const photoHash = await getHash(file.filepath);
+        const photoSize = await getSize(file.filepath);
 
         if (photoHash !== photo.hash || photoSize !== photo.size) {
             ctx.throw(400, "Wrong photo");
@@ -120,7 +120,7 @@ photosRouter.post("/photos/upload/:id", async (ctx) => {
 
         try {
             // TODO: actually move file if it's on different filesystems
-            await photo.processUpload(file.path);
+            await photo.processUpload(file.filepath);
         } catch (e) {
             console.log(e);
             ctx.throw(500);
