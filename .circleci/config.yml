@@ -76,7 +76,7 @@ jobs:
                   command: cd frontend && npm test
 
             - store_test_results:
-                  path: frontend-reports
+                  path: ~/photos/frontend/frontend-reports/frontend-report.xml
 
     test-frontend-build:
         docker:
