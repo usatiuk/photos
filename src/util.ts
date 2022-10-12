@@ -18,7 +18,10 @@ export async function getSize(file: string): Promise<string> {
             `The ${file} doesn't have width and height... how did we get there?`,
         );
     }
-    return `${metadata.width}x${metadata.height}`;
+    const orientation = metadata.orientation ? metadata.orientation : 1;
+    return orientation <= 4
+        ? `${metadata.width}x${metadata.height}`
+        : `${metadata.height}x${metadata.width}`;
 }
 
 export async function getShotDate(file: string): Promise<Date | null> {
