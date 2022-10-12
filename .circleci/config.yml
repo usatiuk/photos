@@ -40,10 +40,10 @@ jobs:
         docker:
             - image: cimg/node:14.20
 
-        working_directory: ~/photos/frontend
+        working_directory: ~/photos
 
         steps:
-            - checkout:
+            - checkout
 
             - restore_cache:
                   keys:
@@ -60,7 +60,7 @@ jobs:
 
             - restore_cache:
                   keys:
-                      - frontend-dependencies-{{ checksum "package.json" }}
+                      - frontend-dependencies-{{ checksum "frontend/package.json" }}
 
             - run:
                   name: install frontend deps
@@ -69,7 +69,7 @@ jobs:
             - save_cache:
                   paths:
                       - frontend/node_modules
-                  key: frontend-dependencies-{{ checksum "package.json" }}
+                  key: frontend-dependencies-{{ checksum "frontend/package.json" }}
 
             - run:
                   name: test frontend
