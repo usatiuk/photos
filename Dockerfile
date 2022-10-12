@@ -1,4 +1,5 @@
-FROM node:16
+# might fix this? https://github.com/parcel-bundler/parcel/issues/6735
+FROM node:16-bullseye
 
 WORKDIR /usr/src/app
 COPY package*.json ./
