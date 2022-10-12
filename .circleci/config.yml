@@ -2,8 +2,8 @@ version: 2
 jobs:
     test-backend:
         docker:
-            - image: circleci/node:16
-            - image: circleci/mariadb:latest
+            - image: cimg/node:14.20
+            - image: cimg/mariadb:10.8
               environment:
                   MYSQL_ALLOW_EMPTY_PASSWORD: "true"
                   MYSQL_DATABASE: photos_test
@@ -35,7 +35,7 @@ jobs:
 
     test-frontend:
         docker:
-            - image: circleci/node:16
+            - image: cimg/node:14.20
 
         working_directory: ~/photos/frontend
 
@@ -74,7 +74,7 @@ jobs:
 
     test-frontend-build:
         docker:
-            - image: circleci/node:16
+            - image: cimg/node:14.20
 
         working_directory: ~/photos/frontend
 
@@ -110,11 +110,11 @@ jobs:
             - run:
                   name: build frontend
                   command: cd frontend && npm run build
-
     build:
         machine:
-            image: ubuntu-2004:202107-01
+            image: ubuntu-2004:current
         working_directory: ~/photos
+        resource_class: large
 
         steps:
             - checkout
@@ -132,8 +132,33 @@ jobs:
 
             - run:
                   name: build and push to docker hub
-                  #command: docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag stepanusatiuk/photos:latest .
-                  command: docker buildx build --push --platform linux/amd64 --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
+                  command: docker buildx build --push --platform linux/arm64,linux/amd64  --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
+                  #command: docker buildx build --push --platform linux/amd64 --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
+
+#    build-arm:
+#        machine:
+#            image: ubuntu-2004:current
+#        resource_class: arm.medium
+#        working_directory: ~/photos
+#
+#        steps:
+#            - checkout
+#            - run:
+#                  name: log in to docker hub
+#                  command: echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USERNAME --password-stdin
+#
+#            - run:
+#                  name: install emulators
+#                  command: docker run --privileged --rm tonistiigi/binfmt --install all
+#
+#            - run:
+#                  name: create docker builder
+#                  command: docker buildx create --use
+#
+#            - run:
+#                  name: build and push to docker hub
+#                  #command: docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag stepanusatiuk/photos:latest .
+#                  command: docker buildx build --push --platform linux/arm64 --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
 
 workflows:
     version: 2
@@ -149,3 +174,8 @@ workflows:
                       - test-backend
                       - test-frontend
                       - test-frontend-build
+#            - build-arm:
+#                  requires:
+#                      - test-backend
+#                      - test-frontend
+#                      - test-frontend-build
