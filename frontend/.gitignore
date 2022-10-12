@@ -10,3 +10,4 @@ ormconfig.json
 .directory
 .history
 .parcel-cache
+frontend-reports/
