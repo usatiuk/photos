@@ -14,4 +14,14 @@ module.exports = {
     },
     setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
     testEnvironment: "jsdom",
+    reporters: [
+        "default",
+        [
+            "jest-junit",
+            {
+                outputDirectory: "frontend-reports",
+                outputName: "frontend-report.xml",
+            },
+        ],
+    ],
 };

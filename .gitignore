@@ -13,3 +13,4 @@ ormconfig.test.json
 data_test
 data_dev
 data
+backend-report.xml
