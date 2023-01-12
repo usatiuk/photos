@@ -2,6 +2,9 @@
 
 Something that tries to be a self-hosted alternative to Google Photos
 
+Demo: https://photos.usatiuk.com
+(data is stored on tmpfs, reset every day)
+
 ![screenshot](docs/s1.png)
 
 ## Getting started
