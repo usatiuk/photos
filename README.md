@@ -3,7 +3,7 @@
 Something that tries to be a self-hosted alternative to Google Photos
 
 Demo: https://photos.usatiuk.com
-(data is stored on tmpfs, reset every day)
+(no need to enter a real email, something like asdf@asdf.com is enough, data is stored on tmpfs, reset every day)
 
 ![screenshot](docs/s1.png)
 
@@ -30,7 +30,7 @@ Also, you need to run database migrations with
 Then start with `npm run dev` and visit http://localhost:1234 (Parcel dev server
 is listening at http://localhost:1234, and koa at http://localhost:3000)
 
-## Actually hosting this thing
+## Actually hosting this
 
 The suggested way to host this is, agian, using Docker: you can find a
 docker-compose example in `dockercomposeexample` folder
@@ -51,7 +51,9 @@ docker-compose example in `dockercomposeexample` folder
 
 * `JWT_SECRET` - JWT secret - set it to something random
 
-* `HTTPS` (`"yes"`/`"no"`) - whether the server enforce HTTPS or not
+* `HTTPS` (`"yes"`/`"no"`) - whether the server enforces HTTPS or not
+
+* `SIGNUP_ALLOWED` (`"yes"`/`"no"`) - whether signups are allowed or not, persistent
 
 * `API_ROOT`
 
