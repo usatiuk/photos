@@ -13,7 +13,7 @@ export enum ConfigKey {
 }
 
 export interface IDBConfig {
-    signupAllowed: boolean;
+    signupAllowed: "yes" | "no";
 }
 
 const defaultValues: Record<ConfigKey, string> = {
@@ -70,6 +70,8 @@ export async function setConfigValue(
     let pair = await Config.findOne({ key });
     if (!pair) {
         pair = new Config(key, val);
+    } else {
+        pair.value = val;
     }
     await pair.save();
 }
