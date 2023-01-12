@@ -180,6 +180,9 @@ workflows:
                       - test-backend
                       - test-frontend
                       - test-frontend-build
+                  filters:
+                      branches:
+                          only: main
 #            - build-arm:
 #                  requires:
 #                      - test-backend
