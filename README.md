@@ -53,7 +53,7 @@ docker-compose example in `dockercomposeexample` folder
 
 * `HTTPS` (`"yes"`/`"no"`) - whether the server enforces HTTPS or not
 
-* `SIGNUP_ALLOWED` (`"yes"`/`"no"`) - whether signups are allowed or not, persistent
+* `SIGNUP_ALLOWED` (`"yes"`/`"no"`) - whether signups are allowed or not, persistent (but the first signup is always allowed)
 
 * `API_ROOT`
 
