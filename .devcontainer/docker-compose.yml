@@ -2,54 +2,33 @@ version: '3'
 
 services:
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
-      args:
-        # [Choice] Node.js version: 14, 12, 10
-        VARIANT: 16
-        # On Linux, you may need to update USER_UID and USER_GID below if not your local UID is not 1000.
-        USER_UID: 1000
-        USER_GID: 1000
-
     volumes:
       - ..:/workspace:cached
-      
+
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
     network_mode: service:db
 
-    # Uncomment the next line to use a non-root user for all processes.
-    user: node
-
-    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
-
   db:
-    image: mariadb:latest
+    image: yobasystems/alpine-mariadb:10.6
     volumes:
       - photosmariadb-data:/var/lib/mysql
+      - ./dbinit:/docker-entrypoint-initdb.d:ro
     environment:
-      MYSQL_DATABASE: photos
-      MYSQL_USER: photos
-      MYSQL_PASSWORD: photos
-      MYSQL_ROOT_PASSWORD: photos
-
-  dbtest:
-    image: mariadb:latest
-    volumes:
-      - photosmariadbtest-data:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: photos_test
-      MYSQL_USER: photos
-      MYSQL_PASSWORD: photos
-      MYSQL_ROOT_PASSWORD: photos
-
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward MongoDB locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+      MYSQL_DATABASE: photosdb
+      MYSQL_USER: photosuser
+      MYSQL_PASSWORD: photospass
+      MYSQL_ROOT_PASSWORD: photosroot
+    healthcheck:
+      test: "mysql $$MYSQL_DATABASE -u$$MYSQL_USER -p$$MYSQL_PASSWORD -e 'SELECT 1;'"
+      interval: 10s
+      timeout: 10s
+      retries: 10
 
 volumes:
   photosmariadb-data:
-  photosmariadbtest-data:

@@ -9,12 +9,18 @@
     // Set *default* container specific settings.json values on container create.
     "settings": {},
     // Add the IDs of extensions you want installed when the container is created.
-    "extensions": ["dbaeumer.vscode-eslint"],
+    "extensions": [
+        "dbaeumer.vscode-eslint",
+        "mikestead.dotenv",
+        "esbenp.prettier-vscode",
+        "foxundermoon.shell-format",
+        "ms-azuretools.vscode-docker"
+    ],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     "forwardPorts": [1234, 3000],
     // Use 'postCreateCommand' to run commands after the container is created.
     // "postCreateCommand": "npm config set unsafe-perm=true && npm i && cd frontend && npm i",
     // Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
     "remoteUser": "node",
-    "postCreateCommand": "cd /workspace; if [ ! -f ormconfig.json ]; then cp ormconfig.dockerdevexample.json ormconfig.json; fi; if [ ! -f ormconfig.test.json ]; then cp ormconfig.dockerdevexample.test.json ormconfig.test.json; fi;"
+    "postCreateCommand": "cd /workspace; if [ ! -f ormconfig.json ]; then cp ormconfig.dockerdevexample.json ormconfig.json; fi; if [ ! -f ormconfig.test.json ]; then cp ormconfig.dockerdevexample.test.json ormconfig.test.json; fi; npm i && cd frontend && npm i"
 }
