@@ -2,20 +2,14 @@
     "type": "mariadb",
     "host": "db",
     "port": 3306,
-    "username": "photos",
-    "password": "photos",
-    "database": "photos",
+    "username": "photosuser",
+    "password": "photospass",
+    "database": "photosdb",
     "synchronize": false,
     "logging": false,
-    "entities": [
-        "src/entity/**/*.ts"
-    ],
-    "migrations": [
-        "src/migration/**/*.ts"
-    ],
-    "subscribers": [
-        "src/subscriber/**/*.ts"
-    ],
+    "entities": ["src/entity/**/*.ts"],
+    "migrations": ["src/migration/**/*.ts"],
+    "subscribers": ["src/subscriber/**/*.ts"],
     "cli": {
         "entitiesDir": "src/entity",
         "migrationsDir": "src/migration",

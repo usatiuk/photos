@@ -1,21 +1,15 @@
 {
     "type": "mariadb",
-    "host": "dbtest",
+    "host": "db",
     "port": 3306,
-    "username": "photos",
-    "password": "photos",
-    "database": "photos_test",
+    "username": "photostestuser",
+    "password": "photostestpass",
+    "database": "photostestdb",
     "synchronize": true,
     "logging": false,
-    "entities": [
-        "src/entity/**/*.ts"
-    ],
-    "migrations": [
-        "src/migration/**/*.ts"
-    ],
-    "subscribers": [
-        "src/subscriber/**/*.ts"
-    ],
+    "entities": ["src/entity/**/*.ts"],
+    "migrations": ["src/migration/**/*.ts"],
+    "subscribers": ["src/subscriber/**/*.ts"],
     "cli": {
         "entitiesDir": "src/entity",
         "migrationsDir": "src/migration",
