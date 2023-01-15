@@ -68,7 +68,7 @@ jobs:
         docker:
             - image: cimg/node:14.20
 
-        working_directory: ~/photos/frontend
+        working_directory: ~/photos
 
         steps:
             - checkout:
