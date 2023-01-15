@@ -20,7 +20,8 @@ RUN rm -rfv frontend
 
 FROM backexceptwithoutfrontend
 
-COPY --from=frontbuild /usr/src/app/frontend .
+WORKDIR /usr/src/app
+COPY --from=frontbuild /usr/src/app/frontend ./frontend
 
 #ENV PORT=8080
 #ENV TYPEORM_HOST=localhost
