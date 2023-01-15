@@ -92,7 +92,6 @@ jobs:
     build:
         machine:
             image: ubuntu-2004:current
-            docker_layer_caching: true
         working_directory: ~/photos
         resource_class: large
 
@@ -108,12 +107,26 @@ jobs:
 
             - run:
                   name: create docker builder
-                  command: docker buildx create --use
+                  command: docker buildx create --use --driver=docker-container
+
+            - restore_cache:
+                  keys:
+                      - buildx-photos-circleci
 
             - run:
                   name: build and push to docker hub
-                  command: docker buildx build --progress=plain --push --platform linux/arm64,linux/amd64  --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
-                  #command: docker buildx build --push --platform linux/amd64 --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
+                  command: |
+                      docker buildx build --progress=plain --push --platform linux/arm64,linux/amd64 --tag stepanusatiuk/photos:$CIRCLE_BRANCH \
+                      --cache-to=type=local,mode=max,dest=/tmp/dockercache \
+                      --cache-from=type=local,src=/tmp/dockercache .
+            - run:
+                  name: prune cache
+                  command: docker buildx prune --keep-storage=2gb --verbose
+
+            - save_cache:
+                  key: buildx-photos-circleci
+                  paths:
+                      - /tmp/dockercache
 
 #    build-arm:
 #        machine:
