@@ -13,7 +13,7 @@ Demo: https://photos.usatiuk.com
 
 First, install all of the dependencies with `npm i` and `cd frontend && npm i`
 
-You also need to create a ormconfig.json and ormconfig.test.json (only if you
+You also need to create a ormconfig.json and ormconfig.test.json (the latter only if you
 want to run the tests). You can use ormconfig.example.json as an example (you
 only need to change the database connection settings)
 
