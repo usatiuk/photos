@@ -111,7 +111,7 @@ jobs:
 
             - restore_cache:
                   keys:
-                      - buildx-photos-circleci
+                      - buildx-photos-circleci-
 
             - run:
                   name: build and push to docker hub
