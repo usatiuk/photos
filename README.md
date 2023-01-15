@@ -20,12 +20,9 @@ only need to change the database connection settings)
 ### Using docker
 
 Open the workspace in a remote docker container using VSCode - everything should
-be set up for you. You just need to rename `ormconfig.dockerdevexample.json` and
+be set up for you. You might need to rename `ormconfig.dockerdevexample.json` and
 `ormconfig.dockerdevexample.test.json` to `ormconfig.json` and
-`ormconfig.test.json`
-
-Also, you need to run database migrations with
-`npm run typeorm-dev -- migration:run`
+`ormconfig.test.json` and install dependencies too (although it should be automatic)
 
 Then start with `npm run dev` and visit http://localhost:1234 (Parcel dev server
 is listening at http://localhost:1234, and koa at http://localhost:3000)
