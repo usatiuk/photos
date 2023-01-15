@@ -1,3 +1,4 @@
+import { Connection } from "typeorm";
 import { Config, ConfigKey, setConfigValue } from "~entity/Config";
 import { app } from "./app";
 import { config } from "./config";
@@ -25,18 +26,29 @@ async function dumpConfig() {
         console.log(`${entry.key} = ${entry.value}`);
     }
 }
+
+async function migrate(connection: Connection) {
+    await connection.runMigrations();
+    console.log("Migrations ran");
+}
+
+async function startApp() {
+    app.listen(config.port);
+    console.log(`Listening at ${config.port}`);
+}
+
 connect()
     .then((connection) => {
         console.log(`Connected to ${connection.name}`);
-        const startApp = () => {
-            app.listen(config.port);
-            console.log(`Listening at ${config.port}`);
-        };
 
-        readConfig()
+        migrate(connection)
             .then(() =>
-                dumpConfig()
-                    .then(() => startApp())
+                readConfig()
+                    .then(() =>
+                        dumpConfig()
+                            .then(() => startApp())
+                            .catch((e) => console.log(e)),
+                    )
                     .catch((e) => console.log(e)),
             )
             .catch((e) => console.log(e));
