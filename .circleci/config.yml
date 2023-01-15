@@ -124,7 +124,7 @@ jobs:
                   command: docker buildx prune --keep-storage=2gb --verbose
 
             - save_cache:
-                  key: buildx-photos-circleci
+                  key: buildx-photos-circleci-{{ checksum "/tmp/dockercache/index.json" }}
                   paths:
                       - /tmp/dockercache
 
