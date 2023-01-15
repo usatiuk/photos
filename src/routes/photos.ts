@@ -1,7 +1,7 @@
 import * as Router from "@koa/router";
 import { IPhotoReqJSON, Photo } from "~entity/Photo";
 import { User } from "~entity/User";
-import { IAPIResponse, IPhotosListPagination } from "~types";
+import { IAPIResponse, IPhotosListPagination } from "~/shared/types";
 import * as fs from "fs/promises";
 import send = require("koa-send");
 import { getHash, getSize } from "~util";

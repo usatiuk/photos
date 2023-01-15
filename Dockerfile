@@ -4,7 +4,8 @@ FROM node:16-bullseye as frontbuild
 WORKDIR /usr/src/app/frontend
 COPY ./frontend/package*.json ./
 RUN npm ci --only=production
-COPY ./ ../
+COPY ./frontend .
+COPY ./src/shared ../src/shared
 RUN npm run build && bash -O extglob -c 'rm -rfv !("dist")'
 WORKDIR ../
 RUN bash -O extglob -c 'rm -rfv !("frontend")'

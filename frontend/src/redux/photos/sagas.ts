@@ -42,7 +42,7 @@ import {
     photoUploadSuccess,
 } from "./actions";
 import { IPhotosNewRespBody } from "../../../../src/routes/photos";
-import { IPhotosListPagination } from "../../../../src/types";
+import { IPhotosListPagination } from "../../../../src/shared/types";
 
 // Thanks, https://dev.to/qortex/compute-md5-checksum-for-a-file-in-typescript-59a4
 function computeChecksumMd5(file: File): Promise<string> {

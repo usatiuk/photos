@@ -1,7 +1,7 @@
 import * as Router from "@koa/router";
 import { getConfigValue, ConfigKey } from "~entity/Config";
 import { IUserAuthJSON, IUserJWT, User } from "~entity/User";
-import { IAPIResponse } from "~types";
+import { IAPIResponse } from "~/shared/types";
 
 export const userRouter = new Router();
 

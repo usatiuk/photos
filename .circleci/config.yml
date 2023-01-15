@@ -112,7 +112,7 @@ jobs:
 
             - run:
                   name: build and push to docker hub
-                  command: docker buildx build --push --platform linux/arm64,linux/amd64  --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
+                  command: docker buildx build --progress=plain --push --platform linux/arm64,linux/amd64  --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
                   #command: docker buildx build --push --platform linux/amd64 --tag stepanusatiuk/photos:$CIRCLE_BRANCH .
 
 #    build-arm:
