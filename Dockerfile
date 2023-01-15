@@ -1,21 +1,25 @@
 # might fix this? https://github.com/parcel-bundler/parcel/issues/6735
-FROM node:16-bullseye
+FROM node:16-bullseye as frontbuild
+
+WORKDIR /usr/src/app/frontend
+COPY ./frontend/package*.json ./
+RUN npm ci --only=production
+COPY ./ ../
+RUN npm run build && bash -O extglob -c 'rm -rfv !("dist")'
+WORKDIR ../
+RUN bash -O extglob -c 'rm -rfv !("frontend")'
+
+FROM node:16-alpine as backexceptwithoutfrontend
 
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci --only=production
+COPY ./ ./
+RUN rm -rfv frontend
 
-RUN mkdir frontend
-WORKDIR frontend
-COPY ./frontend/package*.json ./
-RUN npm ci --only=production
-WORKDIR ../
+FROM backexceptwithoutfrontend
 
-COPY . .
-
-WORKDIR frontend
-RUN npm run build
-WORKDIR ../
+COPY --from=frontbuild /usr/src/app/frontend .
 
 #ENV PORT=8080
 #ENV TYPEORM_HOST=localhost

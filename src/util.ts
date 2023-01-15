@@ -1,4 +1,3 @@
-import deasync = require("deasync");
 import { fromFile } from "hasha";
 import * as ExifReader from "exifreader";
 import * as sharp from "sharp";
@@ -72,8 +71,3 @@ export async function fileCheck(file: string) {
         return false;
     }
 }
-
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-export const getHashSync: (file: string) => string = deasync(getHash);
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-export const getSizeSync: (file: string) => string = deasync(getSize);
