@@ -92,8 +92,8 @@ jobs:
     build:
         machine:
             image: ubuntu-2004:current
+            docker_layer_caching: true
         working_directory: ~/photos
-        docker_layer_caching: true
         resource_class: large
 
         steps:
