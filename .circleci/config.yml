@@ -44,20 +44,6 @@ jobs:
 
         steps:
             - checkout
-
-            - restore_cache:
-                  keys:
-                      - backend-dependencies-{{ checksum "package.json" }}
-
-            - run:
-                  name: install backend deps
-                  command: npm i
-
-            - save_cache:
-                  paths:
-                      - node_modules
-                  key: backend-dependencies-{{ checksum "package.json" }}
-
             - restore_cache:
                   keys:
                       - frontend-dependencies-{{ checksum "frontend/package.json" }}
@@ -86,19 +72,6 @@ jobs:
 
         steps:
             - checkout:
-
-            - restore_cache:
-                  keys:
-                      - backend-dependencies-{{ checksum "package.json" }}
-
-            - run:
-                  name: install backend deps
-                  command: npm i
-
-            - save_cache:
-                  paths:
-                      - node_modules
-                  key: backend-dependencies-{{ checksum "package.json" }}
 
             - restore_cache:
                   keys:
