@@ -4,16 +4,17 @@
     "plugins": [
         "@typescript-eslint",
         "prettier",
-        "import"
+        "import",
+        "mocha"
     ],
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "prettier/@typescript-eslint",
         "plugin:import/errors",
         "plugin:import/warnings",
-        "plugin:import/typescript"
+        "plugin:import/typescript",
+        "plugin:mocha/recommended"
     ],
     "env": {
         "node": true
