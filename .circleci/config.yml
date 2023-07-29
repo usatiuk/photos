@@ -11,38 +11,40 @@ jobs:
                   MYSQL_PASSWORD: photos
                   MYSQL_HOST: "localhost"
 
-        working_directory: ~/photos/backend
+        working_directory: ~/photos
 
         steps:
+            # The checkout is INTO the working directory!!!
             - checkout
-
+            
             - restore_cache:
                   keys:
-                      - backend-dependencies-{{ checksum "package.json" }}
+                      - backend-dependencies-{{ checksum "backend/package.json" }}
 
             - run:
                   name: install backend deps
-                  command: npm i
+                  command: cd backend && npm i
 
             - save_cache:
                   paths:
-                      - node_modules
-                  key: backend-dependencies-{{ checksum "package.json" }}
+                      - backend/node_modules
+                  key: backend-dependencies-{{ checksum "backend/package.json" }}
 
             - run:
                   name: test backend
-                  command: npm test
+                  command: cd backend && npm test
 
             - store_test_results:
-                  path: backend-report.xml
+                  path: ~/photos/backend/backend-report.xml
 
     test-frontend:
         docker:
             - image: cimg/node:14.20
 
-        working_directory: ~/photos/frontend
+        working_directory: ~/photos
 
         steps:
+            # The checkout is INTO the working directory!!!
             - checkout
             - restore_cache:
                   keys:
@@ -50,16 +52,16 @@ jobs:
 
             - run:
                   name: install frontend deps
-                  command: npm i
+                  command: cd frontend && npm i
 
             - save_cache:
                   paths:
-                      - node_modules
+                      - frontend/node_modules
                   key: frontend-dependencies-{{ checksum "frontend/package.json" }}
 
             - run:
                   name: test frontend
-                  command: npm test
+                  command: cd frontend && npm test
 
             - store_test_results:
                   path: ~/photos/frontend/frontend-reports/frontend-report.xml
@@ -68,9 +70,10 @@ jobs:
         docker:
             - image: cimg/node:14.20
 
-        working_directory: ~/photos/frontend
+        working_directory: ~/photos
 
         steps:
+            # The checkout is INTO the working directory!!!
             - checkout:
 
             - restore_cache:
@@ -79,16 +82,16 @@ jobs:
 
             - run:
                   name: install frontend deps
-                  command: npm i
+                  command: cd frontend && npm i
 
             - save_cache:
                   paths:
-                      - node_modules
+                      - frontend/node_modules
                   key: frontend-dependencies-{{ checksum "frontend/package.json" }}
 
             - run:
                   name: build frontend
-                  command: npm run build
+                  command: cd frontend && npm run build
     build:
         machine:
             image: ubuntu-2004:current
@@ -96,6 +99,7 @@ jobs:
         resource_class: large
 
         steps:
+            # The checkout is INTO the working directory!!!
             - checkout
             - run:
                   name: log in to docker hub
