@@ -1,11 +1,19 @@
 import * as Router from "@koa/router";
 import { getConfigValue, ConfigKey } from "~entity/Config";
-import { IUserAuthJSON, IUserJWT, User } from "~entity/User";
-import { IAPIResponse } from "~/shared/types";
+import { User } from "~entity/User";
+import {
+    IUserJWT,
+    IUserGetRespBody,
+    IUserEditRespBody,
+    IUserSignupBody,
+    IUserSignupRespBody,
+    IUserLoginRespBody,
+    IUserEditBody,
+    IUserLoginBody,
+} from "~/shared/types";
 
 export const userRouter = new Router();
 
-export type IUserGetRespBody = IAPIResponse<IUserAuthJSON>;
 userRouter.get("/users/user", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -23,11 +31,6 @@ userRouter.get("/users/user", async (ctx) => {
     ctx.body = { error: false, data: user.toAuthJSON() } as IUserGetRespBody;
 });
 
-export interface IUserLoginBody {
-    username: string | undefined;
-    password: string | undefined;
-}
-export type IUserLoginRespBody = IAPIResponse<IUserAuthJSON>;
 userRouter.post("/users/login", async (ctx) => {
     const request = ctx.request;
 
@@ -50,12 +53,6 @@ userRouter.post("/users/login", async (ctx) => {
     ctx.body = { error: false, data: user.toAuthJSON() } as IUserLoginRespBody;
 });
 
-export interface IUserSignupBody {
-    username: string | undefined;
-    password: string | undefined;
-    email: string | undefined;
-}
-export type IUserSignupRespBody = IAPIResponse<IUserAuthJSON>;
 userRouter.post("/users/signup", async (ctx) => {
     const request = ctx.request;
 
@@ -97,10 +94,6 @@ userRouter.post("/users/signup", async (ctx) => {
     ctx.body = { error: false, data: user.toAuthJSON() } as IUserSignupRespBody;
 });
 
-export interface IUserEditBody {
-    password: string | undefined;
-}
-export type IUserEditRespBody = IAPIResponse<IUserAuthJSON>;
 userRouter.post("/users/edit", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);

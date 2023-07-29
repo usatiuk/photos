@@ -1,7 +1,7 @@
 import { Reducer } from "react";
 
-import { setToken } from "../../redux/api/utils";
-import { UserAction, UserTypes } from "../../redux/user/actions";
+import { setToken } from "~src/redux/api/utils";
+import { UserAction, UserTypes } from "~src/redux/user/actions";
 import { AuthAction, AuthTypes } from "./actions";
 
 export interface IAuthState {

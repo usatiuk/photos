@@ -2,29 +2,24 @@ import "./Home.scss";
 
 import {
     Alignment,
-    Breadcrumbs,
     Button,
     Classes,
-    IBreadcrumbProps,
-    Icon,
     Menu,
     MenuItem,
     Navbar,
     Popover,
-    Spinner,
 } from "@blueprintjs/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router";
 import { animated, config, Transition } from "react-spring/renderprops";
 import { Dispatch } from "redux";
-import { IUserJSON } from "../../../src/entity/User";
+import { IUserJSON } from "../shared/types";
 import { Account } from "../Account/Account";
 import { Overview } from "../Photos/Overview";
 import { toggleDarkMode } from "../redux/localSettings/actions";
 import { IAppState } from "../redux/reducers";
 import { logoutUser } from "../redux/user/actions";
-import { Photo } from "../Photos/Photo";
 import { PhotoRoute } from "../Photos/PhotoRoute";
 import { UploadStatus } from "./UploadStatus";
 
@@ -95,28 +90,24 @@ export class HomeComponent extends React.PureComponent<IHomeProps> {
                                 transform: "translate3d(400px,0,0)",
                             }}
                         >
-                            {(_location: any) => (style: any) =>
-                                (
-                                    <animated.div
-                                        style={style}
-                                        className="viewComponent"
-                                    >
-                                        <Switch location={_location}>
-                                            <Route
-                                                path="/account"
-                                                component={Account}
-                                            />
-                                            <Route
-                                                path="/photos/:id"
-                                                component={PhotoRoute}
-                                            />
-                                            <Route
-                                                path="/"
-                                                component={Overview}
-                                            />
-                                        </Switch>
-                                    </animated.div>
-                                )}
+                            {(_location: any) => (style: any) => (
+                                <animated.div
+                                    style={style}
+                                    className="viewComponent"
+                                >
+                                    <Switch location={_location}>
+                                        <Route
+                                            path="/account"
+                                            component={Account}
+                                        />
+                                        <Route
+                                            path="/photos/:id"
+                                            component={PhotoRoute}
+                                        />
+                                        <Route path="/" component={Overview} />
+                                    </Switch>
+                                </animated.div>
+                            )}
                         </Transition>
                     </div>
                 </div>

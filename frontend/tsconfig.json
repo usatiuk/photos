@@ -15,7 +15,13 @@
         "strictNullChecks": true,
         "skipLibCheck": true,
         "isolatedModules": true,
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "baseUrl": "./",
+        "paths": {
+            "~*": [
+                "./*"
+            ]
+        }
     },
     "include": ["./src/**/*.ts", "./src/**/*.tsx", "./jest.config.js"]
 }

@@ -1,8 +1,8 @@
 import { Connection } from "typeorm";
 import { Config, ConfigKey, setConfigValue } from "~entity/Config";
-import { app } from "./app";
+import { app } from "~app";
 import { config } from "./config";
-import { connect } from "./config/database";
+import { connect } from "~config/database";
 
 async function readConfig() {
     if (process.env.SIGNUP_ALLOWED) {

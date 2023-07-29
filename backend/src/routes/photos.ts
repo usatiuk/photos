@@ -1,8 +1,16 @@
 import * as Router from "@koa/router";
-import { IPhotoReqJSON, Photo } from "~entity/Photo";
-import { User } from "~entity/User";
-import { IAPIResponse, IPhotosListPagination } from "~/shared/types";
-import * as fs from "fs/promises";
+import { Photo } from "~entity/Photo";
+import {
+    IPhotoReqJSON,
+    IPhotosNewRespBody,
+    IPhotosNewPostBody,
+    IPhotoByIDDeleteRespBody,
+    IPhotosUploadRespBody,
+    IPhotosListRespBody,
+    IPhotosByIDGetRespBody,
+    IPhotosDeleteRespBody,
+    IPhotosDeleteBody,
+ IAPIResponse, IPhotosListPagination } from "~/shared/types";
 import send = require("koa-send");
 import { getHash, getSize } from "~util";
 import * as jwt from "jsonwebtoken";
@@ -12,12 +20,6 @@ import { In } from "typeorm";
 
 export const photosRouter = new Router();
 
-export interface IPhotosNewPostBody {
-    hash: string | undefined;
-    size: string | undefined;
-    format: string | undefined;
-}
-export type IPhotosNewRespBody = IAPIResponse<IPhotoReqJSON>;
 photosRouter.post("/photos/new", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -67,7 +69,6 @@ photosRouter.post("/photos/new", async (ctx) => {
     } as IPhotosNewRespBody;
 });
 
-export type IPhotosUploadRespBody = IAPIResponse<IPhotoReqJSON>;
 photosRouter.post("/photos/upload/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -175,7 +176,6 @@ photosRouter.patch("/photos/byID/:id", async (ctx) => {
 });
 */
 
-export type IPhotosListRespBody = IAPIResponse<IPhotoReqJSON[]>;
 photosRouter.get("/photos/list", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -217,7 +217,6 @@ photosRouter.get("/photos/list", async (ctx) => {
     } as IPhotosListRespBody;
 });
 
-export type IPhotosByIDGetRespBody = IAPIResponse<IPhotoReqJSON>;
 photosRouter.get("/photos/byID/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -259,7 +258,7 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx) => {
     }
 
     try {
-        jwt.verify(token, config.jwtSecret) as IPhotoReqJSON;
+        jwt.verify(token, config.jwtSecret);
     } catch (e) {
         ctx.throw(401);
     }
@@ -353,7 +352,6 @@ photosRouter.get("/photos/getShowByIDToken/:id", async (ctx) => {
     ctx.body = { error: false, data: token } as IPhotosGetShowTokenByID;
 });
 
-export type IPhotoByIDDeleteRespBody = IAPIResponse<boolean>;
 photosRouter.delete("/photos/byID/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
@@ -385,11 +383,6 @@ photosRouter.delete("/photos/byID/:id", async (ctx) => {
     } as IPhotoByIDDeleteRespBody;
 });
 
-export interface IPhotosDeleteBody {
-    photos: IPhotoReqJSON[];
-}
-
-export type IPhotosDeleteRespBody = IAPIResponse<boolean>;
 photosRouter.post("/photos/delete", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);

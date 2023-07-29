@@ -11,7 +11,7 @@ jobs:
                   MYSQL_PASSWORD: photos
                   MYSQL_HOST: "localhost"
 
-        working_directory: ~/photos
+        working_directory: ~/photos/backend
 
         steps:
             - checkout
@@ -40,7 +40,7 @@ jobs:
         docker:
             - image: cimg/node:14.20
 
-        working_directory: ~/photos
+        working_directory: ~/photos/frontend
 
         steps:
             - checkout
@@ -50,16 +50,16 @@ jobs:
 
             - run:
                   name: install frontend deps
-                  command: cd frontend && npm i
+                  command: npm i
 
             - save_cache:
                   paths:
-                      - frontend/node_modules
+                      - node_modules
                   key: frontend-dependencies-{{ checksum "frontend/package.json" }}
 
             - run:
                   name: test frontend
-                  command: cd frontend && npm test
+                  command: npm test
 
             - store_test_results:
                   path: ~/photos/frontend/frontend-reports/frontend-report.xml
@@ -68,7 +68,7 @@ jobs:
         docker:
             - image: cimg/node:14.20
 
-        working_directory: ~/photos
+        working_directory: ~/photos/frontend
 
         steps:
             - checkout:
@@ -79,16 +79,16 @@ jobs:
 
             - run:
                   name: install frontend deps
-                  command: cd frontend && npm i
+                  command: npm i
 
             - save_cache:
                   paths:
-                      - frontend/node_modules
+                      - node_modules
                   key: frontend-dependencies-{{ checksum "frontend/package.json" }}
 
             - run:
                   name: build frontend
-                  command: cd frontend && npm run build
+                  command: npm run build
     build:
         machine:
             image: ubuntu-2004:current

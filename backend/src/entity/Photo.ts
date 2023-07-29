@@ -1,11 +1,10 @@
 import * as path from "path";
 import * as fs from "fs/promises";
 import * as mime from "mime-types";
-import { constants as fsConstants } from "fs";
 import * as jwt from "jsonwebtoken";
+import { IPhotoReqJSON, IPhotoJSON } from "~/shared/types";
 
 import {
-    AfterRemove,
     BaseEntity,
     BeforeInsert,
     BeforeRemove,
@@ -18,37 +17,18 @@ import {
 } from "typeorm";
 import { User } from "./User";
 import {
-    isAlphanumeric,
     IsAlphanumeric,
     IsHash,
-    IsIn,
     IsMimeType,
     isNumber,
-    Length,
     Matches,
     validateOrReject,
 } from "class-validator";
 import { config } from "~config";
 import { fileCheck, getShotDate, resizeToJpeg } from "~util";
 
-export interface IPhotoJSON {
-    id: number;
-    user: number;
-    hash: string;
-    size: string;
-    format: string;
-    createdAt: number;
-    editedAt: number;
-    shotAt: number;
-    uploaded: boolean;
-}
-
-export interface IPhotoReqJSON extends IPhotoJSON {
-    accessToken: string;
-}
-
 export const thumbSizes = ["512", "1024", "2048", "original"];
-export type ThumbSize = typeof thumbSizes[number];
+export type ThumbSize = (typeof thumbSizes)[number];
 
 @Entity()
 @Index(["hash", "size", "user"], { unique: true })

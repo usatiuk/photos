@@ -3,7 +3,7 @@ import { connect } from "config/database";
 import * as request from "supertest";
 import { getConnection } from "typeorm";
 import { app } from "~app";
-import { IUserAuthJSON, User } from "~entity/User";
+import { User } from "~entity/User";
 import {
     IUserEditBody,
     IUserEditRespBody,
@@ -12,7 +12,7 @@ import {
     IUserLoginRespBody,
     IUserSignupBody,
     IUserSignupRespBody,
-} from "~routes/users";
+} from "~shared/types";
 
 import { allowSignups, ISeed, seedDB } from "./util";
 

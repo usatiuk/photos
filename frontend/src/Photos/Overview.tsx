@@ -3,20 +3,18 @@ import "./Overview.scss";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { IAppState } from "../redux/reducers";
+import { IAppState } from "~/src/redux/reducers";
 import {
     photosDeleteCancel,
     photosDeleteStart,
     photosLoadStart,
 } from "../redux/photos/actions";
-import { IPhotoReqJSON } from "../../../src/entity/Photo";
-import { LoadingStub } from "../LoadingStub";
+import { IPhotoReqJSON } from "~/src/shared/types";
 import { PhotoCard } from "./PhotoCard";
 import {
     Alignment,
     Button,
     Classes,
-    H1,
     H2,
     H3,
     Navbar,
@@ -25,8 +23,7 @@ import {
 } from "@blueprintjs/core";
 import { UploadButton } from "./UploadButton";
 import { Photo } from "./Photo";
-import { getPhotoThumbPath } from "../redux/api/photos";
-import { showDeletionToast } from "../AppToaster";
+import { showDeletionToast } from "~/src/AppToaster";
 
 export interface IOverviewComponentProps {
     photos: IPhotoReqJSON[];

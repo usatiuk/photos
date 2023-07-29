@@ -35,6 +35,7 @@ app.use(
 if (config.https) {
     app.use(sslify({ resolver: xForwardedProtoResolver }));
 }
+
 app.use(
     jwt({
         secret: config.jwtSecret,

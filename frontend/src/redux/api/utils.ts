@@ -1,4 +1,5 @@
-import { apiRoot } from "../../env";
+import { apiRoot } from "~src/env";
+import { IAPIResponse } from "~/src/shared/types";
 
 let token: string | null;
 
@@ -14,12 +15,12 @@ export function deleteToken(): void {
     token = null;
 }
 
-export async function fetchJSON(
+export async function fetchJSON<T>(
     path: string,
     method: string,
     body?: string | Record<string, unknown> | File,
     headers?: Record<string, string>,
-): Promise<Record<string, unknown>> {
+): Promise<IAPIResponse<T>> {
     if (typeof body === "object" && !(body instanceof File)) {
         body = JSON.stringify(body);
         headers = {
@@ -27,7 +28,7 @@ export async function fetchJSON(
             "Content-Type": "application/json",
         };
     }
-
+    // TODO: io-ts or something like that
     if (body instanceof File) {
         const formData = new FormData();
         formData.append("photo", body);
@@ -37,7 +38,7 @@ export async function fetchJSON(
             body: formData,
         });
         const json = (await response.json()) as Record<string, unknown>;
-        return json;
+        return json as unknown as IAPIResponse<T>;
     }
 
     const response = await fetch(apiRoot + path, {
@@ -46,15 +47,15 @@ export async function fetchJSON(
         headers,
     });
     const json = (await response.json()) as Record<string, unknown>;
-    return json;
+    return json as unknown as IAPIResponse<T>;
 }
 
-export async function fetchJSONAuth(
+export async function fetchJSONAuth<T>(
     path: string,
     method: string,
     body?: string | Record<string, unknown> | File,
     headers?: Record<string, unknown>,
-): Promise<Record<string, unknown>> {
+): Promise<IAPIResponse<T>> {
     if (token) {
         return fetchJSON(path, method, body, {
             ...headers,

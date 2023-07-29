@@ -1,10 +1,11 @@
 import { fetchJSONAuth } from "../utils";
-import { IUserEditRespBody, IUserGetRespBody } from "../../../../../src/routes/users";
+import { IUserEditRespBody, IUserGetRespBody } from "~/src/shared/types";
 
 export async function fetchUser(): Promise<IUserGetRespBody> {
-    return (fetchJSONAuth("/users/user", "GET") as unknown) as Promise<
-        IUserGetRespBody
-    >;
+    return fetchJSONAuth(
+        "/users/user",
+        "GET",
+    ) as unknown as Promise<IUserGetRespBody>;
 }
 
 export async function changeUserPassword(

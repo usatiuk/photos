@@ -4,7 +4,6 @@ import { User } from "entity/User";
 import { Photo } from "~entity/Photo";
 import { getHash, getSize } from "~util";
 import { Config, ConfigKey, setConfigValue } from "~entity/Config";
-import { config } from "chai";
 
 export const dogPath = "./src/tests/integration/photos/dog.jpg";
 export const catPath = "./src/tests/integration/photos/cat.jpg";

@@ -3,12 +3,12 @@ import { connect } from "config/database";
 import * as request from "supertest";
 import { getConnection } from "typeorm";
 import { app } from "~app";
-import { Photo, IPhotoReqJSON } from "~entity/Photo";
-import {
+import { Photo } from "~entity/Photo";
+import { IPhotoReqJSON ,
     IPhotosDeleteBody,
     IPhotosListRespBody,
     IPhotosNewPostBody,
-} from "~routes/photos";
+} from "~shared/types";
 import * as fs from "fs/promises";
 import { constants as fsConstants } from "fs";
 import * as jwt from "jsonwebtoken";
@@ -30,7 +30,6 @@ import {
     prepareMetadata,
     seedDB,
 } from "./util";
-import { sleep } from "deasync";
 import { config } from "~config";
 
 const callback = app.callback();
@@ -121,7 +120,7 @@ describe("photos", function () {
             })
             .expect(200);
         const dogSmallThumbSize = (
-            await fs.stat(await seed.dogPhoto.getThumbPath("512"))
+            await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
         expect(parseInt(response.header["content-length"])).to.equal(
             dogSmallThumbSize,
@@ -160,7 +159,7 @@ describe("photos", function () {
             })
             .expect(200);
         const dogSmallThumbSize = (
-            await fs.stat(await seed.dogPhoto.getThumbPath("512"))
+            await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
         expect(parseInt(response.header["content-length"])).to.equal(
             dogSmallThumbSize,
@@ -174,7 +173,7 @@ describe("photos", function () {
             })
             .expect(200);
         const dogSmallThumbSize2 = (
-            await fs.stat(await seed.dogPhoto.getThumbPath("512"))
+            await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
         expect(parseInt(response.header["content-length"])).to.equal(
             dogSmallThumbSize2,

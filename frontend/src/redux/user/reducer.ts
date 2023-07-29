@@ -1,6 +1,6 @@
 import { Reducer } from "react";
-import { IUserJSON } from "../../../../src/entity/User";
-import { AuthAction, AuthTypes } from "../../redux/auth/actions";
+import { IUserJSON } from "~/src/entity/User";
+import { AuthAction, AuthTypes } from "~src/redux/auth/actions";
 import { UserAction, UserTypes } from "./actions";
 
 export interface IUserState {

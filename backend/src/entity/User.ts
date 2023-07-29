@@ -2,9 +2,10 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as path from "path";
 import * as fs from "fs/promises";
+import { IUserJSON, IUserAuthJSON } from "~/shared/types";
+
 import {
     AfterInsert,
-    AfterRemove,
     BaseEntity,
     BeforeInsert,
     BeforeRemove,
@@ -17,25 +18,7 @@ import {
 } from "typeorm";
 import { config } from "../config";
 import { Photo } from "./Photo";
-import {
-    IsAlphanumeric,
-    IsBase32,
-    IsBase64,
-    IsEmail,
-    IsHash,
-    validateOrReject,
-} from "class-validator";
-
-export type IUserJSON = Pick<User, "id" | "username" | "isAdmin">;
-
-export interface IUserJWT extends IUserJSON {
-    ext: number;
-    iat: number;
-}
-
-export interface IUserAuthJSON extends IUserJSON {
-    jwt: string;
-}
+import { IsAlphanumeric, IsEmail, validateOrReject } from "class-validator";
 
 @Entity()
 export class User extends BaseEntity {

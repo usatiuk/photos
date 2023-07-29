@@ -4,8 +4,8 @@ FROM node:16-bullseye as frontbuild
 WORKDIR /usr/src/app/frontend
 COPY ./frontend/package*.json ./
 RUN npm ci --only=production
-COPY ./frontend .
-COPY ./src/shared ../src/shared
+COPY ./frontend/. .
+COPY ./shared ../shared
 RUN npm run build && bash -O extglob -c 'rm -rfv !("dist")'
 WORKDIR ../
 RUN bash -O extglob -c 'rm -rfv !("frontend")'
@@ -13,15 +13,17 @@ RUN bash -O extglob -c 'rm -rfv !("frontend")'
 FROM node:16-alpine as backexceptwithoutfrontend
 
 WORKDIR /usr/src/app
-COPY package*.json ./
+COPY ./backend/package*.json ./
 RUN npm ci --only=production
-COPY ./ ./
-RUN rm -rfv frontend
+COPY ./backend ./
+RUN rm -rfv frontend && unlink src/shared
+COPY ./shared src/shared
 
 FROM backexceptwithoutfrontend
 
 WORKDIR /usr/src/app
 COPY --from=frontbuild /usr/src/app/frontend ./frontend
+COPY ./dockerentry.sh .
 
 #ENV PORT=8080
 #ENV TYPEORM_HOST=localhost
@@ -45,6 +47,6 @@ ENV DATA_DIR=data\
 
 #EXPOSE 8080
 
-RUN ["chmod", "+x", "dockerentry.sh"]
+RUN ["chmod", "+x", "./dockerentry.sh"]
 
 CMD [ "./dockerentry.sh" ]

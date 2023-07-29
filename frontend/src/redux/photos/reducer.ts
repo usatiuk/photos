@@ -1,6 +1,6 @@
 import { Reducer } from "redux";
-import { IPhotoJSON, IPhotoReqJSON } from "../../../../src/entity/Photo";
-import { UserAction, UserTypes } from "../../redux/user/actions";
+import { IPhotoReqJSON } from "~/src/shared/types";
+import { UserAction, UserTypes } from "~src/redux/user/actions";
 import { PhotoAction, PhotoTypes } from "./actions";
 
 export interface IPhotoState {

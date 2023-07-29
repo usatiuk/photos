@@ -1,7 +1,8 @@
 version: "3.8"
 services:
   photosapp:
-    image: stepanusatiuk/photos:main
+    # image: stepanusatiuk/photos:main
+    build: ../
     restart: always
     ports:
       - "8080:8080"
@@ -21,4 +22,3 @@ services:
       - ./dbdata:/var/lib/mysql
     env_file:
       - db.env
-

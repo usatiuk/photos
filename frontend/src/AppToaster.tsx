@@ -1,6 +1,5 @@
 import { Position, Toaster } from "@blueprintjs/core";
-import { isNumber } from "class-validator";
-import { IPhotoReqJSON } from "../../src/entity/Photo";
+import { IPhotoReqJSON } from "./shared/types";
 
 export const AppToaster = Toaster.create({
     className: "recipe-toaster",

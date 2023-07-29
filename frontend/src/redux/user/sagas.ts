@@ -1,5 +1,5 @@
 import { all, call, delay, put, race, takeLatest } from "redux-saga/effects";
-import { changeUserPassword, fetchUser } from "../../redux/api/user";
+import { changeUserPassword, fetchUser } from "~src/redux/api/user";
 
 import {
     getUserFail,

@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { pathsToModuleNameMapper } = require("ts-jest");
-const { compilerOptions } = require("./tsconfig");
-
 module.exports = {
     preset: "ts-jest",
     moduleNameMapper: {
@@ -11,6 +8,7 @@ module.exports = {
         "react-spring/renderprops":
             "<rootDir>/node_modules/react-spring/renderprops.cjs",
         "react-spring": "<rootDir>/node_modules/react-spring/web.cjs",
+        "~(.*)": "<rootDir>/$1",
     },
     setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
     testEnvironment: "jsdom",

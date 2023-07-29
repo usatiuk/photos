@@ -1,7 +1,4 @@
-import {
-    IUserLoginRespBody,
-    IUserSignupRespBody,
-} from "../../../../../src/routes/users";
+import { IUserLoginRespBody, IUserSignupRespBody } from "~/src/shared/types";
 import { fetchJSON } from "../utils";
 
 export async function login(

@@ -1,4 +1,4 @@
-import { Button, Icon, Popover, Spinner } from "@blueprintjs/core";
+import { Button } from "@blueprintjs/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import { IAppState } from "../redux/reducers";
@@ -12,9 +12,9 @@ export interface IUploadStatusComponentProps {
     uploadingQueue: number;
 }
 
-export const UploadStatusComponent: React.FunctionComponent<IUploadStatusComponentProps> = (
-    props,
-) => {
+export const UploadStatusComponent: React.FunctionComponent<
+    IUploadStatusComponentProps
+> = (props) => {
     const { creatingNow, creatingQueue, uploadingNow, uploadingQueue } = props;
     const uploading =
         creatingNow > 0 ||
