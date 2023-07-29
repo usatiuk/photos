@@ -105,12 +105,6 @@ function computeSize(f: File) {
     });
 }
 
-// Shouldn't be used anymore
-function* startSpinner() {
-    yield delay(300);
-    yield put(photosStartFetchingSpinner());
-}
-
 function* photosLoad() {
     const state = yield select();
     try {

@@ -10,7 +10,11 @@ import {
     IPhotosByIDGetRespBody,
     IPhotosDeleteRespBody,
     IPhotosDeleteBody,
- IAPIResponse, IPhotosListPagination } from "~/shared/types";
+    IPhotosGetShowTokenByID,
+    IPhotoShowToken,
+    IAPIResponse,
+    IPhotosListPagination,
+} from "~/shared/types";
 import send = require("koa-send");
 import { getHash, getSize } from "~util";
 import * as jwt from "jsonwebtoken";
@@ -323,8 +327,6 @@ photosRouter.get("/photos/showByID/:id", async (ctx) => {
     await send(ctx, await photo.getReadyPath("original"));
 });
 
-export type IPhotoShowToken = string;
-export type IPhotosGetShowTokenByID = IAPIResponse<IPhotoShowToken>;
 photosRouter.get("/photos/getShowByIDToken/:id", async (ctx) => {
     if (!ctx.state.user) {
         ctx.throw(401);
