@@ -1,5 +1,5 @@
 import { Reducer } from "react";
-import { IUserJSON } from "~/src/entity/User";
+import { IUserJSON } from "~/src/shared/types";
 import { AuthAction, AuthTypes } from "~src/redux/auth/actions";
 import { UserAction, UserTypes } from "./actions";
 

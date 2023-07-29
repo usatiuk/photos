@@ -125,7 +125,7 @@ jobs:
                       --cache-from=type=local,src=/tmp/dockercache .
             - run:
                   name: prune cache
-                  command: docker buildx prune --keep-storage=2gb --verbose
+                  command: docker buildx prune --keep-storage=4gb --verbose
 
             - save_cache:
                   key: buildx-photos-circleci-{{ checksum "/tmp/dockercache/index.json" }}
