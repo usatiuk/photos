@@ -16,7 +16,7 @@ export function AccountComponent(props: IAccountComponentProps) {
     return (
         <Card className="AuthForm" elevation={2}>
             <form
-                onSubmit={(e: React.FormEvent<any>) => {
+                onSubmit={(e: React.FormEvent<never>) => {
                     e.preventDefault();
                     if (pass.trim()) {
                         props.changePass(pass);

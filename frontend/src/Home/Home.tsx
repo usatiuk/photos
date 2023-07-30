@@ -14,7 +14,7 @@ import { connect } from "react-redux";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router";
 import { animated, config, Transition } from "react-spring/renderprops";
 import { Dispatch } from "redux";
-import { IUserJSON } from "../shared/types";
+import { TUserJSON } from "../shared/types";
 import { Account } from "../Account/Account";
 import { Overview } from "../Photos/Overview";
 import { toggleDarkMode } from "../redux/localSettings/actions";
@@ -24,7 +24,7 @@ import { PhotoRoute } from "../Photos/PhotoRoute";
 import { UploadStatus } from "./UploadStatus";
 
 export interface IHomeProps extends RouteComponentProps {
-    user: IUserJSON | null;
+    user: TUserJSON | null;
 
     darkMode: boolean;
 
@@ -90,7 +90,7 @@ export class HomeComponent extends React.PureComponent<IHomeProps> {
                                 transform: "translate3d(400px,0,0)",
                             }}
                         >
-                            {(_location: any) => (style: any) => (
+                            {(_location) => (style) => (
                                 <animated.div
                                     style={style}
                                     className="viewComponent"

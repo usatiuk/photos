@@ -1,0 +1,6 @@
+{
+    "name": "photos-shared",
+    "dependencies": {
+        "zod": "^3.21.4"
+    }
+}

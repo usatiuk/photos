@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs/promises";
 import * as mime from "mime-types";
 import * as jwt from "jsonwebtoken";
-import { IPhotoReqJSON, IPhotoJSON } from "~/shared/types";
+import { TPhotoReqJSON, TPhotoJSON } from "~/shared/types";
 
 import {
     BaseEntity,
@@ -212,7 +212,7 @@ export class Photo extends BaseEntity {
         }
     }
 
-    public async toJSON(): Promise<IPhotoJSON> {
+    public async toJSON(): Promise<TPhotoJSON> {
         if (!isNumber(this.user.id)) {
             throw new Error("User not loaded");
         }
@@ -232,7 +232,7 @@ export class Photo extends BaseEntity {
         };
     }
 
-    public async toReqJSON(): Promise<IPhotoReqJSON> {
+    public async toReqJSON(): Promise<TPhotoReqJSON> {
         const token = await this.getJWTToken();
         return { ...(await this.toJSON()), accessToken: token };
     }

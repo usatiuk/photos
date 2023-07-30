@@ -1,5 +1,4 @@
 import { apiRoot } from "~src/env";
-import { IAPIResponse } from "~/src/shared/types";
 
 let token: string | null;
 
@@ -15,49 +14,44 @@ export function deleteToken(): void {
     token = null;
 }
 
-export async function fetchJSON<T>(
+export async function fetchJSON<T, P extends { parse: (string) => T }>(
     path: string,
     method: string,
+    parser: P,
     body?: string | Record<string, unknown> | File,
     headers?: Record<string, string>,
-): Promise<IAPIResponse<T>> {
-    if (typeof body === "object" && !(body instanceof File)) {
-        body = JSON.stringify(body);
-        headers = {
-            ...headers,
-            "Content-Type": "application/json",
-        };
-    }
-    // TODO: io-ts or something like that
-    if (body instanceof File) {
-        const formData = new FormData();
-        formData.append("photo", body);
-        const response = await fetch(apiRoot + path, {
-            method,
-            headers,
-            body: formData,
-        });
-        const json = (await response.json()) as Record<string, unknown>;
-        return json as unknown as IAPIResponse<T>;
-    }
+): Promise<T> {
+    const reqBody = () =>
+        body instanceof File
+            ? (() => {
+                  const fd = new FormData();
+                  fd.append("photo", body);
+                  return fd;
+              })()
+            : JSON.stringify(body);
+
+    const reqHeaders = () =>
+        body instanceof File
+            ? headers
+            : { ...headers, "Content-Type": "application/json" };
 
     const response = await fetch(apiRoot + path, {
         method,
-        body,
-        headers,
+        headers: reqHeaders(),
+        body: reqBody(),
     });
-    const json = (await response.json()) as Record<string, unknown>;
-    return json as unknown as IAPIResponse<T>;
+    return parser.parse(await response.json());
 }
 
-export async function fetchJSONAuth<T>(
+export async function fetchJSONAuth<T, P extends { parse: (string) => T }>(
     path: string,
     method: string,
+    parser: P,
     body?: string | Record<string, unknown> | File,
     headers?: Record<string, unknown>,
-): Promise<IAPIResponse<T>> {
+): Promise<T> {
     if (token) {
-        return fetchJSON(path, method, body, {
+        return fetchJSON(path, method, parser, body, {
             ...headers,
             Authorization: `Bearer ${token}`,
         });
