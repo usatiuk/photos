@@ -1,21 +1,21 @@
-import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { persistStore } from "redux-persist";
 import createSagaMiddlware from "redux-saga";
-import { rootReducer } from "../redux/reducers";
+import { configureStore } from "@reduxjs/toolkit";
 
 import { setToken } from "./api/utils";
 import { authSaga } from "./auth/sagas";
 import { photosSaga } from "./photos/sagas";
 import { getUser } from "./user/actions";
 import { userSaga } from "./user/sagas";
+import { rootReducer } from "../redux/reducers";
 
 const sagaMiddleware = createSagaMiddlware();
 
-export const store = createStore(
-    rootReducer,
-    composeWithDevTools(applyMiddleware(sagaMiddleware)),
-);
+export const store = configureStore({
+    reducer: rootReducer,
+    middleware: [sagaMiddleware],
+});
 
 export const persistor = persistStore(store, null, () => {
     const state = store.getState();

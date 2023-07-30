@@ -26,9 +26,8 @@ function* startSpinner() {
 
 function* authStart(action: IAuthStartAction) {
     const { username, password } = action.payload;
+    const spinner = yield fork(startSpinner);
     try {
-        const spinner = yield fork(startSpinner);
-
         const { response, timeout } = yield race({
             response: call(login, username, password),
             timeout: delay(10000),
@@ -47,15 +46,15 @@ function* authStart(action: IAuthStartAction) {
             yield put(authFail(response.error));
         }
     } catch (e) {
+        yield cancel(spinner);
         yield put(authFail("Internal error"));
     }
 }
 
 function* signupStart(action: ISignupStartAction) {
     const { username, password, email } = action.payload;
+    const spinner = yield fork(startSpinner);
     try {
-        const spinner = yield fork(startSpinner);
-
         const { response, timeout } = yield race({
             response: call(signup, username, password, email),
             timeout: delay(10000),
@@ -74,6 +73,7 @@ function* signupStart(action: ISignupStartAction) {
             yield put(authFail(response.error));
         }
     } catch (e) {
+        yield cancel(spinner);
         yield put(authFail(e.toString()));
     }
 }

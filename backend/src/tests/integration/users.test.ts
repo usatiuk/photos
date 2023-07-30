@@ -83,7 +83,7 @@ describe("users", function () {
 
         const body = response.body as TUserLoginRespBody;
         expect(body.error).to.be.equal("User not found");
-        expect(body.data).to.be.false;
+        expect(body.data).to.be.null;
     });
 
     it("should signup user", async function () {
@@ -127,7 +127,7 @@ describe("users", function () {
         const body = response.body as TUserSignupRespBody;
 
         expect(body.error).to.be.equal("Signups not allowed");
-        expect(body.data).to.be.false;
+        expect(body.data).to.be.null;
     });
 
     it("should signup first user and it should be admin, do not signup new users (by default)", async function () {
@@ -170,7 +170,7 @@ describe("users", function () {
         const body2 = response2.body as TUserSignupRespBody;
 
         expect(body2.error).to.be.equal("Signups not allowed");
-        expect(body2.data).to.be.false;
+        expect(body2.data).to.be.null;
     });
 
     it("should signup first user and it should be admin, but not new ones", async function () {
@@ -240,7 +240,7 @@ describe("users", function () {
         const body = response.body as TUserSignupRespBody;
 
         expect(body.error).to.be.equal("User already exists");
-        expect(body.data).to.be.false;
+        expect(body.data).to.be.null;
     });
 
     it("should change user's password", async function () {
@@ -291,6 +291,6 @@ describe("users", function () {
         const badLoginBody = badLoginResponse.body as TUserLoginRespBody;
 
         expect(badLoginBody.error).to.be.equal("User not found");
-        expect(badLoginBody.data).to.be.false;
+        expect(badLoginBody.data).to.be.null;
     });
 });

@@ -15,7 +15,7 @@ import { config, EnvType } from "~config";
 import { userRouter } from "~routes/users";
 import { devRouter } from "~routes/dev";
 import { photosRouter } from "~routes/photos";
-import { TUserJWT } from "~shared/types";
+import { TAPIErrorResponse, TUserJWT } from "~shared/types";
 
 export interface IAppState extends Koa.DefaultState {
     user?: TUserJWT;
@@ -101,6 +101,6 @@ app.on("error", (err, ctx) => {
     console.log(err);
     ctx.body = {
         error: err.message,
-        data: false,
-    };
+        data: null,
+    } as TAPIErrorResponse;
 });
