@@ -14,11 +14,15 @@
         "strictFunctionTypes": true,
         "strictNullChecks": true,
         "skipLibCheck": true,
-        "baseUrl": "./src",
+        "preserveSymlinks": false,
+        "baseUrl": "./",
         "paths": {
             "~*": [
-                "./*"
-            ]
+                "./src/*"
+            ],
+            // Required because for whatever reason typescript uses "real" path to
+            // resolve imports, which means that importing zod in types.ts is broken otherwise
+            "zod": ["node_modules/zod"]
         }
     },
     "include": [

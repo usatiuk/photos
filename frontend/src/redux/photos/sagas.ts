@@ -18,9 +18,9 @@ import {
     uploadPhoto,
 } from "~src/redux/api/photos";
 import {
-    IPhotosDeleteStartAction,
-    IPhotoLoadStartAction,
-    IPhotosUploadStartAction,
+    TPhotosDeleteStartAction,
+    TPhotoLoadStartAction,
+    TPhotosUploadStartAction,
     photoCreateFail,
     photoCreateQueue,
     photoCreateStart,
@@ -38,7 +38,7 @@ import {
     photoUploadStart,
     photoUploadSuccess,
 } from "./actions";
-import { IPhotosNewRespBody, IPhotosListPagination } from "~src/shared/types";
+import { TPhotosNewRespBody, PhotosListPagination } from "~src/shared/types";
 
 // Thanks, https://dev.to/qortex/compute-md5-checksum-for-a-file-in-typescript-59a4
 function computeChecksumMd5(file: File): Promise<string> {
@@ -112,7 +112,7 @@ function* photosLoad() {
 
         const skip = state.photos.photos ? state.photos.photos.length : 0;
         const { response, timeout } = yield race({
-            response: call(fetchPhotosList, skip, IPhotosListPagination),
+            response: call(fetchPhotosList, skip, PhotosListPagination),
             timeout: delay(10000),
         });
 
@@ -133,7 +133,7 @@ function* photosLoad() {
     }
 }
 
-function* photoLoad(action: IPhotoLoadStartAction) {
+function* photoLoad(action: TPhotoLoadStartAction) {
     try {
         //const spinner = yield fork(startSpinner);
 
@@ -185,7 +185,7 @@ function* photoCreate() {
                 return;
             }
             if (response.data || response.error === "Photo already exists") {
-                const photo = (response as IPhotosNewRespBody).data;
+                const photo = (response as TPhotosNewRespBody).data;
                 yield put(photoCreateSuccess(photo, f));
                 yield put(photoUploadQueue(f, photo.id));
             } else {
@@ -233,14 +233,14 @@ function* photoUpload() {
     }
 }
 
-function* photosUpload(action: IPhotosUploadStartAction) {
+function* photosUpload(action: TPhotosUploadStartAction) {
     const files = Array.from(action.files);
     for (const file of files) {
         yield put(photoCreateQueue(file));
     }
 }
 
-function* photosDelete(action: IPhotosDeleteStartAction) {
+function* photosDelete(action: TPhotosDeleteStartAction) {
     try {
         const { cancelled } = yield race({
             timeout: delay(3000),

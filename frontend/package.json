@@ -30,7 +30,6 @@
         "eslint-plugin-react": "^7.33.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "flush-promises": "^1.0.2",
-        "io-ts": "^2.2.20",
         "jest": "^29.6.2",
         "jest-environment-jsdom": "^29.6.2",
         "jest-junit": "^14.0.1",
@@ -51,7 +50,8 @@
         "redux-saga": "^1.2.3",
         "spark-md5": "^3.0.2",
         "ts-jest": "^29.1.1",
-        "typescript": "^5.1.6"
+        "typescript": "^5.1.6",
+        "zod": "^3.21.4"
     },
     "devDependencies": {
         "@types/enzyme": "^3.10.13",

@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { IUserAuthJSON } from "~src/shared/types";
+import { TUserAuthJSON } from "~src/shared/types";
 import {
     showPasswordNotSavedToast,
     showPasswordSavedToast,
@@ -15,20 +15,20 @@ export enum UserTypes {
     USER_PASS_CHANGE_FAIL = "USER_PASS_CHANGE_FAIL",
 }
 
-export interface IUserGetAction extends Action {
+export interface TUserGetAction extends Action {
     type: UserTypes.USER_GET;
 }
 
-export interface IUserLogoutAction extends Action {
+export interface TUserLogoutAction extends Action {
     type: UserTypes.USER_LOGOUT;
 }
 
-export interface IUserGetSuccessAction extends Action {
+export interface TUserGetSuccessAction extends Action {
     type: UserTypes.USER_GET_SUCCESS;
-    payload: IUserAuthJSON;
+    payload: TUserAuthJSON;
 }
 
-export interface IUserGetFailAction extends Action {
+export interface TUserGetFailAction extends Action {
     type: UserTypes.USER_GET_FAIL;
     payload: {
         error: string;
@@ -36,17 +36,17 @@ export interface IUserGetFailAction extends Action {
     };
 }
 
-export interface IUserPassChangeAction extends Action {
+export interface TUserPassChangeAction extends Action {
     type: UserTypes.USER_PASS_CHANGE;
     password: string;
 }
 
-export interface IUserPassChangeSuccessAction extends Action {
+export interface TUserPassChangeSuccessAction extends Action {
     type: UserTypes.USER_PASS_CHANGE_SUCCESS;
-    payload: IUserAuthJSON;
+    payload: TUserAuthJSON;
 }
 
-export interface IUserPassChangeFailAction extends Action {
+export interface TUserPassChangeFailAction extends Action {
     type: UserTypes.USER_PASS_CHANGE_FAIL;
     payload: {
         error: string;
@@ -54,32 +54,32 @@ export interface IUserPassChangeFailAction extends Action {
     };
 }
 
-export function getUser(): IUserGetAction {
+export function getUser(): TUserGetAction {
     return { type: UserTypes.USER_GET };
 }
 
-export function logoutUser(): IUserLogoutAction {
+export function logoutUser(): TUserLogoutAction {
     return { type: UserTypes.USER_LOGOUT };
 }
 
-export function getUserSuccess(user: IUserAuthJSON): IUserGetSuccessAction {
+export function getUserSuccess(user: TUserAuthJSON): TUserGetSuccessAction {
     return { type: UserTypes.USER_GET_SUCCESS, payload: user };
 }
 
 export function getUserFail(
     error: string,
     logout: boolean,
-): IUserGetFailAction {
+): TUserGetFailAction {
     return { type: UserTypes.USER_GET_FAIL, payload: { error, logout } };
 }
 
-export function userPassChange(password: string): IUserPassChangeAction {
+export function userPassChange(password: string): TUserPassChangeAction {
     return { type: UserTypes.USER_PASS_CHANGE, password };
 }
 
 export function userPassChangeSuccess(
-    user: IUserAuthJSON,
-): IUserPassChangeSuccessAction {
+    user: TUserAuthJSON,
+): TUserPassChangeSuccessAction {
     showPasswordSavedToast();
     return { type: UserTypes.USER_PASS_CHANGE_SUCCESS, payload: user };
 }
@@ -87,7 +87,7 @@ export function userPassChangeSuccess(
 export function userPassChangeFail(
     error: string,
     logout: boolean,
-): IUserPassChangeFailAction {
+): TUserPassChangeFailAction {
     showPasswordNotSavedToast(error);
     return {
         type: UserTypes.USER_PASS_CHANGE_FAIL,
@@ -96,10 +96,10 @@ export function userPassChangeFail(
 }
 
 export type UserAction =
-    | IUserGetAction
-    | IUserGetSuccessAction
-    | IUserGetFailAction
-    | IUserLogoutAction
-    | IUserPassChangeAction
-    | IUserPassChangeFailAction
-    | IUserPassChangeSuccessAction;
+    | TUserGetAction
+    | TUserGetSuccessAction
+    | TUserGetFailAction
+    | TUserLogoutAction
+    | TUserPassChangeAction
+    | TUserPassChangeFailAction
+    | TUserPassChangeSuccessAction;

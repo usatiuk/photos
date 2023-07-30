@@ -9,7 +9,7 @@ import {
     photosDeleteStart,
     photosLoadStart,
 } from "../redux/photos/actions";
-import { IPhotoReqJSON } from "~/src/shared/types";
+import { TPhotoReqJSON } from "~/src/shared/types";
 import { PhotoCard } from "./PhotoCard";
 import {
     Alignment,
@@ -26,7 +26,7 @@ import { Photo } from "./Photo";
 import { showDeletionToast } from "~/src/AppToaster";
 
 export interface IOverviewComponentProps {
-    photos: IPhotoReqJSON[];
+    photos: TPhotoReqJSON[];
     triedLoading: boolean;
     allPhotosLoaded: boolean;
     overviewFetching: boolean;
@@ -35,8 +35,8 @@ export interface IOverviewComponentProps {
     darkMode: boolean;
 
     fetchPhotos: () => void;
-    startDeletePhotos: (photos: IPhotoReqJSON[]) => void;
-    cancelDelete: (photos: IPhotoReqJSON[]) => void;
+    startDeletePhotos: (photos: TPhotoReqJSON[]) => void;
+    cancelDelete: (photos: TPhotoReqJSON[]) => void;
 }
 
 const PhotoCardM = React.memo(PhotoCard);
@@ -80,7 +80,7 @@ export const OverviewComponent: React.FunctionComponent<
         (
             acc: Record<
                 string,
-                Record<string, Record<string, IPhotoReqJSON[]>>
+                Record<string, Record<string, TPhotoReqJSON[]>>
             >,
             photo,
         ) => {
@@ -108,7 +108,7 @@ export const OverviewComponent: React.FunctionComponent<
             const els = Object.keys(dates[year]).reduce(
                 (accMonths: JSX.Element[], month): JSX.Element[] => {
                     const photos = Object.values(dates[year][month]).reduce(
-                        (accDays: IPhotoReqJSON[], day) => {
+                        (accDays: TPhotoReqJSON[], day) => {
                             return [...day, ...accDays];
                         },
                         [],
@@ -264,9 +264,9 @@ function mapStateToProps(state: IAppState) {
 function mapDispatchToProps(dispatch: Dispatch) {
     return {
         fetchPhotos: () => dispatch(photosLoadStart()),
-        startDeletePhotos: (photos: IPhotoReqJSON[]) =>
+        startDeletePhotos: (photos: TPhotoReqJSON[]) =>
             dispatch(photosDeleteStart(photos)),
-        cancelDelete: (photos: IPhotoReqJSON[]) =>
+        cancelDelete: (photos: TPhotoReqJSON[]) =>
             dispatch(photosDeleteCancel(photos)),
     };
 }

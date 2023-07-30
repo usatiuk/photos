@@ -36,7 +36,7 @@ export class LoginComponent extends React.PureComponent<
         this.props.history.push("/signup");
     }
 
-    public submit(e: React.FormEvent<any>) {
+    public submit<T extends React.FormEvent>(e: T) {
         e.preventDefault();
         const { username, password } = this.state;
         if (!this.props.inProgress) {

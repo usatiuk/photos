@@ -20,7 +20,10 @@
         "paths": {
             "~*": [
                 "./*"
-            ]
+            ],
+            // Required because for whatever reason typescript uses "real" path to
+            // resolve imports, which means that importing zod in types.ts is broken otherwise
+            "zod": ["node_modules/zod"]
         }
     },
     "include": ["./src/**/*.ts", "./src/**/*.tsx", "./jest.config.js"]

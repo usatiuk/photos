@@ -4,7 +4,7 @@ import { changeUserPassword, fetchUser } from "~src/redux/api/user";
 import {
     getUserFail,
     getUserSuccess,
-    IUserPassChangeAction,
+    TUserPassChangeAction,
     userPassChangeFail,
     userPassChangeSuccess,
     UserTypes,
@@ -32,7 +32,7 @@ function* getUser() {
     }
 }
 
-function* userPassChange(action: IUserPassChangeAction) {
+function* userPassChange(action: TUserPassChangeAction) {
     try {
         const { response, timeout } = yield race({
             response: call(changeUserPassword, action.password),

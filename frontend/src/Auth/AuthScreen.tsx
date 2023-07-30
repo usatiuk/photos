@@ -23,7 +23,9 @@ export class AuthScreenComponent extends React.PureComponent<IAuthScreenProps> {
     }
     public render() {
         const { location } = this.props.history;
-        const { from } = (this.props.location.state as any) || { from: "/" };
+        const { from } = (this.props.location.state as { from: string }) || {
+            from: "/",
+        };
         const { loggedIn } = this.props;
         return loggedIn ? (
             <Redirect to={from} />
@@ -46,7 +48,7 @@ export class AuthScreenComponent extends React.PureComponent<IAuthScreenProps> {
                         transform: "translate3d(400px,0,0)",
                     }}
                 >
-                    {(_location: any) => (style: any) => (
+                    {(_location) => (style) => (
                         <animated.div style={style}>
                             <Switch location={_location}>
                                 <Route path="/login" component={Login} />

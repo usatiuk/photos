@@ -2,7 +2,7 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as path from "path";
 import * as fs from "fs/promises";
-import { IUserJSON, IUserAuthJSON } from "~/shared/types";
+import { TUserJSON, TUserAuthJSON } from "~/shared/types";
 
 import {
     AfterInsert,
@@ -83,12 +83,12 @@ export class User extends BaseEntity {
         return validateOrReject(this);
     }
 
-    public toJSON(): IUserJSON {
+    public toJSON(): TUserJSON {
         const { id, username, isAdmin } = this;
         return { id, username, isAdmin };
     }
 
-    public toAuthJSON(): IUserAuthJSON {
+    public toAuthJSON(): TUserAuthJSON {
         const json = this.toJSON();
         return { ...json, jwt: this.toJWT() };
     }

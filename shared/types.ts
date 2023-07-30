@@ -1,85 +1,124 @@
-interface IAPIErrorResponse {
-    data: null;
-    error: string;
+import { z } from "zod";
+
+export const APIErrorResponse = z.object({
+    data: z.null(),
+    error: z.string(),
+});
+export type TAPIErrorResponse = z.infer<typeof APIErrorResponse>;
+
+function CreateAPISuccessResponse<T extends z.ZodTypeAny>(obj: T) {
+    return z.object({
+        error: z.literal(false),
+        data: obj,
+    });
 }
 
-interface IAPISuccessResponse<T> {
-    error: false;
-    data: T;
+function CreateAPIResponse<T extends z.ZodTypeAny>(obj: T) {
+    return z.union([APIErrorResponse, CreateAPISuccessResponse(obj)]);
 }
 
-export type IAPIResponse<T> = IAPIErrorResponse | IAPISuccessResponse<T>;
+export const PhotoJSON = z.object({
+    id: z.number(),
+    user: z.number(),
+    hash: z.string(),
+    size: z.string(),
+    format: z.string(),
+    createdAt: z.number(),
+    editedAt: z.number(),
+    shotAt: z.number(),
+    uploaded: z.boolean(),
+});
+export type TPhotoJSON = z.infer<typeof PhotoJSON>;
 
-export interface IPhotoJSON {
-    id: number;
-    user: number;
-    hash: string;
-    size: string;
-    format: string;
-    createdAt: number;
-    editedAt: number;
-    shotAt: number;
-    uploaded: boolean;
-}
+export const PhotoReqJSON = PhotoJSON.extend({
+    accessToken: z.string(),
+});
+export type TPhotoReqJSON = z.infer<typeof PhotoReqJSON>;
 
-export interface IPhotoReqJSON extends IPhotoJSON {
-    accessToken: string;
-}
+export const PhotoShowToken = z.string();
+export type TPhotoShowToken = z.infer<typeof PhotoShowToken>;
 
-export type IPhotoShowToken = string;
-export type IPhotosGetShowTokenByID = IAPIResponse<IPhotoShowToken>;
+export const PhotosGetShowTokenByIDRespBody = CreateAPIResponse(PhotoShowToken);
+export type TPhotosGetShowTokenByIDRespBody = z.infer<
+    typeof PhotosGetShowTokenByIDRespBody
+>;
 
-export interface IPhotosNewPostBody {
-    hash: string | undefined;
-    size: string | undefined;
-    format: string | undefined;
-}
+export const PhotosNewPostBody = z.object({
+    hash: z.string(),
+    size: z.string(),
+    format: z.string(),
+});
+export type TPhotosNewPostBody = z.infer<typeof PhotosNewPostBody>;
 
-export interface IPhotosDeleteBody {
-    photos: IPhotoReqJSON[];
-}
+export const PhotosDeleteBody = z.object({
+    photos: z.array(PhotoReqJSON),
+});
+export type TPhotosDeleteBody = z.infer<typeof PhotosDeleteBody>;
 
-export const IPhotosListPagination = 50;
+export const PhotosListPagination = 50;
 
-export type IPhotosNewRespBody = IAPIResponse<IPhotoReqJSON>;
-export type IPhotosUploadRespBody = IAPIResponse<IPhotoReqJSON>;
-export type IPhotosListRespBody = IAPIResponse<IPhotoReqJSON[]>;
-export type IPhotosByIDGetRespBody = IAPIResponse<IPhotoReqJSON>;
-export type IPhotoByIDDeleteRespBody = IAPIResponse<boolean>;
-export type IPhotosDeleteRespBody = IAPIResponse<boolean>;
+export const PhotosNewRespBody = CreateAPIResponse(PhotoReqJSON);
+export type TPhotosNewRespBody = z.infer<typeof PhotosNewRespBody>;
 
-export interface IUserJSON {
-    id: number;
-    username: string;
-    isAdmin: boolean;
-}
+export const PhotosUploadRespBody = CreateAPIResponse(PhotoReqJSON);
+export type TPhotosUploadRespBody = z.infer<typeof PhotosUploadRespBody>;
 
-export interface IUserJWT extends IUserJSON {
-    ext: number;
-    iat: number;
-}
+export const PhotosListRespBody = CreateAPIResponse(z.array(PhotoReqJSON));
+export type TPhotosListRespBody = z.infer<typeof PhotosListRespBody>;
 
-export interface IUserAuthJSON extends IUserJSON {
-    jwt: string;
-}
+export const PhotosByIDGetRespBody = CreateAPIResponse(PhotoReqJSON);
+export type TPhotosByIDGetRespBody = z.infer<typeof PhotosByIDGetRespBody>;
 
-export interface IUserSignupBody {
-    username: string | undefined;
-    password: string | undefined;
-    email: string | undefined;
-}
+export const PhotoByIDDeleteRespBody = CreateAPIResponse(z.boolean());
+export type TPhotoByIDDeleteRespBody = z.infer<typeof PhotoByIDDeleteRespBody>;
 
-export type IUserSignupRespBody = IAPIResponse<IUserAuthJSON>;
+export const PhotosDeleteRespBody = CreateAPIResponse(z.boolean());
+export type TPhotosDeleteRespBody = z.infer<typeof PhotosDeleteRespBody>;
 
-export type IUserGetRespBody = IAPIResponse<IUserAuthJSON>;
-export type IUserLoginRespBody = IAPIResponse<IUserAuthJSON>;
+export const UserJSON = z.object({
+    id: z.number(),
+    username: z.string(),
+    isAdmin: z.boolean(),
+});
+export type TUserJSON = z.infer<typeof UserJSON>;
 
-export interface IUserEditBody {
-    password: string | undefined;
-}
+export const UserJWT = UserJSON.extend({
+    ext: z.number(),
+    iat: z.number(),
+});
+export type TUserJWT = z.infer<typeof UserJWT>;
 
-export type IUserEditRespBody = IAPIResponse<IUserAuthJSON>;
-export interface IUserLoginBody {
-    username: string | undefined;
-    password: string | undefined;
-}
+export const UserAuthJSON = UserJSON.extend({
+    jwt: z.string(),
+});
+export type TUserAuthJSON = z.infer<typeof UserAuthJSON>;
+
+export const UserSignupBody = z.object({
+    username: z.string(),
+    password: z.string(),
+    email: z.string(),
+});
+export type TUserSignupBody = z.infer<typeof UserSignupBody>;
+
+export const UserSignupRespBody = CreateAPIResponse(UserAuthJSON);
+export type TUserSignupRespBody = z.infer<typeof UserSignupRespBody>;
+
+export const UserGetRespBody = CreateAPIResponse(UserAuthJSON);
+export type TUserGetRespBody = z.infer<typeof UserGetRespBody>;
+
+export const UserLoginRespBody = CreateAPIResponse(UserAuthJSON);
+export type TUserLoginRespBody = z.infer<typeof UserLoginRespBody>;
+
+export const UserEditBody = z.object({
+    password: z.optional(z.string()),
+});
+export type TUserEditBody = z.infer<typeof UserEditBody>;
+
+export const UserEditRespBody = CreateAPIResponse(UserAuthJSON);
+export type TUserEditRespBody = z.infer<typeof UserEditRespBody>;
+
+export const UserLoginBody = z.object({
+    username: z.string(),
+    password: z.string(),
+});
+export type TUserLoginBody = z.infer<typeof UserLoginBody>;

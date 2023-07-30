@@ -2,70 +2,65 @@ import * as Router from "@koa/router";
 import { getConfigValue, ConfigKey } from "~entity/Config";
 import { User } from "~entity/User";
 import {
-    IUserJWT,
-    IUserGetRespBody,
-    IUserEditRespBody,
-    IUserSignupBody,
-    IUserSignupRespBody,
-    IUserLoginRespBody,
-    IUserEditBody,
-    IUserLoginBody,
+    TUserJWT,
+    TUserGetRespBody,
+    TUserEditRespBody,
+    TUserSignupBody,
+    TUserSignupRespBody,
+    TUserLoginRespBody,
+    TUserEditBody,
+    TUserLoginBody,
+    UserLoginBody,
+    UserSignupBody,
+    UserEditBody,
 } from "~/shared/types";
+import { IAppContext, IAppState } from "~app";
 
-export const userRouter = new Router();
+export const userRouter = new Router<IAppState, IAppContext>();
 
-userRouter.get("/users/user", async (ctx) => {
+type ContextType = Parameters<
+    Parameters<(typeof userRouter)["post"]>["2"]
+>["0"];
+
+userRouter.get("/users/user", async (ctx: ContextType) => {
     if (!ctx.state.user) {
         ctx.throw(401);
     }
 
-    const jwt = ctx.state.user as IUserJWT;
-
+    const jwt = ctx.state.user;
     const user = await User.findOne(jwt.id);
 
     if (!user) {
         ctx.throw(401);
-        return;
     }
 
-    ctx.body = { error: false, data: user.toAuthJSON() } as IUserGetRespBody;
+    ctx.body = { error: false, data: user.toAuthJSON() } as TUserGetRespBody;
 });
 
-userRouter.post("/users/login", async (ctx) => {
+userRouter.post("/users/login", async (ctx: ContextType) => {
     const request = ctx.request;
 
     if (!request.body) {
         ctx.throw(400);
     }
-    const { username, password } = request.body as IUserLoginBody;
-
-    if (!(username && password)) {
-        ctx.throw(400);
-        return;
-    }
+    const { username, password } = UserLoginBody.parse(request.body);
 
     const user = await User.findOne({ username });
     if (!user || !(await user.verifyPassword(password))) {
         ctx.throw(404, "User not found");
-        return;
     }
 
-    ctx.body = { error: false, data: user.toAuthJSON() } as IUserLoginRespBody;
+    ctx.body = { error: false, data: user.toAuthJSON() } as TUserLoginRespBody;
 });
 
-userRouter.post("/users/signup", async (ctx) => {
+userRouter.post("/users/signup", async (ctx: ContextType) => {
     const request = ctx.request;
 
     if (!request.body) {
         ctx.throw(400);
     }
 
-    const { username, password, email } = request.body as IUserSignupBody;
-
-    if (!(username && password && email)) {
-        ctx.throw(400);
-        return;
-    }
+    const { username, password, email } = UserSignupBody.parse(request.body);
 
     const user = new User(username, email);
     const users = await User.find();
@@ -91,33 +86,30 @@ userRouter.post("/users/signup", async (ctx) => {
         ctx.throw(500);
     }
 
-    ctx.body = { error: false, data: user.toAuthJSON() } as IUserSignupRespBody;
+    ctx.body = { error: false, data: user.toAuthJSON() } as TUserSignupRespBody;
 });
 
-userRouter.post("/users/edit", async (ctx) => {
+userRouter.post("/users/edit", async (ctx: ContextType) => {
     if (!ctx.state.user) {
         ctx.throw(401);
     }
 
-    const jwt = ctx.state.user as IUserJWT;
+    const jwt = ctx.state.user;
     const user = await User.findOne(jwt.id);
     const request = ctx.request;
 
     if (!user) {
         ctx.throw(401);
-        return;
     }
 
     if (!request.body) {
         ctx.throw(400);
-        return;
     }
 
-    const { password } = request.body as IUserEditBody;
+    const { password } = UserEditBody.parse(request.body);
 
     if (!password) {
         ctx.throw(400);
-        return;
     }
 
     await user.setPassword(password);
@@ -129,5 +121,5 @@ userRouter.post("/users/edit", async (ctx) => {
         ctx.throw(500);
     }
 
-    ctx.body = { error: false, data: user.toAuthJSON() } as IUserEditRespBody;
+    ctx.body = { error: false, data: user.toAuthJSON() } as TUserEditRespBody;
 });

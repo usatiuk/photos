@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { IPhotoReqJSON } from "~src/shared/types";
+import { TPhotoReqJSON } from "~src/shared/types";
 import {
     showPhotoCreateFailToast,
     showPhotoUploadFileFailToast,
@@ -29,242 +29,242 @@ export enum PhotoTypes {
     PHOTOS_DELETE_CANCEL = "PHOTOS_DELETE_CANCEL",
 }
 
-export interface IPhotosLoadStartAction extends Action {
+export interface TPhotosLoadStartAction extends Action {
     type: PhotoTypes.PHOTOS_LOAD_START;
 }
 
-export interface IPhotosLoadSuccessAction extends Action {
+export interface TPhotosLoadSuccessAction extends Action {
     type: PhotoTypes.PHOTOS_LOAD_SUCCESS;
-    photos: IPhotoReqJSON[];
+    photos: TPhotoReqJSON[];
 }
 
-export interface IPhotosLoadFailAction extends Action {
+export interface TPhotosLoadFailAction extends Action {
     type: PhotoTypes.PHOTOS_LOAD_FAIL;
     error: string;
 }
 
-export interface IPhotoLoadStartAction extends Action {
+export interface TPhotoLoadStartAction extends Action {
     type: PhotoTypes.PHOTO_LOAD_START;
     id: number;
 }
 
-export interface IPhotoLoadSuccessAction extends Action {
+export interface TPhotoLoadSuccessAction extends Action {
     type: PhotoTypes.PHOTO_LOAD_SUCCESS;
-    photo: IPhotoReqJSON;
+    photo: TPhotoReqJSON;
 }
 
-export interface IPhotoLoadFailAction extends Action {
+export interface TPhotoLoadFailAction extends Action {
     type: PhotoTypes.PHOTO_LOAD_FAIL;
     id: number;
     error: string;
 }
 
-export interface IPhotosUploadStartAction extends Action {
+export interface TPhotosUploadStartAction extends Action {
     type: PhotoTypes.PHOTOS_UPLOAD_START;
     files: FileList;
 }
 
-export interface IPhotoCreateQueue extends Action {
+export interface TPhotoCreateQueue extends Action {
     type: PhotoTypes.PHOTO_CREATE_QUEUE;
     file: File;
 }
 
-export interface IPhotoUploadQueue extends Action {
+export interface TPhotoUploadQueue extends Action {
     type: PhotoTypes.PHOTO_UPLOAD_QUEUE;
     file: File;
     id: number;
 }
 
-export interface IPhotoCreateStart extends Action {
+export interface TPhotoCreateStart extends Action {
     type: PhotoTypes.PHOTO_CREATE_START;
     file: File;
 }
 
-export interface IPhotoUploadStart extends Action {
+export interface TPhotoUploadStart extends Action {
     type: PhotoTypes.PHOTO_UPLOAD_START;
     file: File;
     id: number;
 }
 
-export interface IPhotoUploadSuccessAction extends Action {
+export interface TPhotoUploadSuccessAction extends Action {
     type: PhotoTypes.PHOTO_UPLOAD_SUCCESS;
-    photo: IPhotoReqJSON;
+    photo: TPhotoReqJSON;
 }
 
-export interface IPhotoUploadFailAction extends Action {
+export interface TPhotoUploadFailAction extends Action {
     type: PhotoTypes.PHOTO_UPLOAD_FAIL;
-    photo: IPhotoReqJSON | number;
+    photo: TPhotoReqJSON | number;
     error: string;
 }
 
-export interface IPhotoCreateSuccessAction extends Action {
+export interface TPhotoCreateSuccessAction extends Action {
     type: PhotoTypes.PHOTO_CREATE_SUCCESS;
-    photo: IPhotoReqJSON;
+    photo: TPhotoReqJSON;
     file: File;
 }
 
-export interface IPhotoCreateFailAction extends Action {
+export interface TPhotoCreateFailAction extends Action {
     type: PhotoTypes.PHOTO_CREATE_FAIL;
     file: File;
     error: string;
 }
 
-export interface IPhotosDeleteStartAction extends Action {
+export interface TPhotosDeleteStartAction extends Action {
     type: PhotoTypes.PHOTOS_DELETE_START;
-    photos: IPhotoReqJSON[];
+    photos: TPhotoReqJSON[];
 }
 
-export interface IPhotosDeleteSuccessAction extends Action {
+export interface TPhotosDeleteSuccessAction extends Action {
     type: PhotoTypes.PHOTOS_DELETE_SUCCESS;
-    photos: IPhotoReqJSON[];
+    photos: TPhotoReqJSON[];
 }
 
-export interface IPhotosDeleteFailAction extends Action {
+export interface TPhotosDeleteFailAction extends Action {
     type: PhotoTypes.PHOTOS_DELETE_FAIL;
-    photos: IPhotoReqJSON[];
+    photos: TPhotoReqJSON[];
     error?: string;
 }
 
-export interface IPhotosDeleteCancelAction extends Action {
+export interface TPhotosDeleteCancelAction extends Action {
     type: PhotoTypes.PHOTOS_DELETE_CANCEL;
-    photos: IPhotoReqJSON[];
+    photos: TPhotoReqJSON[];
 }
 
-export interface IPhotosStartFetchingSpinner extends Action {
+export interface TPhotosStartFetchingSpinner extends Action {
     type: PhotoTypes.PHOTOS_START_FETCHING_SPINNER;
 }
 
-export function photoCreateQueue(file: File): IPhotoCreateQueue {
+export function photoCreateQueue(file: File): TPhotoCreateQueue {
     return { type: PhotoTypes.PHOTO_CREATE_QUEUE, file };
 }
 
-export function photoUploadQueue(file: File, id: number): IPhotoUploadQueue {
+export function photoUploadQueue(file: File, id: number): TPhotoUploadQueue {
     return { type: PhotoTypes.PHOTO_UPLOAD_QUEUE, file, id };
 }
 
-export function photoCreateStart(file: File): IPhotoCreateStart {
+export function photoCreateStart(file: File): TPhotoCreateStart {
     return { type: PhotoTypes.PHOTO_CREATE_START, file };
 }
 
-export function photoUploadStart(file: File, id: number): IPhotoUploadStart {
+export function photoUploadStart(file: File, id: number): TPhotoUploadStart {
     return { type: PhotoTypes.PHOTO_UPLOAD_START, file, id };
 }
 
-export function photosLoadStart(): IPhotosLoadStartAction {
+export function photosLoadStart(): TPhotosLoadStartAction {
     return { type: PhotoTypes.PHOTOS_LOAD_START };
 }
 
-export function photoLoadStart(id: number): IPhotoLoadStartAction {
+export function photoLoadStart(id: number): TPhotoLoadStartAction {
     return { type: PhotoTypes.PHOTO_LOAD_START, id };
 }
 
-export function photosUploadStart(files: FileList): IPhotosUploadStartAction {
+export function photosUploadStart(files: FileList): TPhotosUploadStartAction {
     return { type: PhotoTypes.PHOTOS_UPLOAD_START, files };
 }
 
 export function photoUploadSuccess(
-    photo: IPhotoReqJSON,
-): IPhotoUploadSuccessAction {
+    photo: TPhotoReqJSON,
+): TPhotoUploadSuccessAction {
     return { type: PhotoTypes.PHOTO_UPLOAD_SUCCESS, photo };
 }
 
 export function photoUploadFail(
-    photo: IPhotoReqJSON | number,
+    photo: TPhotoReqJSON | number,
     error: string,
-): IPhotoUploadFailAction {
+): TPhotoUploadFailAction {
     showPhotoUploadJSONFailToast(photo, error);
     return { type: PhotoTypes.PHOTO_UPLOAD_FAIL, photo, error };
 }
 
 export function photoUploadFailWithFile(
-    photo: IPhotoReqJSON | number,
+    photo: TPhotoReqJSON | number,
     file: File,
     error: string,
-): IPhotoUploadFailAction {
+): TPhotoUploadFailAction {
     showPhotoUploadFileFailToast(file, error);
     return { type: PhotoTypes.PHOTO_UPLOAD_FAIL, photo, error };
 }
 
 export function photoCreateSuccess(
-    photo: IPhotoReqJSON,
+    photo: TPhotoReqJSON,
     file: File,
-): IPhotoCreateSuccessAction {
+): TPhotoCreateSuccessAction {
     return { type: PhotoTypes.PHOTO_CREATE_SUCCESS, photo, file };
 }
 
 export function photoCreateFail(
     file: File,
     error: string,
-): IPhotoCreateFailAction {
+): TPhotoCreateFailAction {
     showPhotoCreateFailToast(file, error);
     return { type: PhotoTypes.PHOTO_CREATE_FAIL, file, error };
 }
 
 export function photosLoadSuccess(
-    photos: IPhotoReqJSON[],
-): IPhotosLoadSuccessAction {
+    photos: TPhotoReqJSON[],
+): TPhotosLoadSuccessAction {
     return { type: PhotoTypes.PHOTOS_LOAD_SUCCESS, photos };
 }
 
-export function photosLoadFail(error: string): IPhotosLoadFailAction {
+export function photosLoadFail(error: string): TPhotosLoadFailAction {
     return { type: PhotoTypes.PHOTOS_LOAD_FAIL, error };
 }
 
 export function photoLoadSuccess(
-    photo: IPhotoReqJSON,
-): IPhotoLoadSuccessAction {
+    photo: TPhotoReqJSON,
+): TPhotoLoadSuccessAction {
     return { type: PhotoTypes.PHOTO_LOAD_SUCCESS, photo };
 }
 
-export function photoLoadFail(id: number, error: string): IPhotoLoadFailAction {
+export function photoLoadFail(id: number, error: string): TPhotoLoadFailAction {
     return { type: PhotoTypes.PHOTO_LOAD_FAIL, id, error };
 }
 
 export function photosDeleteStart(
-    photos: IPhotoReqJSON[],
-): IPhotosDeleteStartAction {
+    photos: TPhotoReqJSON[],
+): TPhotosDeleteStartAction {
     return { type: PhotoTypes.PHOTOS_DELETE_START, photos };
 }
 export function photosDeleteSuccess(
-    photos: IPhotoReqJSON[],
-): IPhotosDeleteSuccessAction {
+    photos: TPhotoReqJSON[],
+): TPhotosDeleteSuccessAction {
     return { type: PhotoTypes.PHOTOS_DELETE_SUCCESS, photos };
 }
 export function photosDeleteFail(
-    photos: IPhotoReqJSON[],
+    photos: TPhotoReqJSON[],
     error?: string,
-): IPhotosDeleteFailAction {
+): TPhotosDeleteFailAction {
     return { type: PhotoTypes.PHOTOS_DELETE_FAIL, photos, error };
 }
 
 export function photosDeleteCancel(
-    photos: IPhotoReqJSON[],
-): IPhotosDeleteCancelAction {
+    photos: TPhotoReqJSON[],
+): TPhotosDeleteCancelAction {
     return { type: PhotoTypes.PHOTOS_DELETE_CANCEL, photos };
 }
 
-export function photosStartFetchingSpinner(): IPhotosStartFetchingSpinner {
+export function photosStartFetchingSpinner(): TPhotosStartFetchingSpinner {
     return { type: PhotoTypes.PHOTOS_START_FETCHING_SPINNER };
 }
 
 export type PhotoAction =
-    | IPhotosLoadStartAction
-    | IPhotosLoadFailAction
-    | IPhotosLoadSuccessAction
-    | IPhotosStartFetchingSpinner
-    | IPhotosUploadStartAction
-    | IPhotoCreateFailAction
-    | IPhotoCreateSuccessAction
-    | IPhotoUploadFailAction
-    | IPhotoUploadSuccessAction
-    | IPhotosDeleteFailAction
-    | IPhotosDeleteStartAction
-    | IPhotosDeleteSuccessAction
-    | IPhotosDeleteCancelAction
-    | IPhotoLoadFailAction
-    | IPhotoLoadStartAction
-    | IPhotoLoadSuccessAction
-    | IPhotoUploadQueue
-    | IPhotoCreateQueue
-    | IPhotoCreateStart
-    | IPhotoUploadStart;
+    | TPhotosLoadStartAction
+    | TPhotosLoadFailAction
+    | TPhotosLoadSuccessAction
+    | TPhotosStartFetchingSpinner
+    | TPhotosUploadStartAction
+    | TPhotoCreateFailAction
+    | TPhotoCreateSuccessAction
+    | TPhotoUploadFailAction
+    | TPhotoUploadSuccessAction
+    | TPhotosDeleteFailAction
+    | TPhotosDeleteStartAction
+    | TPhotosDeleteSuccessAction
+    | TPhotosDeleteCancelAction
+    | TPhotoLoadFailAction
+    | TPhotoLoadStartAction
+    | TPhotoLoadSuccessAction
+    | TPhotoUploadQueue
+    | TPhotoCreateQueue
+    | TPhotoCreateStart
+    | TPhotoUploadStart;

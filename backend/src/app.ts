@@ -15,8 +15,15 @@ import { config, EnvType } from "~config";
 import { userRouter } from "~routes/users";
 import { devRouter } from "~routes/dev";
 import { photosRouter } from "~routes/photos";
+import { TUserJWT } from "~shared/types";
 
-export const app = new Koa();
+export interface IAppState extends Koa.DefaultState {
+    user?: TUserJWT;
+}
+
+export interface IAppContext extends Koa.DefaultContext {}
+
+export const app = new Koa<IAppState, IAppContext>();
 
 const tmpPath = path.join(config.dataDir, "tmp");
 

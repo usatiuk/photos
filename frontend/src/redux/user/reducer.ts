@@ -1,20 +1,20 @@
 import { Reducer } from "react";
-import { IUserJSON } from "~/src/shared/types";
+import { TUserJSON } from "~/src/shared/types";
 import { AuthAction, AuthTypes } from "~src/redux/auth/actions";
 import { UserAction, UserTypes } from "./actions";
 
-export interface IUserState {
-    user: IUserJSON | null;
+export interface TUserState {
+    user: TUserJSON | null;
 }
 
-const defaultUserState: IUserState = {
+const defaultUserState: TUserState = {
     user: null,
 };
 
-export const userReducer: Reducer<IUserState, AuthAction> = (
-    state: IUserState = defaultUserState,
+export const userReducer: Reducer<TUserState, AuthAction> = (
+    state: TUserState = defaultUserState,
     action: AuthAction | UserAction,
-): IUserState => {
+): TUserState => {
     switch (action.type) {
         case AuthTypes.AUTH_SUCCESS:
         case UserTypes.USER_GET_SUCCESS:

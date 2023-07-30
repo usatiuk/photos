@@ -4,10 +4,11 @@ import * as request from "supertest";
 import { getConnection } from "typeorm";
 import { app } from "~app";
 import { Photo } from "~entity/Photo";
-import { IPhotoReqJSON ,
-    IPhotosDeleteBody,
-    IPhotosListRespBody,
-    IPhotosNewPostBody,
+import {
+    TPhotoReqJSON,
+    TPhotosDeleteBody,
+    TPhotosListRespBody,
+    TPhotosNewPostBody,
 } from "~shared/types";
 import * as fs from "fs/promises";
 import { constants as fsConstants } from "fs";
@@ -60,7 +61,7 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
 
         const usedPhoto = await seed.dogPhoto.toReqJSON();
 
@@ -85,9 +86,7 @@ describe("photos", function () {
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
             })
             .expect(200);
-        expect(parseInt(response.header["content-length"])).to.equal(
-            dogFileSize,
-        );
+        expect(parseInt(response.get("content-length"))).to.equal(dogFileSize);
     });
 
     it("should delete a photo after file has been deleted", async function () {
@@ -97,12 +96,10 @@ describe("photos", function () {
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
             })
             .expect(200);
-        expect(parseInt(response.header["content-length"])).to.equal(
-            dogFileSize,
-        );
+        expect(parseInt(response.get("content-length"))).to.equal(dogFileSize);
 
         await fs.unlink(await seed.dogPhoto.getReadyPath("original"));
-        const response2 = await request(callback)
+        await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}`)
             .set({
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
@@ -122,13 +119,13 @@ describe("photos", function () {
         const dogSmallThumbSize = (
             await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
-        expect(parseInt(response.header["content-length"])).to.equal(
+        expect(parseInt(response.get("content-length"))).to.equal(
             dogSmallThumbSize,
         );
 
         await fs.unlink(await seed.dogPhoto.getReadyPath("512"));
         await fs.unlink(await seed.dogPhoto.getReadyPath("original"));
-        const response2 = await request(callback)
+        await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}?size=512`)
             .set({
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
@@ -146,7 +143,7 @@ describe("photos", function () {
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
             })
             .expect(200);
-        expect(parseInt(response.header["content-length"])).to.be.lessThan(
+        expect(parseInt(response.get("content-length"))).to.be.lessThan(
             dogFileSize,
         );
     });
@@ -161,12 +158,12 @@ describe("photos", function () {
         const dogSmallThumbSize = (
             await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
-        expect(parseInt(response.header["content-length"])).to.equal(
+        expect(parseInt(response.get("content-length"))).to.equal(
             dogSmallThumbSize,
         );
 
         await fs.unlink(seed.dogPhoto.getThumbPath("512"));
-        const response2 = await request(callback)
+        await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}?size=512`)
             .set({
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
@@ -175,7 +172,7 @@ describe("photos", function () {
         const dogSmallThumbSize2 = (
             await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
-        expect(parseInt(response.header["content-length"])).to.equal(
+        expect(parseInt(response.get("content-length"))).to.equal(
             dogSmallThumbSize2,
         );
     });
@@ -188,7 +185,7 @@ describe("photos", function () {
             })
             .expect(200);
 
-        const listRespBody = listResp.body as IPhotosListRespBody;
+        const listRespBody = listResp.body as TPhotosListRespBody;
 
         if (listRespBody.error !== false) {
             expect(listResp.body.error).to.be.false;
@@ -201,7 +198,7 @@ describe("photos", function () {
         const listAnyResp = await request(callback)
             .get(`/photos/showByID/${photos[0].id}/${photos[0].accessToken}`)
             .expect(200);
-        expect(parseInt(listAnyResp.header["content-length"])).to.be.oneOf([
+        expect(parseInt(listAnyResp.get("content-length"))).to.be.oneOf([
             dogFileSize,
             catFileSize,
         ]);
@@ -219,9 +216,7 @@ describe("photos", function () {
         const response = await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}/${token}`)
             .expect(200);
-        expect(parseInt(response.header["content-length"])).to.equal(
-            dogFileSize,
-        );
+        expect(parseInt(response.get("content-length"))).to.equal(dogFileSize);
 
         const tokenSelfSigned = jwt.sign(
             await seed.dogPhoto.toReqJSON(),
@@ -234,7 +229,7 @@ describe("photos", function () {
         const responseSS = await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}/${tokenSelfSigned}`)
             .expect(200);
-        expect(parseInt(responseSS.header["content-length"])).to.equal(
+        expect(parseInt(responseSS.get("content-length"))).to.equal(
             dogFileSize,
         );
     });
@@ -248,7 +243,7 @@ describe("photos", function () {
             },
         );
 
-        const response = await request(callback)
+        await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}/${token}`)
             .expect(401);
     });
@@ -275,17 +270,17 @@ describe("photos", function () {
                 hash: dogHash,
                 size: dogSize,
                 format: dogFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
             id: photo.id,
-            user: seed.user1.id as any,
+            user: { id: seed.user1.id },
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
@@ -302,7 +297,7 @@ describe("photos", function () {
 
         const dbPhotoUpl = await Photo.findOneOrFail({
             id: photo.id,
-            user: seed.user1.id as any,
+            user: { id: seed.user1.id },
         });
         expect(dbPhotoUpl.hash).to.be.equal(dogHash);
         expect(await dbPhotoUpl.origFileExists()).to.be.equal(true);
@@ -317,9 +312,7 @@ describe("photos", function () {
             })
             .expect(200);
 
-        expect(parseInt(showResp.header["content-length"])).to.equal(
-            dogFileSize,
-        );
+        expect(parseInt(showResp.get("content-length"))).to.equal(dogFileSize);
     });
 
     it("should create, upload and show a png file", async function () {
@@ -333,17 +326,17 @@ describe("photos", function () {
                 hash: pngHash,
                 size: pngSize,
                 format: pngFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(pngHash);
         const dbPhoto = await Photo.findOneOrFail({
             id: photo.id,
-            user: seed.user1.id as any,
+            user: { id: seed.user1.id },
         });
         expect(dbPhoto.hash).to.be.equal(pngHash);
 
@@ -360,7 +353,7 @@ describe("photos", function () {
 
         const dbPhotoUpl = await Photo.findOneOrFail({
             id: photo.id,
-            user: seed.user1.id as any,
+            user: { id: seed.user1.id },
         });
         expect(dbPhotoUpl.hash).to.be.equal(pngHash);
         expect(dbPhotoUpl.format).to.be.equal(pngFormat);
@@ -377,9 +370,7 @@ describe("photos", function () {
             })
             .expect(200);
 
-        expect(parseInt(showResp.header["content-length"])).to.equal(
-            pngFileSize,
-        );
+        expect(parseInt(showResp.get("content-length"))).to.equal(pngFileSize);
     });
 
     it("should not create a photo twice", async function () {
@@ -393,12 +384,12 @@ describe("photos", function () {
                 hash: dogHash,
                 size: dogSize,
                 format: dogFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
 
-        const response2 = await request(callback)
+        await request(callback)
             .post("/photos/new")
             .set({
                 Authorization: `Bearer ${seed.user1.toJWT()}`,
@@ -408,7 +399,7 @@ describe("photos", function () {
                 hash: dogHash,
                 size: dogSize,
                 format: dogFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(200);
 
         const dbPhoto = await Photo.find({
@@ -430,17 +421,17 @@ describe("photos", function () {
                 hash: dogHash,
                 size: dogSize,
                 format: dogFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
             id: photo.id,
-            user: seed.user1.id as any,
+            user: { id: seed.user1.id },
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
@@ -473,9 +464,7 @@ describe("photos", function () {
             })
             .expect(200);
 
-        expect(parseInt(showResp.header["content-length"])).to.equal(
-            dogFileSize,
-        );
+        expect(parseInt(showResp.get("content-length"))).to.equal(dogFileSize);
     });
 
     it("should not upload a wrong photo", async function () {
@@ -489,17 +478,17 @@ describe("photos", function () {
                 hash: dogHash,
                 size: dogSize,
                 format: dogFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
             id: photo.id,
-            user: seed.user1.id as any,
+            user: { id: seed.user1.id },
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
 
@@ -516,7 +505,7 @@ describe("photos", function () {
 
         expect(await dbPhoto.origFileExists()).to.be.equal(false);
 
-        const showResp = await request(callback)
+        await request(callback)
             .get(`/photos/showByID/${photo.id}`)
             .set({
                 Authorization: `Bearer ${seed.user1.toJWT()}`,
@@ -535,17 +524,17 @@ describe("photos", function () {
                 hash: dogHash,
                 size: dogSize,
                 format: dogFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
             id: photo.id,
-            user: seed.user1.id as any,
+            user: { id: seed.user1.id },
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
         expect(await dbPhoto.origFileExists()).to.be.equal(false);
@@ -573,17 +562,17 @@ describe("photos", function () {
                 hash: dogHash,
                 size: dogSize,
                 format: dogFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
 
         expect(photo.hash).to.be.equal(dogHash);
         const dbPhoto = await Photo.findOneOrFail({
             id: photo.id,
-            user: seed.user1.id as any,
+            user: { id: seed.user1.id },
         });
         expect(dbPhoto.hash).to.be.equal(dogHash);
         expect(await dbPhoto.origFileExists()).to.be.equal(false);
@@ -608,7 +597,7 @@ describe("photos", function () {
     });
 
     it("should not create a photo with weird properties", async function () {
-        const response = await request(callback)
+        await request(callback)
             .post("/photos/new")
             .set({
                 Authorization: `Bearer ${seed.user1.toJWT()}`,
@@ -618,7 +607,7 @@ describe("photos", function () {
                 hash: "../test",
                 size: "33333",
                 format: dogFormat,
-            } as IPhotosNewPostBody)
+            } as TPhotosNewPostBody)
             .expect(400);
     });
 
@@ -635,13 +624,13 @@ describe("photos", function () {
         
         expect(response.body.error).to.be.false;
         
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
         
         expect(photo.name).to.be.equal("Test1");
         
         const dbPhoto = await Photo.findOne({
             id: seed.dogPhoto.id,
-            user: seed.user1.id as any,
+            user: {id:seed.user1.id} ,
         });
         
         expect(dbPhoto.name).to.be.equal("Test1");
@@ -662,7 +651,7 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photos = response.body.data as IPhotoReqJSON[];
+        const photos = response.body.data as TPhotoReqJSON[];
         const userPhotos = [
             await seed.dogPhoto.toReqJSON(),
             await seed.catPhoto.toReqJSON(),
@@ -685,7 +674,7 @@ describe("photos", function () {
 
         expect(response.body.error).to.be.false;
 
-        const photo = response.body.data as IPhotoReqJSON;
+        const photo = response.body.data as TPhotoReqJSON;
 
         const usedPhoto = seed.catPhoto.toReqJSON();
 
@@ -704,7 +693,7 @@ describe("photos", function () {
             })
             .send({
                 photos: [await seed.dogPhoto.toReqJSON()],
-            } as IPhotosDeleteBody)
+            } as TPhotosDeleteBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;
@@ -736,7 +725,7 @@ describe("photos", function () {
                     await seed.dogPhoto.toReqJSON(),
                     await seed.catPhoto.toReqJSON(),
                 ],
-            } as IPhotosDeleteBody)
+            } as TPhotosDeleteBody)
             .expect(200);
 
         expect(response.body.error).to.be.false;

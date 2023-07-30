@@ -1,5 +1,5 @@
 import { Position, Toaster } from "@blueprintjs/core";
-import { IPhotoReqJSON } from "./shared/types";
+import { TPhotoReqJSON } from "./shared/types";
 
 export const AppToaster = Toaster.create({
     className: "recipe-toaster",
@@ -43,7 +43,7 @@ export function showPhotoCreateFailToast(f: File, e: string): void {
 }
 
 export function showPhotoUploadJSONFailToast(
-    p: IPhotoReqJSON | number,
+    p: TPhotoReqJSON | number,
     e: string,
 ): void {
     const photoMsg = typeof p === "number" ? p : p.hash;
