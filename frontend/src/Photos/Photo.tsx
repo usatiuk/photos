@@ -2,24 +2,31 @@ import "./Photo.scss";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { IPhotoReqJSON } from "~/src/shared/types";
+import { TPhotoReqJSON } from "~/src/shared/types";
 import { LoadingStub } from "../LoadingStub";
 import { getPhotoImgPath, getPhotoThumbPath } from "../redux/api/photos";
 import { photoLoadStart } from "../redux/photos/actions";
-import { IPhotoState } from "../redux/photos/reducer";
+import { TPhotoState } from "../redux/photos/reducer";
 import { IAppState } from "../redux/reducers";
 import { LargeSize, PreviewSize } from "./helper";
 
-export interface IPhotoComponentProps {
-    id: number;
-    photo: IPhotoReqJSON | undefined;
-    photoState: IPhotoState | undefined;
+type StateProps = {
+    photo: TPhotoReqJSON | undefined;
+    photoState: TPhotoState | undefined;
+};
 
+type DispatchProps = {
     fetchPhoto: (id: number) => void;
-    close: () => void;
-}
+};
 
-export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
+type OwnProps = {
+    id: number;
+    close: () => void;
+};
+
+export type TPhotoComponentProps = StateProps & DispatchProps & OwnProps;
+
+export const PhotoComponent: React.FunctionComponent<TPhotoComponentProps> = (
     props,
 ) => {
     const [smallPreviewFetching, setSmallPreviewFetching] =
@@ -114,7 +121,7 @@ export const PhotoComponent: React.FunctionComponent<IPhotoComponentProps> = (
     );
 };
 
-function mapStateToProps(state: IAppState, props: IPhotoComponentProps) {
+function mapStateToProps(state: IAppState, props: OwnProps) {
     const { id } = props;
     return {
         photo: state.photos?.photos?.find((p) => p.id === id),
@@ -126,8 +133,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
     return { fetchPhoto: (id: number) => dispatch(photoLoadStart(id)) };
 }
 
-// Because https://github.com/DefinitelyTyped/DefinitelyTyped/issues/16990
-export const Photo = connect(
+export const Photo = connect<StateProps, DispatchProps, OwnProps, IAppState>(
     mapStateToProps,
     mapDispatchToProps,
-)(PhotoComponent) as any;
+)(PhotoComponent);

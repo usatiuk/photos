@@ -1,17 +1,17 @@
 import { Reducer } from "redux";
-import { IPhotoReqJSON } from "~/src/shared/types";
+import { TPhotoReqJSON } from "~/src/shared/types";
 import { UserAction, UserTypes } from "~src/redux/user/actions";
 import { PhotoAction, PhotoTypes } from "./actions";
 
-export interface IPhotoState {
+export interface TPhotoState {
     fetching: boolean;
     fetchingError: string | null;
 }
 
-export interface IPhotosState {
-    photos: IPhotoReqJSON[];
+export interface TPhotosState {
+    photos: TPhotoReqJSON[];
 
-    photoStates: Record<number, IPhotoState>;
+    photoStates: Record<number, TPhotoState>;
 
     overviewFetching: boolean;
     allPhotosLoaded: boolean;
@@ -24,10 +24,10 @@ export interface IPhotosState {
     photoUploadQueue: Record<number, File>;
     photosUploading: number;
 
-    deleteCache: Record<number, IPhotoReqJSON>;
+    deleteCache: Record<number, TPhotoReqJSON>;
 }
 
-const defaultPhotosState: IPhotosState = {
+const defaultPhotosState: TPhotosState = {
     photos: [],
     allPhotosLoaded: false,
     overviewFetching: false,
@@ -45,12 +45,12 @@ const defaultPhotosState: IPhotosState = {
     deleteCache: {},
 };
 
-export function sortPhotos(photos: IPhotoReqJSON[]): IPhotoReqJSON[] {
+export function sortPhotos(photos: TPhotoReqJSON[]): TPhotoReqJSON[] {
     return [...photos].sort((a, b) => b.shotAt - a.shotAt);
 }
 
-export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
-    state: IPhotosState = defaultPhotosState,
+export const photosReducer: Reducer<TPhotosState, PhotoAction> = (
+    state: TPhotosState = defaultPhotosState,
     action: PhotoAction | UserAction,
 ) => {
     switch (action.type) {
@@ -230,7 +230,7 @@ export const photosReducer: Reducer<IPhotosState, PhotoAction> = (
         case PhotoTypes.PHOTOS_DELETE_FAIL:
         case PhotoTypes.PHOTOS_DELETE_CANCEL: {
             const delCache = { ...state.deleteCache };
-            let photos: IPhotoReqJSON[] = [...state.photos];
+            let photos: TPhotoReqJSON[] = [...state.photos];
             for (const photo of action.photos) {
                 if (delCache[photo.id]) {
                     photos = sortPhotos([...photos, delCache[photo.id]]);

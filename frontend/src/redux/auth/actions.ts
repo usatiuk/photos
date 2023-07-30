@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { IUserAuthJSON } from "~/src/shared/types";
+import { TUserAuthJSON } from "~/src/shared/types";
 
 export enum AuthTypes {
     AUTH_START = "AUTH_START",
@@ -28,7 +28,7 @@ export interface ISignupStartAction extends Action {
 
 export interface IAuthSuccessAction extends Action {
     type: AuthTypes.AUTH_SUCCESS;
-    payload: IUserAuthJSON;
+    payload: TUserAuthJSON;
 }
 
 export interface IAuthFailureAction extends Action {
@@ -64,7 +64,7 @@ export function signupStart(
     };
 }
 
-export function authSuccess(user: IUserAuthJSON): IAuthSuccessAction {
+export function authSuccess(user: TUserAuthJSON): IAuthSuccessAction {
     return { type: AuthTypes.AUTH_SUCCESS, payload: user };
 }
 

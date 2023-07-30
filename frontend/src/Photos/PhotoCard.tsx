@@ -8,7 +8,7 @@ import {
     Spinner,
 } from "@blueprintjs/core";
 import * as React from "react";
-import { IPhotoReqJSON } from "~/src/shared/types";
+import { TPhotoReqJSON } from "~/src/shared/types";
 import { getPhotoThumbPath } from "../redux/api/photos";
 import { showDeletionToast } from "../AppToaster";
 import { Dispatch } from "redux";
@@ -17,30 +17,30 @@ import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router";
 import { PreviewSize } from "./helper";
 
-export interface IPhotoCardComponentProps extends RouteComponentProps {
-    photo: IPhotoReqJSON;
+export interface TPhotoCardComponentProps extends RouteComponentProps {
+    photo: TPhotoReqJSON;
     selected: boolean;
     id: string;
 
-    deletePhoto: (photos: IPhotoReqJSON[]) => void;
-    cancelDelete: (photos: IPhotoReqJSON[]) => void;
+    deletePhoto: (photos: TPhotoReqJSON[]) => void;
+    cancelDelete: (photos: TPhotoReqJSON[]) => void;
     onClick: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
-export interface IPhotoCardComponentState {
+export interface TPhotoCardComponentState {
     loaded: boolean;
 }
 
-const defaultPhotoCardState: IPhotoCardComponentState = {
+const defaultPhotoCardState: TPhotoCardComponentState = {
     loaded: false,
 };
 
 @ContextMenuTarget
 export class PhotoCardComponent extends React.PureComponent<
-    IPhotoCardComponentProps,
-    IPhotoCardComponentState
+    TPhotoCardComponentProps,
+    TPhotoCardComponentState
 > {
-    constructor(props: IPhotoCardComponentProps) {
+    constructor(props: TPhotoCardComponentProps) {
         super(props);
 
         this.handleDelete = this.handleDelete.bind(this);
@@ -121,9 +121,9 @@ export class PhotoCardComponent extends React.PureComponent<
 
 function mapDispatchToProps(dispatch: Dispatch) {
     return {
-        deletePhoto: (photos: IPhotoReqJSON[]) =>
+        deletePhoto: (photos: TPhotoReqJSON[]) =>
             dispatch(photosDeleteStart(photos)),
-        cancelDelete: (photos: IPhotoReqJSON[]) =>
+        cancelDelete: (photos: TPhotoReqJSON[]) =>
             dispatch(photosDeleteCancel(photos)),
     };
 }
