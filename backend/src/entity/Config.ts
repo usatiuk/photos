@@ -52,7 +52,7 @@ export async function getConfigValue(key: ConfigKey): Promise<string> {
     }
 
     try {
-        const pair = await Config.findOneOrFail({ key });
+        const pair = await Config.findOneOrFail({ key }, {});
         return pair.value;
     } catch (e) {
         return defaultValues[key];
@@ -67,7 +67,7 @@ export async function setConfigValue(
         throw new Error(`${key} is not valid config key`);
     }
 
-    let pair = await Config.findOne({ key });
+    let pair = await Config.findOne({ key }, {});
     if (!pair) {
         pair = new Config(key, val);
     } else {

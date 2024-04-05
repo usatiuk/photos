@@ -1,18 +1,14 @@
 import * as Router from "@koa/router";
-import { getConfigValue, ConfigKey } from "~entity/Config";
+import { ConfigKey, getConfigValue } from "~entity/Config";
 import { User } from "~entity/User";
 import {
-    TUserJWT,
-    TUserGetRespBody,
     TUserEditRespBody,
-    TUserSignupBody,
-    TUserSignupRespBody,
+    TUserGetRespBody,
     TUserLoginRespBody,
-    TUserEditBody,
-    TUserLoginBody,
+    TUserSignupRespBody,
+    UserEditBody,
     UserLoginBody,
     UserSignupBody,
-    UserEditBody,
 } from "~/shared/types";
 import { IAppContext, IAppState } from "~app";
 
@@ -28,7 +24,7 @@ userRouter.get("/users/user", async (ctx: ContextType) => {
     }
 
     const jwt = ctx.state.user;
-    const user = await User.findOne(jwt.id);
+    const user = await User.findOne(jwt.id, {});
 
     if (!user) {
         ctx.throw(401);
@@ -45,7 +41,7 @@ userRouter.post("/users/login", async (ctx: ContextType) => {
     }
     const { username, password } = UserLoginBody.parse(request.body);
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }, {});
     if (!user || !(await user.verifyPassword(password))) {
         ctx.throw(404, "User not found");
     }
@@ -95,7 +91,7 @@ userRouter.post("/users/edit", async (ctx: ContextType) => {
     }
 
     const jwt = ctx.state.user;
-    const user = await User.findOne(jwt.id);
+    const user = await User.findOne(jwt.id, {});
     const request = ctx.request;
 
     if (!user) {

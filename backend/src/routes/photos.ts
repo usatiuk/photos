@@ -1,26 +1,26 @@
 import * as Router from "@koa/router";
 import { Photo } from "~entity/Photo";
 import {
-    TPhotoReqJSON,
-    TPhotosNewRespBody,
-    TPhotoByIDDeleteRespBody,
-    TPhotosUploadRespBody,
-    TPhotosListRespBody,
-    TPhotosByIDGetRespBody,
-    TPhotosDeleteRespBody,
+    PhotoJSON,
+    PhotosDeleteBody,
     PhotosListPagination,
     PhotosNewPostBody,
-    PhotoJSON,
+    TPhotoByIDDeleteRespBody,
+    TPhotoReqJSON,
+    TPhotosByIDGetRespBody,
+    TPhotosDeleteRespBody,
     TPhotosGetShowTokenByIDRespBody,
-    PhotosDeleteBody,
+    TPhotosListRespBody,
+    TPhotosNewRespBody,
+    TPhotosUploadRespBody,
 } from "~/shared/types";
-import send = require("koa-send");
 import { getHash, getSize } from "~util";
 import * as jwt from "jsonwebtoken";
 import { config } from "~config";
 import { ValidationError } from "class-validator";
 import { In } from "typeorm";
 import { IAppContext, IAppState } from "~app";
+import send = require("koa-send");
 
 export const photosRouter = new Router<IAppState, IAppContext>();
 
@@ -44,7 +44,7 @@ photosRouter.post("/photos/new", async (ctx: ContextType) => {
         await photo.save();
     } catch (e) {
         if (e.code === "ER_DUP_ENTRY") {
-            const photo = await Photo.findOne({ hash, size, user });
+            const photo = await Photo.findOne({ hash, size, user }, {});
             if (!photo) {
                 ctx.throw(404);
             }
@@ -85,7 +85,7 @@ photosRouter.post("/photos/upload/:id", async (ctx: ContextType) => {
     }
 
     const { user } = ctx.state;
-    const photo = await Photo.findOne({ id: parseInt(id), user });
+    const photo = await Photo.findOne({ id: parseInt(id), user }, {});
     if (!photo) {
         ctx.throw(404);
     }
@@ -131,47 +131,47 @@ photosRouter.post("/photos/upload/:id", async (ctx: ContextType) => {
 });
 
 /**
-export interface TPhotosByIDPatchBody {     
-}
-export type TPhotosByIDPatchRespBody = IAPIResponse<TPhotoReqJSON>;
-photosRouter.patch("/photos/byID/:id", async (ctx: ContextType) => {
-    if (!ctx.state.user) {
-        ctx.throw(401);
-        return;
-    }
-    
-    const { user } = ctx.state;
-    const { id } = ctx.params as {
-        id: number | undefined;
-    };
-    
-    if (!id) {
-        ctx.throw(400);
-        return;
-    }
-    
-    const photo = await Photo.findOne({ id, user });
-    
-    if (!photo) {
-        ctx.throw(404);
-        return;
-    }
-    
-    // TODO: Some actual editing
-    
-    try {
-        photo.editedAt = new Date();
-        await photo.save();
-    } catch (e) {
-        ctx.throw(400);
-    }
-    
-    ctx.body = {
-        error: false,
-        data: photo.toReqJSON(),
-    };
-});
-*/
+ export interface TPhotosByIDPatchBody {
+ }
+ export type TPhotosByIDPatchRespBody = IAPIResponse<TPhotoReqJSON>;
+ photosRouter.patch("/photos/byID/:id", async (ctx: ContextType) => {
+ if (!ctx.state.user) {
+ ctx.throw(401);
+ return;
+ }
+
+ const { user } = ctx.state;
+ const { id } = ctx.params as {
+ id: number | undefined;
+ };
+
+ if (!id) {
+ ctx.throw(400);
+ return;
+ }
+
+ const photo = await Photo.findOne({ id, user },{});
+
+ if (!photo) {
+ ctx.throw(404);
+ return;
+ }
+
+ // TODO: Some actual editing
+
+ try {
+ photo.editedAt = new Date();
+ await photo.save();
+ } catch (e) {
+ ctx.throw(400);
+ }
+
+ ctx.body = {
+ error: false,
+ data: photo.toReqJSON(),
+ };
+ });
+ */
 
 photosRouter.get("/photos/list", async (ctx: ContextType) => {
     if (!ctx.state.user) {
@@ -229,7 +229,7 @@ photosRouter.get("/photos/byID/:id", async (ctx: ContextType) => {
 
     const { user } = ctx.state;
 
-    const photo = await Photo.findOne({ id: parseInt(id), user });
+    const photo = await Photo.findOne({ id: parseInt(id), user }, {});
 
     if (!photo) {
         ctx.throw(404);
@@ -260,10 +260,13 @@ photosRouter.get("/photos/showByID/:id/:token", async (ctx: ContextType) => {
     const photoReqJSON = PhotoJSON.parse(jwt.decode(token));
     const { user } = photoReqJSON;
 
-    const photo = await Photo.findOne({
-        id: parseInt(id),
-        user: { id: user },
-    });
+    const photo = await Photo.findOne(
+        {
+            id: parseInt(id),
+            user: { id: user },
+        },
+        {},
+    );
 
     if (!photo) {
         ctx.throw(404);
@@ -296,7 +299,7 @@ photosRouter.get("/photos/showByID/:id", async (ctx: ContextType) => {
 
     const { user } = ctx.state;
 
-    const photo = await Photo.findOne({ id: parseInt(id), user });
+    const photo = await Photo.findOne({ id: parseInt(id), user }, {});
 
     if (!photo) {
         ctx.throw(404);
@@ -329,7 +332,7 @@ photosRouter.get("/photos/getShowByIDToken/:id", async (ctx: ContextType) => {
 
     const { user } = ctx.state;
 
-    const photo = await Photo.findOne({ id: parseInt(id), user });
+    const photo = await Photo.findOne({ id: parseInt(id), user }, {});
     if (!photo) {
         ctx.throw(404);
     }
@@ -354,7 +357,7 @@ photosRouter.delete("/photos/byID/:id", async (ctx: ContextType) => {
 
     const { user } = ctx.state;
 
-    const photo = await Photo.findOne({ id: parseInt(id), user });
+    const photo = await Photo.findOne({ id: parseInt(id), user }, {});
 
     if (!photo) {
         ctx.throw(404);

@@ -86,7 +86,9 @@ describe("photos", function () {
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
             })
             .expect(200);
-        expect(parseInt(response.get("content-length"))).to.equal(dogFileSize);
+        expect(parseInt(response.get("content-length") ?? "")).to.equal(
+            dogFileSize,
+        );
     });
 
     it("should delete a photo after file has been deleted", async function () {
@@ -96,7 +98,9 @@ describe("photos", function () {
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
             })
             .expect(200);
-        expect(parseInt(response.get("content-length"))).to.equal(dogFileSize);
+        expect(parseInt(response.get("content-length") ?? "")).to.equal(
+            dogFileSize,
+        );
 
         await fs.unlink(await seed.dogPhoto.getReadyPath("original"));
         await request(callback)
@@ -119,7 +123,7 @@ describe("photos", function () {
         const dogSmallThumbSize = (
             await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
-        expect(parseInt(response.get("content-length"))).to.equal(
+        expect(parseInt(response.get("content-length") ?? "")).to.equal(
             dogSmallThumbSize,
         );
 
@@ -143,7 +147,7 @@ describe("photos", function () {
                 Authorization: `Bearer ${seed.user2.toJWT()}`,
             })
             .expect(200);
-        expect(parseInt(response.get("content-length"))).to.be.lessThan(
+        expect(parseInt(response.get("content-length") ?? "")).to.be.lessThan(
             dogFileSize,
         );
     });
@@ -158,7 +162,7 @@ describe("photos", function () {
         const dogSmallThumbSize = (
             await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
-        expect(parseInt(response.get("content-length"))).to.equal(
+        expect(parseInt(response.get("content-length") ?? "")).to.equal(
             dogSmallThumbSize,
         );
 
@@ -172,7 +176,7 @@ describe("photos", function () {
         const dogSmallThumbSize2 = (
             await fs.stat(seed.dogPhoto.getThumbPath("512"))
         ).size;
-        expect(parseInt(response.get("content-length"))).to.equal(
+        expect(parseInt(response.get("content-length") ?? "")).to.equal(
             dogSmallThumbSize2,
         );
     });
@@ -198,7 +202,7 @@ describe("photos", function () {
         const listAnyResp = await request(callback)
             .get(`/photos/showByID/${photos[0].id}/${photos[0].accessToken}`)
             .expect(200);
-        expect(parseInt(listAnyResp.get("content-length"))).to.be.oneOf([
+        expect(parseInt(listAnyResp.get("content-length") ?? "")).to.be.oneOf([
             dogFileSize,
             catFileSize,
         ]);
@@ -216,7 +220,9 @@ describe("photos", function () {
         const response = await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}/${token}`)
             .expect(200);
-        expect(parseInt(response.get("content-length"))).to.equal(dogFileSize);
+        expect(parseInt(response.get("content-length") ?? "")).to.equal(
+            dogFileSize,
+        );
 
         const tokenSelfSigned = jwt.sign(
             await seed.dogPhoto.toReqJSON(),
@@ -229,7 +235,7 @@ describe("photos", function () {
         const responseSS = await request(callback)
             .get(`/photos/showByID/${seed.dogPhoto.id}/${tokenSelfSigned}`)
             .expect(200);
-        expect(parseInt(responseSS.get("content-length"))).to.equal(
+        expect(parseInt(responseSS.get("content-length") ?? "")).to.equal(
             dogFileSize,
         );
     });
@@ -312,7 +318,9 @@ describe("photos", function () {
             })
             .expect(200);
 
-        expect(parseInt(showResp.get("content-length"))).to.equal(dogFileSize);
+        expect(parseInt(showResp.get("content-length") ?? "")).to.equal(
+            dogFileSize,
+        );
     });
 
     it("should create, upload and show a png file", async function () {
@@ -370,7 +378,9 @@ describe("photos", function () {
             })
             .expect(200);
 
-        expect(parseInt(showResp.get("content-length"))).to.equal(pngFileSize);
+        expect(parseInt(showResp.get("content-length") ?? "")).to.equal(
+            pngFileSize,
+        );
     });
 
     it("should not create a photo twice", async function () {
@@ -464,7 +474,9 @@ describe("photos", function () {
             })
             .expect(200);
 
-        expect(parseInt(showResp.get("content-length"))).to.equal(dogFileSize);
+        expect(parseInt(showResp.get("content-length") ?? "")).to.equal(
+            dogFileSize,
+        );
     });
 
     it("should not upload a wrong photo", async function () {
