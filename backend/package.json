@@ -33,7 +33,7 @@
         "sharp": "^0.32.4",
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.2.0",
-        "typeorm": "^0.2.41",
+        "typeorm": "^0.3.0",
         "typescript": "^5.1.6"
     },
     "devDependencies": {
