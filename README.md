@@ -1,10 +1,10 @@
 # Photos
 
 Something that tries to be a self-hosted alternative to Google Photos
-
+<!---
 Demo: https://photos.usatiuk.com
 (no need to enter a real email, something like asdf@asdf.com is enough, data is stored on tmpfs, reset every day)
-
+-->
 ![screenshot](docs/s1.png)
 
 ## Getting started
